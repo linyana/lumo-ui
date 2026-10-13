@@ -31,12 +31,26 @@
 			]
 		},
 		{
+			"name": "spinner",
+			"type": "registry:block",
+			"title": "Spinner",
+			"description": "Default loading indicator: a container-query sized ring of pulsing dots. Cancel the status role where the surrounding control already announces its own state.",
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Spinner/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Spinner/index.tsx"
+				}
+			]
+		},
+		{
 			"name": "button",
 			"type": "registry:block",
 			"title": "Button",
 			"description": "The reference component: tailwind-variants API, token-driven appearance, data-slot / data-variant hooks.",
 			"dependencies": ["tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
 			"files": [
 				{
 					"path": "src/components/lumo/Button/index.tsx",

@@ -1,5 +1,7 @@
-import type { ComponentProps } from 'react';
+import { Button as BaseButton } from '@base-ui/react/button';
+import type { ComponentProps, ReactNode } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
+import { Spinner } from '@/components/lumo/Spinner';
 import { cn } from '@/lib/cn';
 
 /** Reference component — other components follow this shape. */
@@ -9,8 +11,9 @@ export const buttonVariants = tv({
 		'rounded-md font-medium select-none',
 		'transition-colors',
 		'disabled:pointer-events-none disabled:opacity-50',
+		'data-loading:pointer-events-none',
 		'[&_svg]:pointer-events-none [&_svg]:shrink-0',
-		'cursor-pointer'
+		'cursor-pointer',
 	],
 	variants: {
 		variant: {
@@ -34,16 +37,57 @@ export const buttonVariants = tv({
 	},
 });
 
-export type ButtonProps = ComponentProps<'button'> & VariantProps<typeof buttonVariants>;
+export type ButtonProps = ComponentProps<'button'> &
+	VariantProps<typeof buttonVariants> & {
+		/** Leading graphic. While `loading` the spinner takes this slot. */
+		icon?: ReactNode;
+		/** Custom spinner, defaults to the built-in one. */
+		loadingIcon?: ReactNode;
+		loading?: boolean;
+	};
 
-export function Button({ className, variant = 'default', size = 'md', ...props }: ButtonProps) {
+export function Button({
+	className,
+	variant = 'default',
+	size = 'md',
+	icon = null,
+	loadingIcon,
+	loading = false,
+	disabled = false,
+	children,
+	...props
+}: ButtonProps) {
+	const spinner = loadingIcon ?? <Spinner label={null} />;
+
 	return (
-		<button
+		<BaseButton
 			data-slot="button"
 			data-variant={variant}
 			data-size={size}
+			data-loading={loading ? '' : undefined}
+			aria-busy={loading || undefined}
+			disabled={disabled || loading}
+			focusableWhenDisabled={loading || undefined}
 			className={cn(buttonVariants({ variant, size }), className)}
 			{...props}
-		/>
+		>
+			{icon ? (
+				<>
+					{loading ? spinner : icon}
+					{children}
+				</>
+			) : (
+				<span data-slot="button-content" className="grid">
+					<span className={cn('col-start-1 row-start-1', loading && 'opacity-0')}>
+						{children}
+					</span>
+					{loading && (
+						<span className="col-start-1 row-start-1 flex place-self-center">
+							{spinner}
+						</span>
+					)}
+				</span>
+			)}
+		</BaseButton>
 	);
 }

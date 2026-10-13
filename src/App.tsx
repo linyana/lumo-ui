@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/lumo/Button';
 import { Dialog } from '@/components/lumo/Dialog';
+import { Spinner } from '@/components/lumo/Spinner';
 
 const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;
 const sizes = ['sm', 'md', 'lg'] as const;
@@ -59,10 +60,28 @@ export default function App() {
 						disabled outline
 					</Button>
 				</div>
+				<div className="flex flex-wrap items-center gap-3">
+					<Button loading>loading</Button>
+					<Button variant="outline" icon={<span aria-hidden="true">+</span>} loading>
+						add
+					</Button>
+					<Button size="icon" loading aria-label="loading icon button">
+						+
+					</Button>
+				</div>
 				<p className="text-xs text-muted-foreground">
 					tab through the buttons: focus is a 1px ring defined once in
 					<code className="mx-1 rounded bg-muted px-1 py-0.5">lumo-tokens.css</code>
 				</p>
+			</section>
+
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">spinners</h2>
+				<div className="flex flex-wrap items-center gap-4 text-foreground">
+					<Spinner />
+					<Spinner className="size-6" />
+					<Spinner className="size-10 text-muted-foreground" label="saving" />
+				</div>
 			</section>
 
 			<section className="space-y-3">
