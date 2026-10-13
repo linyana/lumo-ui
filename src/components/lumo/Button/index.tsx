@@ -10,6 +10,7 @@ export const buttonVariants = tv({
 		'transition-colors',
 		'disabled:pointer-events-none disabled:opacity-50',
 		'[&_svg]:pointer-events-none [&_svg]:shrink-0',
+		'cursor-pointer'
 	],
 	variants: {
 		variant: {
@@ -35,12 +36,12 @@ export const buttonVariants = tv({
 
 export type ButtonProps = ComponentProps<'button'> & VariantProps<typeof buttonVariants>;
 
-export function Button({ className, variant, size, ...props }: ButtonProps) {
+export function Button({ className, variant = 'default', size = 'md', ...props }: ButtonProps) {
 	return (
 		<button
 			data-slot="button"
-			data-variant={variant ?? 'default'}
-			data-size={size ?? 'md'}
+			data-variant={variant}
+			data-size={size}
 			className={cn(buttonVariants({ variant, size }), className)}
 			{...props}
 		/>
