@@ -1,0 +1,24 @@
+{
+	"files.eol": "\n",
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][html]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode",
+		"editor.formatOnSave": true,
+		"editor.detectIndentation": false,
+		"editor.insertSpaces": false
+	},
+	"[yaml]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode",
+		"editor.formatOnSave": true,
+		"editor.detectIndentation": false,
+		"editor.tabSize": 4,
+		"editor.insertSpaces": true
+	},
+	"[tailwindcss]": {
+		"editor.formatOnSave": false,
+		"editor.detectIndentation": false,
+		"editor.insertSpaces": false
+	}
+}

@@ -1,0 +1,109 @@
+{
+	"$schema": "https://ui.shadcn.com/schema/registry.json",
+	"name": "lumo-ui",
+	"homepage": "https://github.com/linyana/lumo-ui",
+	"items": [
+		{
+			"name": "cn",
+			"type": "registry:file",
+			"title": "cn() class merge helper",
+			"description": "clsx + tailwind-merge. Required by every component; installed automatically as a dependency.",
+			"dependencies": ["clsx", "tailwind-merge"],
+			"files": [
+				{
+					"path": "src/lib/cn.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/cn.ts"
+				}
+			]
+		},
+		{
+			"name": "theme",
+			"type": "registry:file",
+			"title": "lumo-ui theme tokens",
+			"description": "Semantic CSS variables (shadcn-compatible names), the derived radius scale, dark mode variant and base layer. Skip this if the target project already defines these variables.",
+			"files": [
+				{
+					"path": "src/styles/lumo-tokens.css",
+					"type": "registry:file",
+					"target": "~/src/styles/lumo-tokens.css"
+				}
+			]
+		},
+		{
+			"name": "button",
+			"type": "registry:block",
+			"title": "Button",
+			"description": "The reference component: tailwind-variants API, token-driven appearance, data-slot / data-variant hooks.",
+			"dependencies": ["tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Button/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Button/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "dialog",
+			"type": "registry:block",
+			"title": "Dialog",
+			"description": "Modal dialog. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Dialog/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Trigger/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Trigger/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Portal/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Portal/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Close/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Close/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Backdrop/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Backdrop/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Viewport/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Viewport/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Popup/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Popup/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Title/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Title/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Dialog/Description/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Dialog/Description/index.tsx"
+				}
+			]
+		}
+	]
+}

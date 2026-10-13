@@ -1,0 +1,2 @@
+# LF everywhere: oxfmt's endOfLine has no "auto" and Git for Windows defaults to CRLF.
+* text=auto eol=lf

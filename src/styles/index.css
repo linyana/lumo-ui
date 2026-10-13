@@ -1,0 +1,6 @@
+/*
+ * Demo entry stylesheet. Not distributed — consuming projects import
+ * `lumo-tokens.css` into their own global stylesheet instead.
+ */
+@import 'tailwindcss';
+@import './lumo-tokens.css';
