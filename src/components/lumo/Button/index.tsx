@@ -10,8 +10,8 @@ export const buttonVariants = tv({
 		'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap',
 		'rounded-md font-medium select-none',
 		'transition-colors',
-		'disabled:pointer-events-none disabled:opacity-50',
-		'data-loading:pointer-events-none',
+		'data-disabled:pointer-events-none',
+		'data-disabled:not-data-loading:opacity-50',
 		'[&_svg]:pointer-events-none [&_svg]:shrink-0',
 		'cursor-pointer',
 	],
@@ -21,14 +21,14 @@ export const buttonVariants = tv({
 			secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
 			outline: 'border bg-background hover:bg-accent hover:text-accent-foreground',
 			ghost: 'hover:bg-accent hover:text-accent-foreground',
-			destructive: 'bg-destructive text-white hover:bg-destructive/90',
+			destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
 			link: 'text-primary underline-offset-4 hover:underline',
 		},
 		size: {
 			sm: 'h-8 gap-1.5 px-3 text-sm',
 			md: 'h-9 px-4 text-sm',
 			lg: 'h-10 px-6 text-base',
-			icon: 'size-9',
+			icon: 'size-9 text-sm',
 		},
 	},
 	defaultVariants: {
@@ -37,8 +37,10 @@ export const buttonVariants = tv({
 	},
 });
 
-export type ButtonProps = ComponentProps<'button'> &
+export type ButtonProps = Omit<ComponentProps<typeof BaseButton>, 'className'> &
 	VariantProps<typeof buttonVariants> & {
+		/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
+		className?: string;
 		/** Leading graphic. While `loading` the spinner takes this slot. */
 		icon?: ReactNode;
 		/** Custom spinner, defaults to the built-in one. */
