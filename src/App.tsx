@@ -8,6 +8,7 @@ const sizes = ['sm', 'md', 'lg'] as const;
 
 export default function App() {
 	const [dark, setDark] = useState(false);
+	const [saving, setSaving] = useState(false);
 
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', dark);
@@ -72,6 +73,29 @@ export default function App() {
 				<p className="text-xs text-muted-foreground">
 					tab through the buttons: focus is a 1px ring defined once in
 					<code className="mx-1 rounded bg-muted px-1 py-0.5">lumo-tokens.css</code>
+				</p>
+			</section>
+
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">interaction</h2>
+				<div className="flex flex-wrap items-center gap-3">
+					<Button
+						loading={saving}
+						onClick={() => {
+							setSaving(true);
+							setTimeout(() => setSaving(false), 1200);
+						}}
+					>
+						save draft
+					</Button>
+					<Button variant="outline">hover me</Button>
+					<Button variant="ghost">press me</Button>
+				</div>
+				<p className="text-xs text-muted-foreground">
+					hover and press are one state layer tinted by <code>currentColor</code>, so
+					every variant reacts in the right direction without its own hover rule. press
+					scales to <code>var(--press-scale)</code> on an 80ms curve; tab through to see
+					the ring.
 				</p>
 			</section>
 

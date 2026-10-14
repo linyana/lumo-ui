@@ -8,8 +8,15 @@ import { cn } from '@/lib/cn';
 export const buttonVariants = tv({
 	base: [
 		'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap',
-		'rounded-md font-medium select-none',
-		'transition-colors',
+		'relative rounded-md font-medium select-none',
+		'transition-[color,background-color,border-color,scale]',
+		'ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+		'active:scale-[var(--press-scale)] active:duration-[var(--duration-press)]',
+		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
+		'after:bg-current after:opacity-0 after:transition-opacity',
+		'after:duration-[var(--duration-state)]',
+		'hover:after:opacity-[var(--state-layer-hover-opacity)]',
+		'active:after:opacity-[var(--state-layer-pressed-opacity)]',
 		'data-disabled:pointer-events-none',
 		'data-disabled:not-data-loading:opacity-50',
 		'[&_svg]:pointer-events-none [&_svg]:shrink-0',
@@ -17,12 +24,12 @@ export const buttonVariants = tv({
 	],
 	variants: {
 		variant: {
-			default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-			secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-			outline: 'border bg-background hover:bg-accent hover:text-accent-foreground',
-			ghost: 'hover:bg-accent hover:text-accent-foreground',
-			destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-			link: 'text-primary underline-offset-4 hover:underline',
+			default: 'bg-primary text-primary-foreground',
+			secondary: 'bg-secondary text-secondary-foreground',
+			outline: 'border bg-background',
+			ghost: 'bg-transparent',
+			destructive: 'bg-destructive text-destructive-foreground',
+			link: 'text-primary underline-offset-4 hover:underline after:hidden',
 		},
 		size: {
 			sm: 'h-8 gap-1.5 px-3 text-sm',
@@ -31,6 +38,15 @@ export const buttonVariants = tv({
 			icon: 'size-9 text-sm',
 		},
 	},
+	compoundVariants: [
+		{
+			variant: ['default', 'destructive'],
+			class: [
+				'[--state-layer-hover-opacity:var(--state-layer-fill-hover-opacity)]',
+				'[--state-layer-pressed-opacity:var(--state-layer-fill-pressed-opacity)]',
+			],
+		},
+	],
 	defaultVariants: {
 		variant: 'default',
 		size: 'md',
