@@ -223,6 +223,76 @@
 					"target": "~/src/components/lumo/Collapsible/Trigger/index.tsx"
 				}
 			]
+		},
+		{
+			"name": "popover",
+			"type": "registry:block",
+			"title": "Popover",
+			"description": "Anchored panel that holds rich content. One popup can be shared by several detached triggers, each with its own payload. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Popover/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Arrow/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Arrow/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Backdrop/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Backdrop/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Close/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Close/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Description/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Description/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Popup/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Popup/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Portal/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Portal/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Positioner/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Positioner/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Title/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Title/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Trigger/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Trigger/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Popover/Viewport/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Popover/Viewport/index.tsx"
+				}
+			]
 		}
 	]
 }
