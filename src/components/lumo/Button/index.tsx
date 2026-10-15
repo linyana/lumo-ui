@@ -19,7 +19,7 @@ export const buttonVariants = tv({
 		'active:after:opacity-[var(--state-layer-pressed-opacity)]',
 		'data-disabled:pointer-events-none',
 		'data-disabled:not-data-loading:opacity-50',
-		'[&_svg]:pointer-events-none [&_svg]:shrink-0',
+		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
 		'cursor-pointer',
 	],
 	variants: {

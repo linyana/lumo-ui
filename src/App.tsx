@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/lumo/Button';
+import { Collapsible } from '@/components/lumo/Collapsible';
 import { Dialog } from '@/components/lumo/Dialog';
+import { Icon } from '@/components/lumo/Icon';
 import { Spinner } from '@/components/lumo/Spinner';
 import { Tooltip } from '@/components/lumo/Tooltip';
 
@@ -188,6 +190,77 @@ export default function App() {
 					hover straight across the row: the popup glides to the next trigger, its content
 					slides out the way it came, and the width animates instead of jumping. that is{' '}
 					<code className="rounded bg-muted px-1 py-0.5">Viewport</code>.
+				</p>
+			</section>
+
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">icon</h2>
+				<div className="flex flex-wrap items-center gap-3">
+					<Button
+						icon={
+							<Icon>
+								<path d="M7.25 2.5h1.5v4.75h4.75v1.5H8.75v4.75h-1.5V8.75H2.5v-1.5h4.75z" />
+							</Icon>
+						}
+					>
+						add
+					</Button>
+					<Button
+						variant="outline"
+						icon={
+							<Icon>
+								<path d="M6.5 11.6 3.4 8.5l-1.1 1.1 4.2 4.2 8-8-1.1-1.1z" />
+							</Icon>
+						}
+					>
+						saved
+					</Button>
+				</div>
+				<div className="flex items-center gap-3">
+					<span className="text-sm">
+						<Icon>
+							<path d="M6 12V4l4.5 4z" />
+						</Icon>
+					</span>
+					<span className="text-lg">
+						<Icon>
+							<path d="M6 12V4l4.5 4z" />
+						</Icon>
+					</span>
+					<span className="text-2xl">
+						<Icon>
+							<path d="M6 12V4l4.5 4z" />
+						</Icon>
+					</span>
+				</div>
+				<p className="text-xs text-muted-foreground">
+					lumo ships no icon set:{' '}
+					<code className="rounded bg-muted px-1 py-0.5">Icon</code> is only a shell, so a
+					glyph arrives as a path or as any element. it measures itself in{' '}
+					<code className="rounded bg-muted px-1 py-0.5">em</code>, the same three paths
+					above one text size apart.
+				</p>
+			</section>
+
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">collapsible</h2>
+				<Collapsible.Root className="max-w-sm rounded-lg border">
+					<Collapsible.Trigger>
+						recovery keys
+						<Collapsible.Icon />
+					</Collapsible.Trigger>
+					<Collapsible.Panel>
+						<div className="flex flex-col gap-1 px-3 pb-3 text-sm text-muted-foreground">
+							<div>alien-bean-pasta</div>
+							<div>wild-irish-burrito</div>
+							<div>horse-battery-staple</div>
+						</div>
+					</Collapsible.Panel>
+				</Collapsible.Root>
+				<p className="text-xs text-muted-foreground">
+					Base UI animates the panel from its own measured height, so the content needs no
+					fixed size. the caret reads <code>data-panel-open</code> off the trigger and
+					turns with it.
 				</p>
 			</section>
 

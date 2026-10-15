@@ -49,13 +49,28 @@
 			"type": "registry:block",
 			"title": "Button",
 			"description": "The reference component: tailwind-variants API, token-driven appearance, data-slot / data-variant hooks.",
-			"dependencies": ["tailwind-variants"],
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
 			"files": [
 				{
 					"path": "src/components/lumo/Button/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Button/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "icon",
+			"type": "registry:block",
+			"title": "Icon",
+			"description": "Shell for a glyph that brings its own path. Bundles no icon set; sizes itself to the surrounding text.",
+			"dependencies": [],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Icon/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Icon/index.tsx"
 				}
 			]
 		},
@@ -171,6 +186,41 @@
 					"path": "src/components/lumo/Dialog/Description/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Dialog/Description/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "collapsible",
+			"type": "registry:block",
+			"title": "Collapsible",
+			"description": "Disclosure region that expands and collapses one panel. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/icon"],
+			"files": [
+				{
+					"path": "src/components/lumo/Collapsible/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Collapsible/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Collapsible/Icon/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Collapsible/Icon/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Collapsible/Panel/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Collapsible/Panel/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Collapsible/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Collapsible/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Collapsible/Trigger/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Collapsible/Trigger/index.tsx"
 				}
 			]
 		}

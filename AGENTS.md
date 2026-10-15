@@ -37,6 +37,18 @@ registry. No npm package.
 6. Add a `registry.json` item whose `files` name any one path in the new directory, then run
    `bun run registry:sync` to fill in the rest. Use it in `src/App.tsx`.
 
+## Icons
+
+lumo ships no icon set. `Icon` is a shell for a path the consumer brings, and a component that has
+an icon slot takes a rendered element (`icon={<Icon>…</Icon>}` or `icon={<SomeGlyph />}`) — never an
+icon-component type, never a name from a glyph library. Size is the surrounding text's: the `Icon`
+shell and every icon slot measure themselves in `em` (`[&_svg]:size-[1em]`), so a call site passes no
+size and an icon inside a `text-lg` control grows with it. Name slots by role (`icon`,
+`loadingIcon`) and add a second slot only when it means something different.
+
+A glyph whose appearance is bound to the component's own state is a part instead —
+`Collapsible.Icon` owns its rotation, because no generic icon could know when to turn.
+
 ## Variants
 
 Use `tailwind-variants` and export the variants object. Mirror the variant onto the DOM
