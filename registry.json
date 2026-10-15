@@ -60,6 +60,61 @@
 			]
 		},
 		{
+			"name": "tooltip",
+			"type": "registry:block",
+			"title": "Tooltip",
+			"description": "Hover and focus hint anchored to its trigger. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Tooltip/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Arrow/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Arrow/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Popup/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Popup/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Portal/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Portal/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Positioner/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Positioner/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Provider/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Provider/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Trigger/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Trigger/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tooltip/Viewport/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tooltip/Viewport/index.tsx"
+				}
+			]
+		},
+		{
 			"name": "dialog",
 			"type": "registry:block",
 			"title": "Dialog",

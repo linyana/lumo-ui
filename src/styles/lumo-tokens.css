@@ -48,6 +48,11 @@
 	--duration-state: 150ms;
 	--duration-press: 80ms;
 
+	/* Overlays travel further than a state change, so they ease out with no overshoot
+	   and take a longer tail. */
+	--ease-overlay: cubic-bezier(0.22, 1, 0.36, 1);
+	--duration-overlay: 350ms;
+
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
 	--card: oklch(1 0 0);
@@ -116,5 +121,7 @@
 		--ease-spring: linear;
 		--duration-state: 1ms;
 		--duration-press: 1ms;
+		--ease-overlay: linear;
+		--duration-overlay: 1ms;
 	}
 }

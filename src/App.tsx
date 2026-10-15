@@ -2,9 +2,18 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/lumo/Button';
 import { Dialog } from '@/components/lumo/Dialog';
 import { Spinner } from '@/components/lumo/Spinner';
+import { Tooltip } from '@/components/lumo/Tooltip';
 
 const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;
 const sizes = ['sm', 'md', 'lg'] as const;
+
+const hintHandle = Tooltip.createHandle<string>();
+
+const hints = [
+	{ label: 'play', hint: 'Listen to audio preview' },
+	{ label: 'timer', hint: 'Set a timer' },
+	{ label: 'delete', hint: 'Delete: this action cannot be undone' },
+];
 
 export default function App() {
 	const [dark, setDark] = useState(false);
@@ -106,6 +115,80 @@ export default function App() {
 					<Spinner className="size-6" />
 					<Spinner className="size-10 text-muted-foreground" label="saving" />
 				</div>
+			</section>
+
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">tooltip</h2>
+				<Tooltip.Provider delay={300}>
+					<div className="flex flex-wrap items-center gap-3">
+						<Tooltip.Root>
+							<Tooltip.Trigger render={<Button variant="outline">hover me</Button>} />
+							<Tooltip.Portal>
+								<Tooltip.Positioner>
+									<Tooltip.Popup>
+										behaviour from Base UI, appearance from tokens
+										<Tooltip.Arrow />
+									</Tooltip.Popup>
+								</Tooltip.Positioner>
+							</Tooltip.Portal>
+						</Tooltip.Root>
+						<Tooltip.Root>
+							<Tooltip.Trigger render={<Button variant="ghost">bottom</Button>} />
+							<Tooltip.Portal>
+								<Tooltip.Positioner side="bottom" align="start">
+									<Tooltip.Popup>
+										with an arrow, aligned to the start edge
+										<Tooltip.Arrow />
+									</Tooltip.Popup>
+								</Tooltip.Positioner>
+							</Tooltip.Portal>
+						</Tooltip.Root>
+					</div>
+				</Tooltip.Provider>
+				<p className="text-xs text-muted-foreground">
+					one <code className="rounded bg-muted px-1 py-0.5">Provider</code> shares the
+					delay, so moving between triggers shows the next hint instantly. hovering only
+					ever previews; the same hint is announced on keyboard focus.
+				</p>
+			</section>
+
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">
+					tooltip — one popup, three triggers
+				</h2>
+				<Tooltip.Provider delay={300}>
+					<div className="flex">
+						{hints.map(({ label, hint }) => (
+							<Tooltip.Trigger
+								key={label}
+								handle={hintHandle}
+								payload={hint}
+								render={
+									<Button variant="outline" size="sm">
+										{label}
+									</Button>
+								}
+							/>
+						))}
+					</div>
+					<Tooltip.Root handle={hintHandle}>
+						{({ payload }) => (
+							<Tooltip.Portal>
+								<Tooltip.Positioner>
+									<Tooltip.Popup>
+										<Tooltip.Arrow />
+										<Tooltip.Viewport>{payload}</Tooltip.Viewport>
+									</Tooltip.Popup>
+								</Tooltip.Positioner>
+							</Tooltip.Portal>
+						)}
+					</Tooltip.Root>
+				</Tooltip.Provider>
+				<p className="text-xs text-muted-foreground">
+					hover straight across the row: the popup glides to the next trigger, its content
+					slides out the way it came, and the width animates instead of jumping. that is{' '}
+					<code className="rounded bg-muted px-1 py-0.5">Viewport</code>.
+				</p>
 			</section>
 
 			<section className="space-y-3">
