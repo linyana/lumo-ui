@@ -56,7 +56,8 @@ export function Spinner({
 				data-slot="spinner"
 				role={label ? 'status' : undefined}
 				className={cn(
-					'@container-size relative inline-flex aspect-square size-4 items-center justify-center',
+					'@container-size relative inline-flex aspect-square size-[1em] align-middle',
+					'items-center justify-center',
 					className,
 				)}
 				style={style}

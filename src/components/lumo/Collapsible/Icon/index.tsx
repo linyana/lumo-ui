@@ -1,22 +1,22 @@
+import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
-import { Icon as LumoIcon } from '@/components/lumo/Icon';
 import { cn } from '@/lib/cn';
 
-export type IconProps = ComponentProps<typeof LumoIcon>;
+export type IconProps = ComponentProps<typeof ChevronRight>;
 
 /** Caret that turns with the panel. Reads `data-panel-open` off the trigger. */
 export function Icon({ className, ...props }: IconProps) {
 	return (
-		<LumoIcon
+		<ChevronRight
 			data-slot="collapsible-icon"
+			aria-hidden="true"
 			className={cn(
+				'size-[1em] shrink-0',
 				'transition-transform duration-(--duration-state) ease-(--ease-overlay)',
 				'group-data-panel-open:rotate-90',
 				className,
 			)}
 			{...props}
-		>
-			<path d="M6 12V4l4.5 4z" />
-		</LumoIcon>
+		/>
 	);
 }

@@ -34,7 +34,7 @@
 			"name": "spinner",
 			"type": "registry:block",
 			"title": "Spinner",
-			"description": "Default loading indicator: a container-query sized ring of pulsing dots. Cancel the status role where the surrounding control already announces its own state.",
+			"description": "Default loading indicator: a container-query sized ring of pulsing dots, one em across so it matches the icon it replaces. Cancel the status role where the surrounding control already announces its own state.",
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
@@ -56,21 +56,6 @@
 					"path": "src/components/lumo/Button/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Button/index.tsx"
-				}
-			]
-		},
-		{
-			"name": "icon",
-			"type": "registry:block",
-			"title": "Icon",
-			"description": "Shell for a glyph that brings its own path. Bundles no icon set; sizes itself to the surrounding text.",
-			"dependencies": [],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
-			"files": [
-				{
-					"path": "src/components/lumo/Icon/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Icon/index.tsx"
 				}
 			]
 		},
@@ -194,8 +179,8 @@
 			"type": "registry:block",
 			"title": "Collapsible",
 			"description": "Disclosure region that expands and collapses one panel. Behaviour from Base UI, appearance from tokens.",
-			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/icon"],
+			"dependencies": ["@base-ui/react", "lucide-react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
 					"path": "src/components/lumo/Collapsible/index.tsx",

@@ -39,12 +39,26 @@ registry. No npm package.
 
 ## Icons
 
-lumo ships no icon set. `Icon` is a shell for a path the consumer brings, and a component that has
-an icon slot takes a rendered element (`icon={<Icon>…</Icon>}` or `icon={<SomeGlyph />}`) — never an
-icon-component type, never a name from a glyph library. Size is the surrounding text's: the `Icon`
-shell and every icon slot measure themselves in `em` (`[&_svg]:size-[1em]`), so a call site passes no
-size and an icon inside a `text-lg` control grows with it. Name slots by role (`icon`,
-`loadingIcon`) and add a second slot only when it means something different.
+Every glyph comes from lucide, imported by name where it is used (`icon={<Trash2 />}`): one family,
+one grid (24, 2 stroke, round caps), tree-shaken. Nothing wraps them — there is no lumo icon
+component, because a wrapper would only be a second set of names for the same drawings.
+
+Two things lucide cannot supply:
+
+- **A state.** Loading is `Spinner`, the library's only loading indicator, which sizes itself in `em`
+  so a control loads at exactly the size of the icon it replaces. Pass `label={null}` inside a control
+  that announces its own state — `Button` does, and its default `loadingIcon` is that element.
+- **A glyph lucide does not ship.** Make one with `createLucideIcon`, which puts it on lucide's own
+  grid and stroke so it reads as one of the set. Used once, keep it a local constant; used in many
+  places, it earns a component of its own.
+
+A slot takes a rendered element (`icon={<Trash2 />}`, `icon={<Spinner label={null} />}`) — never an
+icon-component type, never a name from a glyph library. Size is the surrounding text's: every slot
+carries `[&_svg]:size-[1em]`, so a call site passes no size and an icon inside a `text-lg` control
+grows with it. Outside a slot, size it yourself and centre it — `align-middle`, or a flex row, since
+a bare text line puts an inline svg and a spinner at different heights. Name slots by role (`icon`,
+`loadingIcon`)
+and add a second slot only when it means something different.
 
 A glyph whose appearance is bound to the component's own state is a part instead —
 `Collapsible.Icon` owns its rotation, because no generic icon could know when to turn.

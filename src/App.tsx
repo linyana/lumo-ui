@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { Check, ChevronRight, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/lumo/Button';
 import { Collapsible } from '@/components/lumo/Collapsible';
 import { Dialog } from '@/components/lumo/Dialog';
-import { Icon } from '@/components/lumo/Icon';
 import { Popover } from '@/components/lumo/Popover';
 import { Spinner } from '@/components/lumo/Spinner';
 import { Tooltip } from '@/components/lumo/Tooltip';
@@ -99,8 +99,8 @@ export default function App() {
 							{size}
 						</Button>
 					))}
-					<Button size="icon" aria-label="icon button">
-						+
+					<Button size="icon" aria-label="add">
+						<Plus />
 					</Button>
 				</div>
 			</section>
@@ -115,11 +115,11 @@ export default function App() {
 				</div>
 				<div className="flex flex-wrap items-center gap-3">
 					<Button loading>loading</Button>
-					<Button variant="outline" icon={<span aria-hidden="true">+</span>} loading>
+					<Button variant="outline" icon={<Plus />} loading>
 						add
 					</Button>
 					<Button size="icon" loading aria-label="loading icon button">
-						+
+						<Plus />
 					</Button>
 				</div>
 				<p className="text-xs text-muted-foreground">
@@ -237,49 +237,43 @@ export default function App() {
 			<section className="space-y-3">
 				<h2 className="text-sm font-medium text-muted-foreground">icon</h2>
 				<div className="flex flex-wrap items-center gap-3">
-					<Button
-						icon={
-							<Icon>
-								<path d="M7.25 2.5h1.5v4.75h4.75v1.5H8.75v4.75h-1.5V8.75H2.5v-1.5h4.75z" />
-							</Icon>
-						}
-					>
-						add
+					<Button icon={<Plus />}>add</Button>
+					<Button variant="outline" icon={<Pencil />}>
+						edit
 					</Button>
-					<Button
-						variant="outline"
-						icon={
-							<Icon>
-								<path d="M6.5 11.6 3.4 8.5l-1.1 1.1 4.2 4.2 8-8-1.1-1.1z" />
-							</Icon>
-						}
-					>
+					<Button variant="outline" icon={<Trash2 />}>
+						delete
+					</Button>
+					<Button variant="outline" icon={<Check />}>
 						saved
 					</Button>
+					<Button size="icon" variant="ghost" aria-label="close">
+						<X />
+					</Button>
+					<Button size="icon" variant="ghost" aria-label="search" icon={<Search />} />
 				</div>
 				<div className="flex items-center gap-3">
-					<span className="text-sm">
-						<Icon>
-							<path d="M6 12V4l4.5 4z" />
-						</Icon>
+					<span className="inline-flex items-center text-sm">
+						<ChevronRight className="size-[1em]" />
 					</span>
-					<span className="text-lg">
-						<Icon>
-							<path d="M6 12V4l4.5 4z" />
-						</Icon>
+					<span className="inline-flex items-center text-lg">
+						<ChevronRight className="size-[1em]" />
 					</span>
-					<span className="text-2xl">
-						<Icon>
-							<path d="M6 12V4l4.5 4z" />
-						</Icon>
+					<span className="inline-flex items-center text-2xl">
+						<ChevronRight className="size-[1em]" />
+					</span>
+					<span className="inline-flex items-center text-2xl text-muted-foreground">
+						<Spinner label={null} />
 					</span>
 				</div>
 				<p className="text-xs text-muted-foreground">
-					lumo ships no icon set:{' '}
-					<code className="rounded bg-muted px-1 py-0.5">Icon</code> is only a shell, so a
-					glyph arrives as a path or as any element. it measures itself in{' '}
-					<code className="rounded bg-muted px-1 py-0.5">em</code>, the same three paths
-					above one text size apart.
+					one family, one source: a glyph arrives as itself — lucide by name, sized by the
+					slot (<code className="rounded bg-muted px-1 py-0.5">[&_svg]:size-[1em]</code>),
+					so nothing can drift in grid or stroke weight; outside a slot, size it like the
+					carets above. loading is the one thing lucide cannot draw:{' '}
+					<code className="rounded bg-muted px-1 py-0.5">Spinner</code>, with{' '}
+					<code className="rounded bg-muted px-1 py-0.5">label={'{null}'}</code> inside a
+					control that announces its own state.
 				</p>
 			</section>
 
