@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Check, ChevronRight, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/lumo/Button';
 import { Collapsible } from '@/components/lumo/Collapsible';
@@ -57,6 +57,37 @@ const panels: { label: string; content: ReactNode }[] = [
 		),
 	},
 ];
+
+/** The docs' own example, kept verbatim as the reference the lumo menu is measured against. */
+const docsMenus = {
+	library: {
+		heading: 'Library',
+		groups: [
+			['Add to library', 'Add to favorites'],
+			['Create playlist', 'Create station'],
+		],
+	},
+	playback: {
+		heading: 'Playback',
+		groups: [
+			['Play now', 'Add to queue'],
+			['Play next', 'Play last', 'Sleep timer'],
+		],
+	},
+	share: {
+		heading: 'Share',
+		groups: [
+			['Copy link', 'Copy embed code'],
+			['Share to contacts', 'Share to social'],
+		],
+	},
+} as const;
+
+type DocsMenuKey = keyof typeof docsMenus;
+
+const docsMenuKeys = Object.keys(docsMenus) as DocsMenuKey[];
+
+const docsMenu = Menu.createHandle<DocsMenuKey>();
 
 export default function App() {
 	const [dark, setDark] = useState(false);
@@ -395,7 +426,55 @@ export default function App() {
 				</Dialog.Root>
 			</section>
 
-			<Menu />
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-muted-foreground">
+					menu — the same content, styled the way base ui's docs do it
+				</h2>
+				<div className="flex flex-wrap gap-2">
+					{docsMenuKeys.map((key) => (
+						<Menu.Trigger key={key} handle={docsMenu} payload={key}>
+							{docsMenus[key].heading}
+						</Menu.Trigger>
+					))}
+				</div>
+				<Menu.Root handle={docsMenu} modal={false}>
+					{({ payload }) => (
+						<Menu.Portal>
+							<Menu.Positioner sideOffset={8} align="start">
+								<Menu.Popup>
+									<Menu.Viewport>
+										{payload &&
+											docsMenus[payload].groups.map((group, groupIndex) => (
+												<Fragment key={group[0]}>
+													<Menu.Group>
+														{groupIndex === 0 && (
+															<Menu.GroupLabel>
+																{docsMenus[payload].heading}
+															</Menu.GroupLabel>
+														)}
+														{group.map((item) => (
+															<Menu.Item key={item}>{item}</Menu.Item>
+														))}
+													</Menu.Group>
+													{groupIndex <
+														docsMenus[payload].groups.length - 1 && (
+														<Menu.Separator />
+													)}
+												</Fragment>
+											))}
+									</Menu.Viewport>
+								</Menu.Popup>
+							</Menu.Positioner>
+						</Menu.Portal>
+					)}
+				</Menu.Root>
+				<p className="text-xs text-muted-foreground">
+					the docs' own styling, straight from base ui's site: no radius, a hard shadow, a
+					solid block behind the highlighted row. kept here as the reference — the lumo
+					menu should switch triggers with the same rhythm, whatever it ends up looking
+					like.
+				</p>
+			</section>
 		</main>
 	);
 }

@@ -293,26 +293,6 @@
 					"target": "~/src/components/lumo/Menu/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Arrow/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Arrow/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/Backdrop/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Backdrop/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/CheckboxItem/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/CheckboxItem/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/CheckboxItemIndicator/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/CheckboxItemIndicator/index.tsx"
-				},
-				{
 					"path": "src/components/lumo/Menu/Group/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Menu/Group/index.tsx"
@@ -326,11 +306,6 @@
 					"path": "src/components/lumo/Menu/Item/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Menu/Item/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/LinkItem/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/LinkItem/index.tsx"
 				},
 				{
 					"path": "src/components/lumo/Menu/Popup/index.tsx",
@@ -348,21 +323,6 @@
 					"target": "~/src/components/lumo/Menu/Positioner/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/RadioGroup/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/RadioGroup/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/RadioItem/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/RadioItem/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/RadioItemIndicator/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/RadioItemIndicator/index.tsx"
-				},
-				{
 					"path": "src/components/lumo/Menu/Root/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Menu/Root/index.tsx"
@@ -371,16 +331,6 @@
 					"path": "src/components/lumo/Menu/Separator/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Menu/Separator/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/SubmenuRoot/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/SubmenuRoot/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/Menu/SubmenuTrigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/SubmenuTrigger/index.tsx"
 				},
 				{
 					"path": "src/components/lumo/Menu/Trigger/index.tsx",
