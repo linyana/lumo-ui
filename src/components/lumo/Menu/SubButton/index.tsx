@@ -5,10 +5,13 @@ import { cn } from '@/lib/cn';
 
 export const menuSubButtonVariants = tv({
 	base: [
-		'flex h-7 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-md',
-		'px-2 select-none',
-		'transition-[color,background-color] duration-(--duration-state)',
-		'hover:bg-accent hover:text-accent-foreground',
+		'relative flex h-7 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden',
+		'rounded-md px-2 select-none',
+		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
+		'after:bg-current after:opacity-0 after:transition-opacity',
+		'after:duration-(--duration-state)',
+		'hover:after:opacity-(--state-layer-hover-opacity)',
+		'active:after:opacity-(--state-layer-pressed-opacity)',
 		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
 		'[&>span:last-child]:truncate',

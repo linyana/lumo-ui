@@ -9,7 +9,6 @@ export const menuButtonVariants = tv({
 	base: [
 		'peer/menu-button relative flex w-full cursor-pointer items-center gap-2 overflow-hidden',
 		'rounded-md p-2 text-left text-sm select-none',
-		'transition-[color,background-color] duration-(--duration-state) ease-[var(--ease-spring)]',
 		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
 		'after:bg-current after:opacity-0 after:transition-opacity',
 		'after:duration-(--duration-state)',
