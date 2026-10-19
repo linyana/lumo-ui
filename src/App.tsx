@@ -4,7 +4,6 @@ import {
 	Check,
 	ChevronRight,
 	Layers,
-	PanelLeft,
 	Pencil,
 	Play,
 	Plus,
@@ -14,6 +13,7 @@ import {
 	User,
 	X,
 } from 'lucide-react';
+import { Layout, type LayoutMenuEntry } from '@/components/blocks/Layout';
 import { Button } from '@/components/lumo/Button';
 import { Collapsible } from '@/components/lumo/Collapsible';
 import { Dialog } from '@/components/lumo/Dialog';
@@ -25,8 +25,6 @@ import { Separator } from '@/components/lumo/Separator';
 import { Spinner } from '@/components/lumo/Spinner';
 import { Tooltip } from '@/components/lumo/Tooltip';
 
-import { cn } from '@/lib/cn';
-
 const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;
 const sizes = ['sm', 'md', 'lg'] as const;
 
@@ -35,6 +33,40 @@ const navItems: { label: string; icon?: ReactNode; badge?: string }[] = [
 	{ label: 'playground', icon: <Play /> },
 	{ label: 'activity', icon: <Bell />, badge: '3' },
 	{ label: 'releases' },
+];
+
+/** The rail as data: a group with its own action, a separator, a submenu, a loading group. */
+const layoutMenu: LayoutMenuEntry[] = [
+	{
+		type: 'group',
+		label: 'library',
+		action: (
+			<Menu.GroupAction aria-label="add component">
+				<Plus />
+			</Menu.GroupAction>
+		),
+		children: navItems.map(({ label, icon, badge }) => ({ key: label, label, icon, badge })),
+	},
+	{ type: 'separator' },
+	{
+		key: 'settings',
+		label: 'settings',
+		icon: <Settings />,
+		defaultOpen: true,
+		children: [
+			{ key: 'profile', label: 'profile', icon: <User /> },
+			{ key: 'billing', label: 'billing', icon: <Bell /> },
+		],
+	},
+	{
+		type: 'group',
+		label: 'loading',
+		children: [
+			{ type: 'skeleton', showIcon: true },
+			{ type: 'skeleton', showIcon: true, width: '50%' },
+			{ type: 'skeleton', showIcon: true, width: '80%' },
+		],
+	},
 ];
 
 const hintHandle = Tooltip.createHandle<string>();
@@ -119,139 +151,76 @@ export default function App() {
 	const [dark, setDark] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [drawerBox, setDrawerBox] = useState<HTMLDivElement | null>(null);
-	const [menuOpen, setMenuOpen] = useState(true);
+	const [selectedKey, setSelectedKey] = useState('components');
+	const [shell, setShell] = useState<'default' | 'plain'>('default');
+	// The shell reports the fold; where it is remembered is the app's business, so the cookie is
+	// written here and never by Layout itself.
+	const [folded, setFolded] = useState(() => document.cookie.includes('layout_folded=1'));
 
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', dark);
 	}, [dark]);
 
-	// The shell below is the app's own: one state, one cookie, one shortcut. A Layout component
-	// would own exactly these three effects.
-	useEffect(() => {
-		document.cookie = `menu_open=${menuOpen}; path=/; max-age=${60 * 60 * 24 * 7}`;
-	}, [menuOpen]);
-
-	useEffect(() => {
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === 'b' && (event.metaKey || event.ctrlKey)) {
-				event.preventDefault();
-				setMenuOpen((open) => !open);
-			}
-		};
-
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, []);
-
 	return (
-		<div className="flex min-h-svh w-full">
-			<aside
-				className={cn(
-					'sticky top-0 hidden h-svh shrink-0 flex-col overflow-hidden border-e bg-card md:flex',
-					'text-card-foreground transition-[width] duration-(--duration-state) ease-linear',
-					menuOpen ? 'w-64' : 'w-12',
-				)}
-			>
-				<div className="flex items-center gap-2 border-b p-2">
-					{menuOpen && <span className="truncate text-sm font-semibold">lumo-ui</span>}
-					<Button
-						variant="ghost"
-						size="icon"
-						className="ms-auto size-7 shrink-0"
-						aria-label="toggle menu"
-						onClick={() => setMenuOpen((open) => !open)}
-					>
-						<PanelLeft />
-					</Button>
-				</div>
-				<div className="p-2">
-					<Button
-						size="sm"
-						variant="outline"
-						icon={<Plus />}
-						className={cn('w-full', !menuOpen && 'px-0')}
-					>
-						{menuOpen && <span className="truncate">new component</span>}
-					</Button>
-				</div>
-				<Menu.Root
-					compact={!menuOpen}
-					className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
-				>
-					<Menu.Group>
-						<Menu.GroupLabel>library</Menu.GroupLabel>
-						<Menu.GroupAction aria-label="add component">
-							<Plus />
-						</Menu.GroupAction>
-						<Menu.List>
-							{navItems.map((item, index) => (
-								<Menu.Item key={item.label}>
-									<Menu.Button
-										icon={item.icon}
-										label={item.label}
-										isActive={index === 0}
-									/>
-									{item.badge !== undefined && (
-										<Menu.Badge>{item.badge}</Menu.Badge>
-									)}
-								</Menu.Item>
-							))}
-						</Menu.List>
-					</Menu.Group>
-					<Menu.Group>
-						<Menu.GroupLabel>loading</Menu.GroupLabel>
-						<Menu.List>
-							<Menu.Skeleton showIcon />
-							<Menu.Skeleton showIcon width="50%" />
-							<Menu.Skeleton showIcon width="80%" />
-						</Menu.List>
-					</Menu.Group>
-					<Menu.Group>
-						<Menu.GroupLabel>settings</Menu.GroupLabel>
-						<Menu.List>
-							<Menu.Item>
-								<Menu.Sub icon={<Settings />} label="settings" defaultOpen>
-									<Menu.SubItem>
-										<Menu.SubButton icon={<User />} isActive>
-											profile
-										</Menu.SubButton>
-									</Menu.SubItem>
-									<Menu.SubItem>
-										<Menu.SubButton icon={<Bell />}>billing</Menu.SubButton>
-									</Menu.SubItem>
-								</Menu.Sub>
-							</Menu.Item>
-						</Menu.List>
-					</Menu.Group>
-				</Menu.Root>
-				<div className="border-t p-2">
-					<Menu.Root compact={!menuOpen}>
-						<Menu.List>
-							<Menu.Item>
-								<Menu.Button icon={<User />} label="account" />
-							</Menu.Item>
-						</Menu.List>
-					</Menu.Root>
-				</div>
-			</aside>
-			<main className="relative flex w-full min-w-0 flex-1 flex-col bg-background">
-				<div className="mx-auto max-w-3xl space-y-10 p-10">
-					<header className="flex items-center justify-between">
-						<div>
-							<h1 className="text-2xl font-semibold tracking-tight">lumo-ui</h1>
-							<p className="text-sm text-muted-foreground">
-								reference components, Base UI behaviour + token-driven styling
-							</p>
-							<p className="text-xs text-muted-foreground">
-								press cmd/ctrl+b or the toggle: rows keep their icon, and a row
-								without one falls back to its first letter. the panel around this
-								menu is a plain div in this file — a Layout would own it.
-							</p>
-						</div>
+		<Layout
+			variant={shell}
+			menu={layoutMenu}
+			selectedKey={selectedKey}
+			onSelect={setSelectedKey}
+			logo={<Layers />}
+			title="lumo-ui"
+			collapsible
+			collapsed={folded}
+			onCollapsedChange={(next) => {
+				setFolded(next);
+				document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
+			}}
+			footer={
+				<Menu.List>
+					<Menu.Item>
+						<Menu.Button icon={<User />} label="account" />
+					</Menu.Item>
+				</Menu.List>
+			}
+		>
+			<Layout.Header
+				title="lumo-ui"
+				description="base ui behaviour + token-driven styling"
+				actions={
+					<>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() =>
+								setShell((current) => (current === 'default' ? 'plain' : 'default'))
+							}
+						>
+							{shell}
+						</Button>
 						<Button variant="outline" size="sm" onClick={() => setDark((d) => !d)}>
 							{dark ? 'light' : 'dark'}
 						</Button>
-					</header>
+					</>
+				}
+			/>
+			<Layout.Content>
+				<div className="mx-auto max-w-3xl space-y-10">
+					<section className="space-y-3">
+						<h2 className="text-sm font-medium text-muted-foreground">layout</h2>
+						<p className="text-xs text-muted-foreground">
+							the shell around this page is{' '}
+							<code className="rounded bg-muted px-1 py-0.5">Layout</code>: one{' '}
+							<code className="rounded bg-muted px-1 py-0.5">menu</code> array draws
+							the rail, and the header above belongs to this page — it is written
+							here, sticks to the surface it scrolls in, and is the only thing that
+							knows what this page is called. the button next to the theme toggle
+							switches the variant: <strong>default</strong> insets a card on every
+							edge, <strong>plain</strong> lets the content be the page. cmd/ctrl+b or
+							the button in the rail's corner folds it into icons — the app keeps that
+							in a cookie, so the shell reports the fold instead of choosing where it
+							lives.
+						</p>
+					</section>
 
 					<section className="space-y-3">
 						<h2 className="text-sm font-medium text-muted-foreground">variants</h2>
@@ -788,7 +757,7 @@ export default function App() {
 						</p>
 					</section>
 				</div>
-			</main>
-		</div>
+			</Layout.Content>
+		</Layout>
 	);
 }

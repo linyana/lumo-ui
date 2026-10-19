@@ -564,6 +564,41 @@
 					"target": "~/src/components/lumo/Menu/context.ts"
 				}
 			]
+		},
+		{
+			"name": "layout",
+			"type": "registry:block",
+			"title": "Layout",
+			"description": "The app shell: a sidebar drawn from a menu array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
+			"dependencies": ["tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/menu"],
+			"files": [
+				{
+					"path": "src/components/blocks/Layout/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/blocks/Layout/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/Layout/types.ts",
+					"type": "registry:file",
+					"target": "~/src/components/blocks/Layout/types.ts"
+				},
+				{
+					"path": "src/components/blocks/Layout/Header/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/blocks/Layout/Header/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/Layout/Content/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/blocks/Layout/Content/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/Layout/Sidebar/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/blocks/Layout/Sidebar/index.tsx"
+				}
+			]
 		}
 	]
 }
