@@ -56,7 +56,7 @@ export function Sub({
 							<Popover.Title className="px-2 py-1 text-xs font-medium text-muted-foreground">
 								{label}
 							</Popover.Title>
-							<SubList className="ms-0 me-0 border-s-0 ps-0">{children}</SubList>
+							<SubList className="ms-0 me-0 border-s-0 ps-1">{children}</SubList>
 						</Popover.Popup>
 					</Popover.Positioner>
 				</Popover.Portal>

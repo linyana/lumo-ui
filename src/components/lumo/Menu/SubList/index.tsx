@@ -9,7 +9,7 @@ export function SubList({ className, ...props }: SubListProps) {
 		<ul
 			data-slot="menu-sub-list"
 			className={cn(
-				'ms-4 me-2 mt-1 flex min-w-0 flex-col gap-1 border-s ps-1',
+				'ms-4 me-2 mt-1 flex min-w-0 flex-col gap-1 border-s ps-3',
 				'group-data-[compact]:hidden',
 				className,
 			)}
