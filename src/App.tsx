@@ -177,8 +177,9 @@ export default function App() {
 				<p className="text-xs text-muted-foreground">
 					hover and press are one state layer tinted by <code>currentColor</code>, so
 					every variant reacts in the right direction without its own hover rule. press
-					scales to <code>var(--press-scale)</code> on an 80ms curve; tab through to see
-					the ring.
+					also nudges the button down 1px, except where <code>aria-haspopup</code> says it
+					opens a popup — an overlay is positioned against that trigger's rect; tab
+					through to see the ring.
 				</p>
 			</section>
 

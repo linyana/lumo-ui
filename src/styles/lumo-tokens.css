@@ -38,12 +38,16 @@
 
 	/* Interaction feedback — shared by every pressable control.
 	   Filled buttons tint themselves with their light foreground colour, which reads
-	   weaker than the dark tint the surface variants get, so they carry their own pair. */
+	   weaker than the dark tint the surface variants get, so they carry their own pair.
+	   A press also nudges the control down one pixel — except where `aria-haspopup` marks
+	   it as a trigger, because an overlay is positioned against that element's measured
+	   rect and must not see it move. If Base UI ever stops setting that attribute
+	   somewhere, the nudge returns there silently. */
 	--state-layer-hover-opacity: 0.08;
 	--state-layer-pressed-opacity: 0.14;
 	--state-layer-fill-hover-opacity: 0.16;
 	--state-layer-fill-pressed-opacity: 0.26;
-	--press-scale: 0.97;
+	--press-offset: 1px;
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 	--duration-state: 150ms;
 	--duration-press: 80ms;
@@ -117,7 +121,7 @@
 /* Neutralise the interaction tokens instead of asking every component to opt out. */
 @media (prefers-reduced-motion: reduce) {
 	:root {
-		--press-scale: 1;
+		--press-offset: 0;
 		--ease-spring: linear;
 		--duration-state: 1ms;
 		--duration-press: 1ms;

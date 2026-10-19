@@ -9,9 +9,10 @@ export const buttonVariants = tv({
 	base: [
 		'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap',
 		'relative rounded-md font-medium select-none',
-		'transition-[color,background-color,border-color,scale]',
+		'transition-[color,background-color,border-color,translate]',
 		'ease-[var(--ease-spring)] duration-[var(--duration-state)]',
-		'active:scale-[var(--press-scale)] active:duration-[var(--duration-press)]',
+		'active:not-aria-[haspopup]:translate-y-[var(--press-offset)]',
+		'active:not-aria-[haspopup]:duration-[var(--duration-press)]',
 		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
 		'after:bg-current after:opacity-0 after:transition-opacity',
 		'after:duration-[var(--duration-state)]',
