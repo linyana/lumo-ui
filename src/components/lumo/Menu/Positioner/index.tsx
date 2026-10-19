@@ -4,11 +4,11 @@ import { cn } from '@/lib/cn';
 
 export type PositionerProps = ComponentProps<typeof BaseMenu.Positioner>;
 
-const docsPositionerClass = `
-	outline-none
-	h-[var(--positioner-height)] w-[var(--positioner-width)] max-w-[var(--available-width)]
+const positionerClass = `
+	z-50 outline-none
+	h-(--positioner-height,auto) w-(--positioner-width,auto) max-w-(--available-width)
 	transition-[top,left,right,bottom,transform]
-	duration-[0.35s] ease-[cubic-bezier(0.22,1,0.36,1)]
+	duration-(--duration-overlay) ease-(--ease-overlay)
 	data-instant:transition-none
 `;
 
@@ -16,7 +16,7 @@ export function Positioner({ className, ...props }: PositionerProps) {
 	return (
 		<BaseMenu.Positioner
 			data-slot="menu-positioner"
-			className={cn(docsPositionerClass, className)}
+			className={cn(positionerClass, className)}
 			{...props}
 		/>
 	);

@@ -8,7 +8,7 @@ export function Separator({ className, ...props }: SeparatorProps) {
 	return (
 		<BaseMenu.Separator
 			data-slot="menu-separator"
-			className={cn('mx-1 my-1 h-px bg-neutral-950 dark:bg-white', className)}
+			className={cn('mx-1 my-1 h-px bg-border', className)}
 			{...props}
 		/>
 	);
