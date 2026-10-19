@@ -15,7 +15,7 @@ export const menuButtonVariants = tv({
 		'after:duration-(--duration-state)',
 		'hover:after:opacity-(--state-layer-hover-opacity)',
 		'active:after:opacity-(--state-layer-pressed-opacity)',
-		'data-active:bg-accent data-active:font-medium data-active:text-accent-foreground',
+		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
 		'[&>span:last-child]:truncate',
 		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',

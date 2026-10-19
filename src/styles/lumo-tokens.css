@@ -19,6 +19,7 @@
 	--color-muted-foreground: var(--muted-foreground);
 	--color-accent: var(--accent);
 	--color-accent-foreground: var(--accent-foreground);
+	--color-selected: var(--selected);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
 	--color-border: var(--border);
@@ -71,6 +72,12 @@
 	--muted-foreground: oklch(0.556 0 0);
 	--accent: oklch(0.97 0 0);
 	--accent-foreground: oklch(0.205 0 0);
+	/* Selection needs a step of its own: `--accent` equals `--muted`, and the shell's rail is
+	   `bg-muted`, so a selected row would fill with its own background and read as nothing.
+	   Each value is `--foreground` mixed 14% into `--muted` — the pressed layer's strength, so a
+	   selected row outranks the 8% hover tint. Written out rather than as `color-mix`, which the
+	   build compiles to a `@supports` fallback of bare `--foreground` and would paint it black. */
+	--selected: oklch(0.855 0 0);
 	--destructive: oklch(0.577 0.245 27.325);
 	--destructive-foreground: oklch(0.985 0 0);
 	--border: oklch(0.922 0 0);
@@ -93,6 +100,7 @@
 	--muted-foreground: oklch(0.708 0 0);
 	--accent: oklch(0.269 0 0);
 	--accent-foreground: oklch(0.985 0 0);
+	--selected: oklch(0.371 0 0);
 	--destructive: oklch(0.704 0.191 22.216);
 	--destructive-foreground: oklch(0.205 0 0);
 	--border: oklch(1 0 0 / 10%);

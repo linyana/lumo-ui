@@ -9,7 +9,7 @@ export const menuSubButtonVariants = tv({
 		'px-2 select-none',
 		'transition-[color,background-color] duration-(--duration-state)',
 		'hover:bg-accent hover:text-accent-foreground',
-		'data-active:bg-accent data-active:text-accent-foreground',
+		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
 		'[&>span:last-child]:truncate',
 		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
