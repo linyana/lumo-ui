@@ -20,7 +20,7 @@ const triggerClass = `
 export function Trigger<Payload>({ className, ...props }: TriggerProps<Payload>) {
 	return (
 		<BaseMenu.Trigger
-			data-slot="menu-trigger"
+			data-slot="dropdown-trigger"
 			className={cn(triggerClass, className)}
 			{...props}
 		/>

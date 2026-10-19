@@ -1,14 +1,15 @@
 import type { ComponentProps } from 'react';
-import { Menu as BaseMenu } from '@base-ui/react/menu';
+import { Separator as BaseSeparator } from '@/components/lumo/Separator';
 import { cn } from '@/lib/cn';
 
-export type SeparatorProps = ComponentProps<typeof BaseMenu.Separator>;
+export type SeparatorProps = ComponentProps<typeof BaseSeparator>;
 
+/** Section split inside the list, inset so it does not run into the rounded corners. */
 export function Separator({ className, ...props }: SeparatorProps) {
 	return (
-		<BaseMenu.Separator
+		<BaseSeparator
 			data-slot="menu-separator"
-			className={cn('mx-1 my-1 h-px bg-border', className)}
+			className={cn('mx-2 w-auto', className)}
 			{...props}
 		/>
 	);

@@ -280,67 +280,67 @@
 			]
 		},
 		{
-			"name": "menu",
+			"name": "dropdown",
 			"type": "registry:block",
-			"title": "Menu",
-			"description": "A list of actions on a trigger, with groups, separators, checkbox and radio rows and nested submenus. Behaviour from Base UI, appearance from tokens.",
-			"dependencies": ["@base-ui/react", "lucide-react"],
+			"title": "Dropdown",
+			"description": "A dropdown of actions on a trigger, with groups, separators, checkbox and radio rows and nested submenus. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/Menu/index.tsx",
+					"path": "src/components/lumo/Dropdown/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Group/index.tsx",
+					"path": "src/components/lumo/Dropdown/Group/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Group/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Group/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/GroupLabel/index.tsx",
+					"path": "src/components/lumo/Dropdown/GroupLabel/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/GroupLabel/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/GroupLabel/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Item/index.tsx",
+					"path": "src/components/lumo/Dropdown/Item/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Item/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Item/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Popup/index.tsx",
+					"path": "src/components/lumo/Dropdown/Popup/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Popup/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Popup/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Portal/index.tsx",
+					"path": "src/components/lumo/Dropdown/Portal/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Portal/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Portal/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Positioner/index.tsx",
+					"path": "src/components/lumo/Dropdown/Positioner/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Positioner/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Positioner/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Root/index.tsx",
+					"path": "src/components/lumo/Dropdown/Root/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Root/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Root/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Separator/index.tsx",
+					"path": "src/components/lumo/Dropdown/Separator/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Separator/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Separator/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Trigger/index.tsx",
+					"path": "src/components/lumo/Dropdown/Trigger/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Trigger/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Trigger/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/Menu/Viewport/index.tsx",
+					"path": "src/components/lumo/Dropdown/Viewport/index.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/Menu/Viewport/index.tsx"
+					"target": "~/src/components/lumo/Dropdown/Viewport/index.tsx"
 				}
 			]
 		},
@@ -446,6 +446,122 @@
 					"path": "src/components/lumo/Drawer/VirtualKeyboardProvider/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/Drawer/VirtualKeyboardProvider/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "skeleton",
+			"type": "registry:block",
+			"title": "Skeleton",
+			"description": "Placeholder for content that has not arrived. Give it the size the real content will be.",
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Skeleton/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Skeleton/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "menu",
+			"type": "registry:block",
+			"title": "Menu",
+			"description": "A list of navigation rows: groups, icons, active state, badges, inline submenus, and a compact rail where a row with children opens them in a popover. The menu knows nothing about the shell it sits in.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/collapsible",
+				"linyana/lumo-ui/popover",
+				"linyana/lumo-ui/separator",
+				"linyana/lumo-ui/skeleton",
+				"linyana/lumo-ui/tooltip"
+			],
+			"files": [
+				{
+					"path": "src/components/lumo/Menu/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Action/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Action/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Badge/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Badge/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Button/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Button/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Group/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Group/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/GroupAction/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/GroupAction/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/GroupLabel/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/GroupLabel/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Item/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Item/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/List/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/List/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Separator/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Separator/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Skeleton/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Skeleton/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/Sub/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/Sub/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/SubButton/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/SubButton/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/SubItem/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/SubItem/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/SubList/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/SubList/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Menu/context.ts",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Menu/context.ts"
 				}
 			]
 		}

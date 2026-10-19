@@ -15,7 +15,7 @@ const positionerClass = `
 export function Positioner({ className, ...props }: PositionerProps) {
 	return (
 		<BaseMenu.Positioner
-			data-slot="menu-positioner"
+			data-slot="dropdown-positioner"
 			className={cn(positionerClass, className)}
 			{...props}
 		/>

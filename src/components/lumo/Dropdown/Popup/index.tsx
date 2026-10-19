@@ -17,6 +17,10 @@ const popupClass = `
 
 export function Popup({ className, ...props }: PopupProps) {
 	return (
-		<BaseMenu.Popup data-slot="menu-popup" className={cn(popupClass, className)} {...props} />
+		<BaseMenu.Popup
+			data-slot="dropdown-popup"
+			className={cn(popupClass, className)}
+			{...props}
+		/>
 	);
 }

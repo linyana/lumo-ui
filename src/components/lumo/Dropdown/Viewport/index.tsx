@@ -31,7 +31,7 @@ const viewportClass = `
 export function Viewport({ className, ...props }: ViewportProps) {
 	return (
 		<BaseMenu.Viewport
-			data-slot="menu-viewport"
+			data-slot="dropdown-viewport"
 			className={cn(viewportClass, className)}
 			{...props}
 		/>
