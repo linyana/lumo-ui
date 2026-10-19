@@ -343,6 +343,111 @@
 					"target": "~/src/components/lumo/Menu/Viewport/index.tsx"
 				}
 			]
+		},
+		{
+			"name": "separator",
+			"type": "registry:block",
+			"title": "Separator",
+			"description": "A line between two regions, horizontal or vertical, announced as a separator. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Separator/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Separator/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "drawer",
+			"type": "registry:block",
+			"title": "Drawer",
+			"description": "A panel that slides in from an edge and can be swiped away. Each of the four edges is one swipe direction. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Drawer/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Backdrop/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Backdrop/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Close/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Close/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Content/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Content/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Description/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Description/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Popup/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Popup/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Portal/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Portal/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Title/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Title/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Trigger/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Trigger/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Viewport/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Viewport/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Indent/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Indent/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/IndentBackground/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/IndentBackground/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/Provider/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/Provider/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/SwipeArea/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/SwipeArea/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Drawer/VirtualKeyboardProvider/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Drawer/VirtualKeyboardProvider/index.tsx"
+				}
+			]
 		}
 	]
 }
