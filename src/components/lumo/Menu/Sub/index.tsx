@@ -1,3 +1,4 @@
+import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import type { ReactNode } from 'react';
 import { Collapsible } from '@/components/lumo/Collapsible';
 import { Button as MenuRow } from '@/components/lumo/Menu/Button';
@@ -66,7 +67,12 @@ export function Sub({
 
 	return (
 		<Collapsible.Root defaultOpen={defaultOpen}>
-			<Collapsible.Trigger
+			{/* Base UI's own trigger rather than `Collapsible.Trigger`: that one paints a collapsible
+			    header, and a menu row already has an appearance of its own. Two looks on one element
+			    mean every shared property — padding, text size, the icon's size — is settled by
+			    whichever rule lands later in the stylesheet, which is neither look. */}
+			<BaseCollapsible.Trigger
+				data-slot="menu-sub-trigger"
 				render={
 					<MenuRow
 						icon={icon}
