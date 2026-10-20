@@ -120,12 +120,6 @@
 		-webkit-font-smoothing: antialiased;
 	}
 
-	/* Delete this rule to drop focus rings; lower --ring to soften them. */
-	:focus-visible {
-		outline: 1px solid var(--ring);
-		outline-offset: 1px;
-	}
-
 	/* Scrollbars: a transparent track, so whatever a pane is filled with shows through, and a
 	   rounded thumb that only firms up on hover. Firefox has no webkit pseudo-elements, so it
 	   needs the standard pair — and Chromium ignores the pseudo-elements once that pair is set,
