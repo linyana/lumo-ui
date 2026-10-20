@@ -74,6 +74,56 @@
 			]
 		},
 		{
+			"name": "card",
+			"type": "registry:block",
+			"title": "Card",
+			"description": "One surface for one subject: a header with its title, description and action, a body that takes the slack, and a footer. Two sizes, set once on the root and read by every part.",
+			"dependencies": ["tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Card/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Action/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Action/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Content/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Content/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Description/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Description/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Footer/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Footer/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Header/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Header/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Card/Title/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Card/Title/index.tsx"
+				}
+			]
+		},
+		{
 			"name": "tooltip",
 			"type": "registry:block",
 			"title": "Tooltip",

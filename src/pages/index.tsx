@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { ButtonPage } from './Button';
+import { CardPage } from './Card';
 import { CodePage } from './Code';
 import { CodeDiffPage } from './CodeDiff';
 import { CollapsiblePage } from './Collapsible';
@@ -30,6 +31,7 @@ export type DocRoute = {
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },
+	{ path: 'card', label: 'Card', section: 'Components', element: <CardPage /> },
 	{ path: 'code', label: 'Code', section: 'Components', element: <CodePage /> },
 	{ path: 'code-diff', label: 'CodeDiff', section: 'Components', element: <CodeDiffPage /> },
 	{
