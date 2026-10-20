@@ -16,7 +16,7 @@ export function Content({ className, ...props }: ContentProps) {
 		<BaseToast.Content
 			data-slot="toast-content"
 			className={cn(
-				'flex items-start gap-3 p-4',
+				'flex items-start gap-3 p-3',
 				'transition-opacity duration-(--duration-state)',
 				'data-behind:opacity-0 data-expanded:opacity-100',
 				className,
