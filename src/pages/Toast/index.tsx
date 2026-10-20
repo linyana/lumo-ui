@@ -36,6 +36,30 @@ function Kinds() {
 			</Button>
 			<Button
 				variant="outline"
+				onClick={() =>
+					toast.add({
+						type: 'warning',
+						title: 'storage almost full',
+						description: '2.1 gb of 2.5 gb used.',
+					})
+				}
+			>
+				warning
+			</Button>
+			<Button
+				variant="outline"
+				onClick={() => toast.add({ type: 'tip', title: 'press ⌘k to jump anywhere' })}
+			>
+				tip
+			</Button>
+			<Button
+				variant="outline"
+				onClick={() => toast.add({ type: 'info', title: 'maintenance sunday, 03:00 utc' })}
+			>
+				info
+			</Button>
+			<Button
+				variant="outline"
 				onClick={() => toast.add({ type: 'loading', title: 'rebuilding the index' })}
 			>
 				loading
@@ -102,11 +126,12 @@ export function ToastPage() {
 		<Toast.Provider>
 			<DocPage title="toast" description="a message that says itself and gets out of the way">
 				<DocSection
-					title="four kinds, one part"
+					title="a glyph per kind"
 					note={
 						<>
-							<code>type</code> is a plain string and the only thing it decides here
-							is which glyph leads the row.
+							<code>type</code> is a plain string, and the only thing it decides is
+							the glyph and its ink. <code>warning</code> is the one that needed a
+							token of its own.
 						</>
 					}
 				>

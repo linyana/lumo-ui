@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { CircleCheck, CircleX, Info } from 'lucide-react';
+import { CircleCheck, CircleX, Info, Lightbulb, TriangleAlert } from 'lucide-react';
 import { Spinner } from '@/components/lumo/Spinner';
 import { useToastItem } from '@/components/lumo/Toast/context';
 import { cn } from '@/lib/cn';
@@ -11,8 +11,12 @@ function glyphOf(type: string | undefined): ReactNode {
 			return <CircleCheck />;
 		case 'error':
 			return <CircleX />;
+		case 'warning':
+			return <TriangleAlert />;
 		case 'info':
 			return <Info />;
+		case 'tip':
+			return <Lightbulb />;
 		case 'loading':
 			return <Spinner className="size-4" label={null} />;
 		default:
@@ -20,10 +24,12 @@ function glyphOf(type: string | undefined): ReactNode {
 	}
 }
 
-/** Only the two outcomes worth reading at a glance take a colour; the rest stay muted. */
+/** The three outcomes take their own ink; a hint is a remark, so it borrows the accent or nothing. */
 function toneOf(type: string | undefined) {
 	if (type === 'success') return 'text-success';
 	if (type === 'error') return 'text-destructive';
+	if (type === 'warning') return 'text-warning';
+	if (type === 'tip') return 'text-primary';
 	return 'text-muted-foreground';
 }
 
