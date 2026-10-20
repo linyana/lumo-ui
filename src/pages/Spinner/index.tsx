@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/lumo/Spinner';
+import { Spinner } from '@/components/lumo/ui/Spinner';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function SpinnerPage() {

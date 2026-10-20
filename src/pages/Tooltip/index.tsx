@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/Button';
-import { Tooltip } from '@/components/lumo/Tooltip';
+import { Button } from '@/components/lumo/ui/Button';
+import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 const hintHandle = Tooltip.createHandle<string>();

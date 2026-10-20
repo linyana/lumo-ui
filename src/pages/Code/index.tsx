@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/Code';
+import { Code } from '@/components/lumo/ui/Code';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 const source = [

@@ -1,4 +1,4 @@
-import { Tabs } from '@/components/lumo/Tabs';
+import { Tabs } from '@/components/lumo/ui/Tabs';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 const items = [

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check, ChevronRight, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
-import { Button } from '@/components/lumo/Button';
-import { Spinner } from '@/components/lumo/Spinner';
+import { Button } from '@/components/lumo/ui/Button';
+import { Spinner } from '@/components/lumo/ui/Spinner';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;

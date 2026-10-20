@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/Button';
-import { Dialog } from '@/components/lumo/Dialog';
+import { Button } from '@/components/lumo/ui/Button';
+import { Dialog } from '@/components/lumo/ui/Dialog';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function DialogPage() {

@@ -1,4 +1,4 @@
-import { Collapsible } from '@/components/lumo/Collapsible';
+import { Collapsible } from '@/components/lumo/ui/Collapsible';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function CollapsiblePage() {

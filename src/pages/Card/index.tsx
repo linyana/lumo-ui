@@ -1,6 +1,6 @@
 import { CalendarClock, Plus } from 'lucide-react';
-import { Button } from '@/components/lumo/Button';
-import { Card } from '@/components/lumo/Card';
+import { Button } from '@/components/lumo/ui/Button';
+import { Card } from '@/components/lumo/ui/Card';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function CardPage() {

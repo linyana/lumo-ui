@@ -40,41 +40,47 @@ bun run build    # 生产构建
 
 ```
 src/
-├── components/lumo/              # 库的本体，一个组件一个 PascalCase 目录
-│   ├── Button/
-│   │   └── index.tsx             # ★ 实现就在 index.tsx，加新组件前先读它
-│   └── Dialog/
-│       ├── index.tsx             # 组装并导出 Dialog 命名空间
-│       ├── Root/index.tsx        # 每个 part 一个目录
-│       ├── Trigger/index.tsx
-│       ├── Portal/index.tsx
-│       ├── Close/index.tsx
-│       ├── Backdrop/index.tsx
-│       ├── Viewport/index.tsx
-│       ├── Popup/index.tsx
-│       ├── Title/index.tsx
-│       └── Description/index.tsx
+├── components/lumo/              # 库的本体：两层，ui 是原子，blocks 是组合
+│   ├── ui/
+│   │   ├── Button/
+│   │   │   └── index.tsx         # ★ 实现就在 index.tsx，加新组件前先读它
+│   │   └── Dialog/
+│   │       ├── index.tsx         # 组装并导出 Dialog 命名空间
+│   │       ├── Root/index.tsx    # 每个 part 一个目录
+│   │       ├── Trigger/index.tsx
+│   │       └── …
+│   └── blocks/
+│       └── Layout/               # 应用外壳：sidebar、header、content
+│           ├── index.tsx
+│           ├── types.ts
+│           ├── Sidebar/index.tsx
+│           └── …
 ├── lib/cn.ts                     # clsx + tailwind-merge
 ├── styles/
 │   ├── lumo-tokens.css           # ★ 全部视觉常量都在这里（可独立分发）
 │   └── index.css                 # demo 入口，不分发
-└── App.tsx                       # demo 页面
+├── pages/                        # 文档页，一个组件一页
+└── App.tsx                       # 外壳：把路由接到 Layout 上
 scripts/check-registry.ts         # registry.json 与磁盘的同步检查（--fix 即 sync）
 registry.json                     # 分发定义
 AGENTS.md                         # 给 AI 的项目规范
 ```
 
+`ui/` 里的每个组件是一条 `registry:ui`，`blocks/` 里的是 `registry:block`——层决定类型，
+写错 `bun run check` 会当场拦下来。两层都能一条命令装进项目里。
+
 ## 怎么加一个组件
 
-1. 先读 `src/components/lumo/Button/`
-2. 建 `src/components/lumo/<Name>/index.tsx`——PascalCase 目录，实现直接写在 index.tsx
-3. 多部件组件：**每个 part 一个目录**（`Dialog/Popup/index.tsx`），父级 index.tsx 组装成命名空间对象
-4. 所有颜色/圆角/间距用 token（`bg-primary`、`rounded-md`），**不许硬编码**
-5. 不要写 focus 样式——焦点样式只在 `lumo-tokens.css` 里定义一次
-6. 在 `registry.json` 里加一条 item，`files` 里**只写该目录下任意一个文件的路径**，当锚点
-7. `bun run registry:sync`——该目录下其余文件自动补进去，target 一并生成
-8. 在 `src/App.tsx` 里用上，方便看效果
-9. `bun run check` 必须过（漏声明、target 不镜像都会报错）
+1. 先定层：`ui/` 是能单独用的原子，`blocks/` 是由原子拼出来的组合（外壳之类）
+2. 先读 `src/components/lumo/ui/Button/`
+3. 建 `src/components/lumo/<ui|blocks>/<Name>/index.tsx`——PascalCase 目录，实现直接写在 index.tsx
+4. 多部件组件：**每个 part 一个目录**（`Dialog/Popup/index.tsx`），父级 index.tsx 组装成命名空间对象
+5. 所有颜色/圆角/间距用 token（`bg-primary`、`rounded-md`），**不许硬编码**
+6. 不要写 focus 样式——焦点样式只在 `lumo-tokens.css` 里定义一次
+7. 在 `registry.json` 里加一条 item（`type` 按层给 `registry:ui` 或 `registry:block`），`files` 里**只写该目录下任意一个文件的路径**，当锚点
+8. `bun run registry:sync`——该目录下其余文件自动补进去，target 一并生成
+9. 在 `src/pages/` 里加一页 demo，方便看效果
+10. `bun run check` 必须过（漏声明、target 不镜像、类型和层对不上都会报错）
 
 ## 分发到项目里
 
@@ -84,6 +90,9 @@ AGENTS.md                         # 给 AI 的项目规范
 # 装一个组件（依赖会自动连带装上）
 bunx shadcn@latest add linyana/lumo-ui/button
 
+# 装一个 block（连它依赖的 ui 组件一起装上）
+bunx shadcn@latest add linyana/lumo-ui/layout
+
 # 装主题变量（项目里已经有 shadcn 主题的话，跳过这步）
 bunx shadcn@latest add linyana/lumo-ui/theme
 ```
@@ -91,8 +100,8 @@ bunx shadcn@latest add linyana/lumo-ui/theme
 装完在项目里这样引入（路径带组件名，没有统一入口）：
 
 ```ts
-import { Button } from '@/components/lumo/Button';
-import { Dialog } from '@/components/lumo/Dialog';
+import { Button } from '@/components/lumo/ui/Button';
+import { Dialog } from '@/components/lumo/ui/Dialog';
 ```
 
 装之前可以先看：
@@ -111,7 +120,8 @@ bun run registry:check  # 再用 shadcn CLI 校验 registry.json 本身
 
 ### 装进「已经在用 shadcn」的项目
 
-可以共存，`target` 全部落在 `src/components/lumo/`，不碰 shadcn 的 `src/components/ui/`。
+可以共存，`target` 全部落在 `src/components/lumo/`（`ui/` 与 `blocks/`），不碰 shadcn 的
+`src/components/ui/`。
 **注意**：如果那个项目已经有主题变量（`:root` 里定义了 `--primary`、`--radius` 等），
 **不要装 `theme`**，你的组件会直接吃他的配色。
 

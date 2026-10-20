@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Dropdown } from '@/components/lumo/Dropdown';
+import { Dropdown } from '@/components/lumo/ui/Dropdown';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 /** The docs' own example, kept verbatim as the reference the lumo dropdown is measured against. */

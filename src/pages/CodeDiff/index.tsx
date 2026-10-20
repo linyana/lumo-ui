@@ -1,4 +1,4 @@
-import { CodeDiff } from '@/components/lumo/CodeDiff';
+import { CodeDiff } from '@/components/lumo/ui/CodeDiff';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 const before = [

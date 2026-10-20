@@ -17,11 +17,13 @@ export function OverviewPage() {
 			<DocSection title="what is here">
 				<ul className="space-y-2 text-sm text-muted-foreground">
 					<li>
-						<code className="rounded bg-muted px-1 py-0.5">src/components/lumo</code> —
-						the primitives, each one copyable on its own.
+						<code className="rounded bg-muted px-1 py-0.5">src/components/lumo/ui</code>{' '}
+						— the primitives, each one copyable on its own.
 					</li>
 					<li>
-						<code className="rounded bg-muted px-1 py-0.5">src/components/blocks</code>{' '}
+						<code className="rounded bg-muted px-1 py-0.5">
+							src/components/lumo/blocks
+						</code>{' '}
 						— the shell: a rail drawn from data, and the surface a page scrolls in.
 					</li>
 					<li>

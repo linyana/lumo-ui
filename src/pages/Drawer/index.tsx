@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from '@/components/lumo/Button';
-import { Drawer } from '@/components/lumo/Drawer';
-import { Separator } from '@/components/lumo/Separator';
+import { Button } from '@/components/lumo/ui/Button';
+import { Drawer } from '@/components/lumo/ui/Drawer';
+import { Separator } from '@/components/lumo/ui/Separator';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function DrawerPage() {

@@ -10,6 +10,10 @@
  * array is derived from the component tree rather than trusted, so a new component costs the
  * one anchor path its item needs anyway instead of a row per file.
  *
+ * A component lives in one layer of `src/components/lumo`: `ui/<Name>/` for a primitive,
+ * `blocks/<Name>/` for a composition. The layer decides the item type it must carry
+ * (`registry:ui` and `registry:block`), so the shape of registry.json mirrors shadcn's.
+ *
  * Items outside `src/components/lumo` (cn, theme) are checked for existence and target
  * mirroring, never added to or dropped. Anything this script will not guess at — an
  * unanchored directory, a loose file, a missing source — stops it before it writes.
@@ -17,7 +21,7 @@
 import { join } from 'node:path';
 
 type RegistryFile = { path: string; type?: string; target?: string };
-type RegistryItem = { name: string; files?: RegistryFile[] };
+type RegistryItem = { name: string; type?: string; files?: RegistryFile[] };
 type Registry = { items: RegistryItem[] };
 
 const fix = process.argv.includes('--fix');
@@ -26,6 +30,11 @@ const root = join(import.meta.dir, '..');
 const registryPath = join(root, 'registry.json');
 const componentRoot = join(root, 'src', 'components', 'lumo');
 const componentPrefix = 'src/components/lumo/';
+/** The two layers a component can belong to, and the item type each one demands. */
+const layerTypes: Record<string, string> = { ui: 'registry:ui', blocks: 'registry:block' };
+
+/** `src/components/lumo/ui/Dialog/Popup/index.tsx` → `ui/Dialog`. */
+const dirOf = (rel: string) => rel.split('/').slice(0, 2).join('/');
 
 const registry: Registry = await Bun.file(registryPath).json();
 
@@ -44,13 +53,13 @@ for await (const entry of glob.scan({ cwd: componentRoot, onlyFiles: true })) {
 	const path = `${componentPrefix}${rel}`;
 	files += 1;
 
-	const slash = rel.indexOf('/');
-	if (slash === -1) {
-		problems.push(`${path}: loose file — a component must live in its own directory`);
+	// layer, component name, then whatever the component is made of.
+	if (rel.split('/').length < 3) {
+		problems.push(`${path}: loose file — a component must live in lumo/<layer>/<Name>/`);
 		continue;
 	}
 
-	const dir = rel.slice(0, slash);
+	const dir = dirOf(rel);
 	const bucket = onDisk.get(dir);
 	if (bucket === undefined) onDisk.set(dir, [path]);
 	else bucket.push(path);
@@ -65,9 +74,8 @@ for (const item of registry.items) {
 	for (const file of item.files ?? []) {
 		if (!file.path.startsWith(componentPrefix)) continue;
 		const rel = file.path.slice(componentPrefix.length);
-		const slash = rel.indexOf('/');
-		if (slash === -1) continue; // a loose path; the scan above already reported it
-		const dir = rel.slice(0, slash);
+		if (rel.split('/').length < 3) continue; // a loose path; the scan above already reported it
+		const dir = dirOf(rel);
 		const owner = dirToItem.get(dir);
 		if (owner !== undefined && owner !== item) {
 			problems.push(
@@ -77,6 +85,20 @@ for (const item of registry.items) {
 			dirToItem.set(dir, item);
 		}
 		break;
+	}
+}
+
+for (const [dir, item] of dirToItem) {
+	const layer = dir.split('/')[0]!;
+	const expected = layerTypes[layer];
+	if (expected === undefined) {
+		problems.push(
+			`${componentPrefix}${dir}/: unknown layer — only ${Object.keys(layerTypes).join('/')} live here`,
+		);
+	} else if (item.type !== expected) {
+		problems.push(
+			`"${item.name}": type "${item.type}" but its files sit in ${layer}/ — expected "${expected}"`,
+		);
 	}
 }
 
@@ -122,7 +144,7 @@ for (const item of registry.items) {
 	if (managed.length === 0) continue;
 
 	const anchor = managed[0]!;
-	const dir = anchor.path.slice(componentPrefix.length).split('/')[0]!;
+	const dir = dirOf(anchor.path.slice(componentPrefix.length));
 	const home = `${componentPrefix}${dir}/`;
 	if (managed.some((file) => !file.path.startsWith(home))) {
 		problems.push(

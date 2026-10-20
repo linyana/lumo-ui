@@ -15,7 +15,7 @@
 	"ignorePatterns": ["dist"],
 	"overrides": [
 		{
-			"files": ["src/components/lumo/**/*.tsx"],
+			"files": ["src/components/lumo/ui/**/*.tsx"],
 			"rules": {
 				"no-restricted-imports": [
 					"error",
@@ -23,7 +23,7 @@
 						"patterns": [
 							{
 								"group": ["@/App", "@/main"],
-								"message": "components/lumo is the primitive layer: it may not import app code. App code depends on the primitives, never the other way round — an import from here is what makes the directory impossible to copy into another project."
+								"message": "components/lumo/ui is the primitive layer: it may not import app code. App code depends on the primitives, never the other way round — an import from here is what makes the directory impossible to copy into another project."
 							},
 							{
 								"group": ["../**"],

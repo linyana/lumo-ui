@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button } from '@/components/lumo/Button';
-import { Popover } from '@/components/lumo/Popover';
+import { Button } from '@/components/lumo/ui/Button';
+import { Popover } from '@/components/lumo/ui/Popover';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 const panelHandle = Popover.createHandle<ReactNode>();

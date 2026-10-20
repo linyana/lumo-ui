@@ -1,4 +1,4 @@
-import { Separator } from '@/components/lumo/Separator';
+import { Separator } from '@/components/lumo/ui/Separator';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function SeparatorPage() {

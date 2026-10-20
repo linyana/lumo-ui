@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Layers, User } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
-import { Layout, type LayoutMenuEntry, type LayoutMenuItem } from '@/components/blocks/Layout';
-import { Menu } from '@/components/lumo/Menu';
+import { Layout, type LayoutMenuEntry, type LayoutMenuItem } from '@/components/lumo/blocks/Layout';
+import { Menu } from '@/components/lumo/ui/Menu';
 import { docRoutes, docSections } from '@/pages';
 import { ThemeProvider } from '@/pages/theme';
 

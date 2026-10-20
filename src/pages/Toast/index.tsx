@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/Button';
-import { Toast } from '@/components/lumo/Toast';
+import { Button } from '@/components/lumo/ui/Button';
+import { Toast } from '@/components/lumo/ui/Toast';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 function Kinds() {

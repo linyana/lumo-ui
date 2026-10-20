@@ -14,7 +14,8 @@ registry. No npm package.
 4. Base UI supplies behaviour, we supply appearance. Never reimplement focus trapping,
    escape handling, scroll lock, positioning or ARIA.
 5. Merge the consumer's `className` last, with `cn()`.
-6. When adding a component, only touch `src/components/lumo/`, `src/lib/`, `src/styles/`.
+6. When adding a component, only touch `src/components/lumo/` (`ui/` or `blocks/`), `src/lib/`,
+   `src/styles/`.
 7. Don't add comments that restate the code.
 
 ## Toolchain
@@ -26,16 +27,19 @@ registry. No npm package.
 
 ## Adding a component
 
-1. Read `src/components/lumo/Button/` first.
-2. One directory per component, PascalCase, implementation in `index.tsx`:
-   `src/components/lumo/<Name>/index.tsx`. Never `<name>.tsx` or `<Name>/<Name>.tsx`.
-3. A component with parts gives **each part its own directory** — `Dialog/Popup/index.tsx`,
+1. Read `src/components/lumo/ui/Button/` first.
+2. Pick the layer: `ui/` is a primitive that stands on its own, `blocks/` is a composition of
+   primitives (the shell). The layer decides the registry type, so the check refuses a
+   mismatch.
+3. One directory per component, PascalCase, implementation in `index.tsx`:
+   `src/components/lumo/<layer>/<Name>/index.tsx`. Never `<name>.tsx` or `<Name>/<Name>.tsx`.
+4. A component with parts gives **each part its own directory** — `Dialog/Popup/index.tsx`,
    never `dialog/popup.tsx`. The parent `index.tsx` imports the parts and assembles them.
-4. Export one namespace object: `export const Dialog = { Root, Trigger, Popup, ... }`, used
+5. Export one namespace object: `export const Dialog = { Root, Trigger, Popup, ... }`, used
    as `<Dialog.Popup>`. A single-part component exports the function directly (`Button`).
-5. `data-slot="<name>-<part>"` on every rendered element.
-6. Add a `registry.json` item whose `files` name any one path in the new directory, then run
-   `bun run registry:sync` to fill in the rest. Use it in `src/App.tsx`.
+6. `data-slot="<name>-<part>"` on every rendered element.
+7. Add a `registry.json` item whose `files` name any one path in the new directory, then run
+   `bun run registry:sync` to fill in the rest. Use it in `src/pages/` so the docs show it.
 
 ## Icons
 
@@ -99,8 +103,9 @@ Don't rename Base UI's state attributes: `data-open`, `data-closed`,
 
 ## Registry
 
-- `type: "registry:block"` for components, with an explicit `target` per file; never
-  `registry:ui`.
+- `type: "registry:ui"` for a component under `ui/`, `"registry:block"` for one under `blocks/`;
+  `scripts/check-registry.ts` fails on a mismatch. Every item carries an explicit `target`
+  per file, and each file stays `registry:file` — the type the CLI copies verbatim.
 - Targets stay under `~/src/components/lumo/`, never `~/src/components/ui/` (shadcn's).
 - **Declare every file in the component directory.** An undeclared file is silently left out
   of the consuming project and only breaks there, at build time.
