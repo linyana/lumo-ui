@@ -6,17 +6,19 @@
  * bites: it is silently left out of the consuming project, and the failure surfaces there,
  * at build time, far from its cause.
  *
+ * A component lives in one of two layers of `src/components/lumo`, and the two have different
+ * shapes. `ui/` is a primitive, and a primitive is a single file: `ui/Button.tsx`. `blocks/`
+ * is a composition, and a composition is a directory of parts: `blocks/Layout/index.tsx`. The
+ * layer decides the item type it must carry — `registry:ui` and `registry:block` — so the
+ * shape of registry.json mirrors shadcn's.
+ *
  * No argument: check, and fail on any drift. `--fix`: write the correction back. The files
  * array is derived from the component tree rather than trusted, so a new component costs the
  * one anchor path its item needs anyway instead of a row per file.
  *
- * A component lives in one layer of `src/components/lumo`: `ui/<Name>/` for a primitive,
- * `blocks/<Name>/` for a composition. The layer decides the item type it must carry
- * (`registry:ui` and `registry:block`), so the shape of registry.json mirrors shadcn's.
- *
  * Items outside `src/components/lumo` (cn, theme) are checked for existence and target
- * mirroring, never added to or dropped. Anything this script will not guess at — an
- * unanchored directory, a loose file, a missing source — stops it before it writes.
+ * mirroring, never added to or dropped. Anything this script will not guess at stops it before
+ * it writes.
  */
 import { join } from 'node:path';
 
@@ -30,11 +32,12 @@ const root = join(import.meta.dir, '..');
 const registryPath = join(root, 'registry.json');
 const componentRoot = join(root, 'src', 'components', 'lumo');
 const componentPrefix = 'src/components/lumo/';
+
 /** The two layers a component can belong to, and the item type each one demands. */
 const layerTypes: Record<string, string> = { ui: 'registry:ui', blocks: 'registry:block' };
 
-/** `src/components/lumo/ui/Dialog/Popup/index.tsx` → `ui/Dialog`. */
-const dirOf = (rel: string) => rel.split('/').slice(0, 2).join('/');
+/** The registry.json item name convention: `CodeDiff` is `code-diff`. */
+const kebab = (name: string) => name.replaceAll(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 
 const registry: Registry = await Bun.file(registryPath).json();
 
@@ -43,7 +46,8 @@ const drift: string[] = [];
 /** Structure it must not guess at — a person settles these first. */
 const problems: string[] = [];
 
-// Every file under the component root, grouped by the directory it lives in.
+// Every file under the component root, keyed by the component it belongs to: `ui/Button.tsx`
+// for a primitive, `blocks/Layout` for a composition.
 const onDisk = new Map<string, string[]>();
 let files = 0;
 
@@ -53,67 +57,86 @@ for await (const entry of glob.scan({ cwd: componentRoot, onlyFiles: true })) {
 	const path = `${componentPrefix}${rel}`;
 	files += 1;
 
-	// layer, component name, then whatever the component is made of.
-	if (rel.split('/').length < 3) {
-		problems.push(`${path}: loose file — a component must live in lumo/<layer>/<Name>/`);
+	const segments = rel.split('/');
+	const layer = segments[0]!;
+	if (segments.length < 2) {
+		problems.push(
+			`${path}: loose file — a component lives in ${Object.keys(layerTypes).join('/')}`,
+		);
+		continue;
+	}
+	if (layerTypes[layer] === undefined) {
+		problems.push(
+			`${componentPrefix}${rel}: unknown layer — only ${Object.keys(layerTypes).join('/')} live here`,
+		);
 		continue;
 	}
 
-	const dir = dirOf(rel);
-	const bucket = onDisk.get(dir);
-	if (bucket === undefined) onDisk.set(dir, [path]);
+	if (layer === 'ui') {
+		if (segments.length > 2) {
+			problems.push(
+				`${path}: a ui component is one file — ui/${segments[1]!.replace(/\.tsx?$/, '')}.tsx`,
+			);
+			continue;
+		}
+	} else if (segments.length < 3) {
+		problems.push(`${path}: a block is a directory — blocks/<Name>/…`);
+		continue;
+	}
+
+	const key = layer === 'ui' ? rel : segments.slice(0, 2).join('/');
+	const bucket = onDisk.get(key);
+	if (bucket === undefined) onDisk.set(key, [path]);
 	else bucket.push(path);
 }
 
-// Which item owns which directory, read off the first component path each item declares.
-// Learned rather than guessed, so no naming convention has to be invented — and a directory
-// nothing anchors is reported, which is exactly where a person is wanted anyway.
-const dirToItem = new Map<string, RegistryItem>();
+/** Which item owns which component, read off the paths its files declare. */
+const keyToItem = new Map<string, RegistryItem>();
 
 for (const item of registry.items) {
 	for (const file of item.files ?? []) {
 		if (!file.path.startsWith(componentPrefix)) continue;
 		const rel = file.path.slice(componentPrefix.length);
-		if (rel.split('/').length < 3) continue; // a loose path; the scan above already reported it
-		const dir = dirOf(rel);
-		const owner = dirToItem.get(dir);
+		const segments = rel.split('/');
+		if (segments.length < 2) break; // a loose path; the scan above already reported it
+		const key = segments.slice(0, 2).join('/');
+		const owner = keyToItem.get(key);
 		if (owner !== undefined && owner !== item) {
 			problems.push(
-				`${componentPrefix}${dir}/: anchored by both "${owner.name}" and "${item.name}"`,
+				`${componentPrefix}${key}: anchored by both "${owner.name}" and "${item.name}"`,
 			);
 		} else {
-			dirToItem.set(dir, item);
+			keyToItem.set(key, item);
 		}
 		break;
 	}
 }
 
-for (const [dir, item] of dirToItem) {
-	const layer = dir.split('/')[0]!;
+for (const [key, item] of keyToItem) {
+	const layer = key.split('/')[0]!;
 	const expected = layerTypes[layer];
-	if (expected === undefined) {
-		problems.push(
-			`${componentPrefix}${dir}/: unknown layer — only ${Object.keys(layerTypes).join('/')} live here`,
-		);
-	} else if (item.type !== expected) {
+	if (expected !== undefined && item.type !== expected) {
 		problems.push(
 			`"${item.name}": type "${item.type}" but its files sit in ${layer}/ — expected "${expected}"`,
 		);
 	}
-}
-
-for (const dir of onDisk.keys()) {
-	if (!dirToItem.has(dir)) {
+	if (!onDisk.has(key)) {
 		problems.push(
-			`${componentPrefix}${dir}/: no item anchors this directory — add an item naming one of its files`,
+			`${componentPrefix}${key}: "${item.name}" anchors this component but nothing is on disk — restore it or drop the item`,
 		);
 	}
 }
 
-for (const [dir, item] of dirToItem) {
-	if (!onDisk.has(dir)) {
+for (const key of onDisk.keys()) {
+	if (!keyToItem.has(key)) {
+		const name = kebab(
+			key
+				.split('/')
+				.pop()!
+				.replace(/\.tsx?$/, ''),
+		);
 		problems.push(
-			`${componentPrefix}${dir}/: "${item.name}" anchors this directory but nothing is in it — restore the files or drop the item`,
+			`${componentPrefix}${key}: no item anchors this component — add one named "${name}"`,
 		);
 	}
 }
@@ -124,8 +147,8 @@ for (const item of registry.items) {
 
 	for (const file of item.files ?? []) {
 		const rel = file.path.slice(componentPrefix.length);
-		const inComponentDir = file.path.startsWith(componentPrefix) && rel.includes('/');
-		(inComponentDir ? managed : rest).push(file);
+		const inComponent = file.path.startsWith(componentPrefix) && rel.includes('/');
+		(inComponent ? managed : rest).push(file);
 	}
 
 	// Hand-written entries outside the component root: check them, never add or drop.
@@ -144,16 +167,18 @@ for (const item of registry.items) {
 	if (managed.length === 0) continue;
 
 	const anchor = managed[0]!;
-	const dir = dirOf(anchor.path.slice(componentPrefix.length));
-	const home = `${componentPrefix}${dir}/`;
-	if (managed.some((file) => !file.path.startsWith(home))) {
+	const rel = anchor.path.slice(componentPrefix.length);
+	const key = rel.split('/').slice(0, 2).join('/');
+	const prefix = `${componentPrefix}${key}`;
+
+	if (managed.some((file) => !file.path.startsWith(`${prefix}/`) && file.path !== prefix)) {
 		problems.push(
-			`"${item.name}": its files span more than one component directory — a component lives in exactly one`,
+			`"${item.name}": its files span more than one component — a component lives in exactly one`,
 		);
 		continue;
 	}
 
-	const diskHere = onDisk.get(dir) ?? [];
+	const diskHere = onDisk.get(key) ?? [];
 	const declaredHere = new Set(managed.map((file) => file.path));
 	const expected = [...diskHere].sort();
 	const itemDrift: string[] = [];
@@ -181,7 +206,6 @@ for (const item of registry.items) {
 	// Keep the order a person chose and append what is new: reshuffling the whole array would
 	// bury the one line actually added, and this script has no opinion on the order anyway.
 	const known = new Map(managed.map((file) => [file.path, file]));
-	const fallbackType = anchor.type ?? 'registry:file';
 	const order = [
 		...managed.filter((file) => diskHere.includes(file.path)).map((file) => file.path),
 		...expected.filter((path) => !declaredHere.has(path)),
@@ -189,7 +213,7 @@ for (const item of registry.items) {
 	item.files = [
 		...order.map((path) => ({
 			path,
-			type: known.get(path)?.type ?? fallbackType,
+			type: known.get(path)?.type ?? 'registry:file',
 			target: `~/${path}`,
 		})),
 		...rest,

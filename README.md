@@ -41,15 +41,11 @@ bun run build    # 生产构建
 ```
 src/
 ├── components/lumo/              # 库的本体：两层，ui 是原子，blocks 是组合
-│   ├── ui/
-│   │   ├── Button/
-│   │   │   └── index.tsx         # ★ 实现就在 index.tsx，加新组件前先读它
-│   │   └── Dialog/
-│   │       ├── index.tsx         # 组装并导出 Dialog 命名空间
-│   │       ├── Root/index.tsx    # 每个 part 一个目录
-│   │       ├── Trigger/index.tsx
-│   │       └── …
-│   └── blocks/
+│   ├── ui/                       # 一个组件一个文件
+│   │   ├── Button.tsx            # ★ 单部件就是这一个文件，加新组件前先读它
+│   │   ├── Dialog.tsx            # 多部件的全在一个文件里，末尾汇成 Dialog 命名空间
+│   │   └── …
+│   └── blocks/                   # 组合，一个组件一个目录
 │       └── Layout/               # 应用外壳：sidebar、header、content
 │           ├── index.tsx
 │           ├── types.ts
@@ -66,21 +62,24 @@ registry.json                     # 分发定义
 AGENTS.md                         # 给 AI 的项目规范
 ```
 
-`ui/` 里的每个组件是一条 `registry:ui`，`blocks/` 里的是 `registry:block`——层决定类型，
-写错 `bun run check` 会当场拦下来。两层都能一条命令装进项目里。
+`ui/` 里的每个组件是一条 `registry:ui`、装进项目里就是一个 `.tsx`；`blocks/` 里的是
+`registry:block`、装进去是一个目录。层决定类型和形状，写错 `bun run check` 会当场拦下来。
+两层都能一条命令装进项目里。
 
 ## 怎么加一个组件
 
-1. 先定层：`ui/` 是能单独用的原子，`blocks/` 是由原子拼出来的组合（外壳之类）
-2. 先读 `src/components/lumo/ui/Button/`
-3. 建 `src/components/lumo/<ui|blocks>/<Name>/index.tsx`——PascalCase 目录，实现直接写在 index.tsx
-4. 多部件组件：**每个 part 一个目录**（`Dialog/Popup/index.tsx`），父级 index.tsx 组装成命名空间对象
+1. 先定层：`ui/` 是能单独用的原子（一个文件），`blocks/` 是由原子拼出来的组合（一个目录）
+2. 先读 `src/components/lumo/ui/Button.tsx`
+3. ui 组件：建 `src/components/lumo/ui/<Name>.tsx`，多部件的都写在这一个文件里，末尾汇成
+   `export const Dialog = { Root, Trigger, Popup, … }`（part 依旧各自 `export`——别的组件可能来拿）
+4. blocks 组件：建 `src/components/lumo/blocks/<Name>/index.tsx`，按需要给 part 分目录
+   （`Layout/Sidebar/index.tsx`）
 5. 所有颜色/圆角/间距用 token（`bg-primary`、`rounded-md`），**不许硬编码**
 6. 不要写 focus 样式——焦点样式只在 `lumo-tokens.css` 里定义一次
-7. 在 `registry.json` 里加一条 item（`type` 按层给 `registry:ui` 或 `registry:block`），`files` 里**只写该目录下任意一个文件的路径**，当锚点
-8. `bun run registry:sync`——该目录下其余文件自动补进去，target 一并生成
+7. 在 `registry.json` 里加一条 item（`type` 按层给 `registry:ui` 或 `registry:block`），`files` 里只写一个路径：ui 写那个文件本身，blocks 写目录里任意一个文件当锚点
+8. `bun run registry:sync`——blocks 目录下其余文件自动补进去，target 一并生成
 9. 在 `src/pages/` 里加一页 demo，方便看效果
-10. `bun run check` 必须过（漏声明、target 不镜像、类型和层对不上都会报错）
+10. `bun run check` 必须过（漏声明、target 不镜像、类型和层对不上、ui 不是一个文件都会报错）
 
 ## 分发到项目里
 

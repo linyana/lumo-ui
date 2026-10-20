@@ -52,9 +52,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Spinner/index.tsx",
+					"path": "src/components/lumo/ui/Spinner.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Spinner/index.tsx"
+					"target": "~/src/components/lumo/ui/Spinner.tsx"
 				}
 			]
 		},
@@ -67,9 +67,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Button/index.tsx",
+					"path": "src/components/lumo/ui/Button.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Button/index.tsx"
+					"target": "~/src/components/lumo/ui/Button.tsx"
 				}
 			]
 		},
@@ -82,44 +82,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Card/index.tsx",
+					"path": "src/components/lumo/ui/Card.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Action/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Action/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Content/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Content/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Description/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Description/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Footer/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Footer/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Header/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Header/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Card/Title/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card/Title/index.tsx"
+					"target": "~/src/components/lumo/ui/Card.tsx"
 				}
 			]
 		},
@@ -132,49 +97,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Tooltip/index.tsx",
+					"path": "src/components/lumo/ui/Tooltip.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Arrow/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Arrow/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Popup/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Popup/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Portal/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Portal/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Positioner/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Positioner/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Provider/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Provider/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Trigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Trigger/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tooltip/Viewport/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip/Viewport/index.tsx"
+					"target": "~/src/components/lumo/ui/Tooltip.tsx"
 				}
 			]
 		},
@@ -187,54 +112,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Dialog/index.tsx",
+					"path": "src/components/lumo/ui/Dialog.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Trigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Trigger/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Portal/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Portal/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Close/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Close/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Backdrop/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Backdrop/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Viewport/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Viewport/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Popup/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Popup/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Title/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Title/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dialog/Description/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog/Description/index.tsx"
+					"target": "~/src/components/lumo/ui/Dialog.tsx"
 				}
 			]
 		},
@@ -247,29 +127,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Collapsible/index.tsx",
+					"path": "src/components/lumo/ui/Collapsible.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Collapsible/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Collapsible/Icon/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Collapsible/Icon/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Collapsible/Panel/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Collapsible/Panel/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Collapsible/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Collapsible/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Collapsible/Trigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Collapsible/Trigger/index.tsx"
+					"target": "~/src/components/lumo/ui/Collapsible.tsx"
 				}
 			]
 		},
@@ -282,64 +142,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Popover/index.tsx",
+					"path": "src/components/lumo/ui/Popover.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Arrow/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Arrow/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Backdrop/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Backdrop/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Close/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Close/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Description/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Description/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Popup/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Popup/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Portal/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Portal/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Positioner/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Positioner/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Title/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Title/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Trigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Trigger/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Popover/Viewport/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover/Viewport/index.tsx"
+					"target": "~/src/components/lumo/ui/Popover.tsx"
 				}
 			]
 		},
@@ -352,59 +157,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Dropdown/index.tsx",
+					"path": "src/components/lumo/ui/Dropdown.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Group/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Group/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/GroupLabel/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/GroupLabel/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Item/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Item/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Popup/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Popup/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Portal/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Portal/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Positioner/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Positioner/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Separator/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Separator/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Trigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Trigger/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Dropdown/Viewport/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown/Viewport/index.tsx"
+					"target": "~/src/components/lumo/ui/Dropdown.tsx"
 				}
 			]
 		},
@@ -417,9 +172,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Separator/index.tsx",
+					"path": "src/components/lumo/ui/Separator.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Separator/index.tsx"
+					"target": "~/src/components/lumo/ui/Separator.tsx"
 				}
 			]
 		},
@@ -432,39 +187,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Tabs/index.tsx",
+					"path": "src/components/lumo/ui/Tabs.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tabs/Indicator/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/Indicator/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tabs/List/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/List/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tabs/Panel/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/Panel/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tabs/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tabs/Tab/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/Tab/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Tabs/context.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs/context.ts"
+					"target": "~/src/components/lumo/ui/Tabs.tsx"
 				}
 			]
 		},
@@ -477,84 +202,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Drawer/index.tsx",
+					"path": "src/components/lumo/ui/Drawer.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Backdrop/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Backdrop/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Close/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Close/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Content/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Content/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Description/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Description/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Popup/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Popup/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Portal/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Portal/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Title/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Title/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Trigger/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Trigger/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Viewport/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Viewport/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Indent/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Indent/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/IndentBackground/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/IndentBackground/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/Provider/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/Provider/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/SwipeArea/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/SwipeArea/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Drawer/VirtualKeyboardProvider/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer/VirtualKeyboardProvider/index.tsx"
+					"target": "~/src/components/lumo/ui/Drawer.tsx"
 				}
 			]
 		},
@@ -566,9 +216,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Skeleton/index.tsx",
+					"path": "src/components/lumo/ui/Skeleton.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Skeleton/index.tsx"
+					"target": "~/src/components/lumo/ui/Skeleton.tsx"
 				}
 			]
 		},
@@ -588,89 +238,9 @@
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Menu/index.tsx",
+					"path": "src/components/lumo/ui/Menu.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Action/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Action/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Badge/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Badge/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Button/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Button/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Group/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Group/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/GroupAction/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/GroupAction/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/GroupLabel/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/GroupLabel/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Item/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Item/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/List/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/List/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Separator/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Separator/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Skeleton/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Skeleton/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/Sub/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/Sub/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/SubButton/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/SubButton/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/SubItem/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/SubItem/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/SubList/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/SubList/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Menu/context.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu/context.ts"
+					"target": "~/src/components/lumo/ui/Menu.tsx"
 				}
 			]
 		},
@@ -722,29 +292,9 @@
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Code/index.tsx",
+					"path": "src/components/lumo/ui/Code.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Code/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Code/Copy/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Code/Copy/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Code/Header/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Code/Header/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Code/Tokens/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Code/Tokens/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Code/useCodeLines.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Code/useCodeLines.ts"
+					"target": "~/src/components/lumo/ui/Code.tsx"
 				}
 			]
 		},
@@ -757,14 +307,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/code"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/CodeDiff/index.tsx",
+					"path": "src/components/lumo/ui/CodeDiff.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/CodeDiff/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/CodeDiff/diff.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/CodeDiff/diff.ts"
+					"target": "~/src/components/lumo/ui/CodeDiff.tsx"
 				}
 			]
 		},
@@ -777,69 +322,9 @@
 			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Toast/index.tsx",
+					"path": "src/components/lumo/ui/Toast.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Action/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Action/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Close/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Close/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Content/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Content/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Description/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Description/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Icon/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Icon/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Portal/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Portal/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Provider/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Provider/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Root/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Root/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Title/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Title/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Toaster/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Toaster/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/Viewport/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/Viewport/index.tsx"
-				},
-				{
-					"path": "src/components/lumo/ui/Toast/context.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast/context.ts"
+					"target": "~/src/components/lumo/ui/Toast.tsx"
 				}
 			]
 		}

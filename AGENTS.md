@@ -27,19 +27,23 @@ registry. No npm package.
 
 ## Adding a component
 
-1. Read `src/components/lumo/ui/Button/` first.
+1. Read `src/components/lumo/ui/Button.tsx` first.
 2. Pick the layer: `ui/` is a primitive that stands on its own, `blocks/` is a composition of
-   primitives (the shell). The layer decides the registry type, so the check refuses a
-   mismatch.
-3. One directory per component, PascalCase, implementation in `index.tsx`:
-   `src/components/lumo/<layer>/<Name>/index.tsx`. Never `<name>.tsx` or `<Name>/<Name>.tsx`.
-4. A component with parts gives **each part its own directory** — `Dialog/Popup/index.tsx`,
-   never `dialog/popup.tsx`. The parent `index.tsx` imports the parts and assembles them.
+   primitives (the shell). The layer decides the shape and the registry type, so the check
+   refuses a mismatch.
+3. A `ui/` component is **one file**: `src/components/lumo/ui/<Name>.tsx`, PascalCase. Its
+   parts are functions in that file, assembled at the end into one namespace object —
+   `Dialog.tsx` holds Root, Trigger, Popup and the rest. Never `ui/Button/index.tsx`.
+4. A `blocks/` component is **a directory**: `src/components/lumo/blocks/<Name>/index.tsx`,
+   with a directory per part where that helps (`Layout/Sidebar/index.tsx`).
 5. Export one namespace object: `export const Dialog = { Root, Trigger, Popup, ... }`, used
    as `<Dialog.Popup>`. A single-part component exports the function directly (`Button`).
+   Keep every part exported: another component may reach for one (`CodeDiff` takes `Copy`
+   from `Code`).
 6. `data-slot="<name>-<part>"` on every rendered element.
-7. Add a `registry.json` item whose `files` name any one path in the new directory, then run
-   `bun run registry:sync` to fill in the rest. Use it in `src/pages/` so the docs show it.
+7. Add a `registry.json` item whose `files` name one path — the file for a ui component, any
+   file in the directory for a block — then run `bun run registry:sync` to fill in the rest.
+   Use it in `src/pages/` so the docs show it.
 
 ## Icons
 
@@ -78,18 +82,17 @@ Base UI is already namespaced — keep that shape, never flatten it into `Dialog
 part is one directory exporting one name; the parent `index.tsx` assembles them.
 
 ```tsx
-// Dialog/Popup/index.tsx
+// ui/Dialog.tsx — one file, every part a function in it
 export function Popup({ className, ...props }: PopupProps) {
 	return (
 		<BaseDialog.Popup data-slot="dialog-popup" className={cn('...', className)} {...props} />
 	);
 }
 
-// Dialog/index.tsx
 export const Dialog = { Root, Trigger, Portal, Close, Backdrop, Viewport, Popup, Title, Description };
 ```
 
-A part that needs no styling is a one-line re-export: `Dialog/Root/index.tsx` is
+A part that needs no styling is a one-line assignment in the same file:
 `export const Root = BaseDialog.Root`.
 
 Consumers compose with `render` rather than wrapper props:
@@ -104,8 +107,9 @@ Don't rename Base UI's state attributes: `data-open`, `data-closed`,
 ## Registry
 
 - `type: "registry:ui"` for a component under `ui/`, `"registry:block"` for one under `blocks/`;
-  `scripts/check-registry.ts` fails on a mismatch. Every item carries an explicit `target`
-  per file, and each file stays `registry:file` — the type the CLI copies verbatim.
+  `scripts/check-registry.ts` fails on a mismatch, on a ui component that is not a single
+  file, and on a component no item claims. Every item carries an explicit `target` per file,
+  and each file stays `registry:file` — the type the CLI copies verbatim.
 - Targets stay under `~/src/components/lumo/`, never `~/src/components/ui/` (shadcn's).
 - **Declare every file in the component directory.** An undeclared file is silently left out
   of the consuming project and only breaks there, at build time.
