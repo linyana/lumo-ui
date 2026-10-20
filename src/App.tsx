@@ -1,763 +1,83 @@
-import { Fragment, useEffect, useState, type ReactNode } from 'react';
-import {
-	Bell,
-	Check,
-	ChevronRight,
-	Layers,
-	Pencil,
-	Play,
-	Plus,
-	Search,
-	Settings,
-	Trash2,
-	User,
-	X,
-} from 'lucide-react';
-import { Layout, type LayoutMenuEntry } from '@/components/blocks/Layout';
-import { Button } from '@/components/lumo/Button';
-import { Collapsible } from '@/components/lumo/Collapsible';
-import { Dialog } from '@/components/lumo/Dialog';
-import { Drawer } from '@/components/lumo/Drawer';
-import { Dropdown } from '@/components/lumo/Dropdown';
+import { useEffect, useMemo, useState } from 'react';
+import { Layers, User } from 'lucide-react';
+import { NavLink, Outlet, useLocation } from 'react-router';
+import { Layout, type LayoutMenuEntry, type LayoutMenuItem } from '@/components/blocks/Layout';
 import { Menu } from '@/components/lumo/Menu';
-import { Popover } from '@/components/lumo/Popover';
-import { Separator } from '@/components/lumo/Separator';
-import { Spinner } from '@/components/lumo/Spinner';
-import { Tooltip } from '@/components/lumo/Tooltip';
+import { docRoutes } from '@/pages';
+import { ThemeProvider } from '@/pages/theme';
 
-const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;
-const sizes = ['sm', 'md', 'lg'] as const;
+const to = (path: string) => `/${path}`;
 
-const navItems: { label: string; icon?: ReactNode; badge?: string }[] = [
-	{ label: 'components', icon: <Layers /> },
-	{ label: 'playground', icon: <Play /> },
-	{ label: 'activity', icon: <Bell />, badge: '3' },
-	{ label: 'releases' },
-];
+/** A row that is a route: the anchor comes from the router, the look from the menu. */
+const row = (path: string, label: string): LayoutMenuItem => ({
+	key: path,
+	label,
+	href: to(path),
+	render: <NavLink to={to(path)} />,
+});
 
-/** The rail as data: a group with its own action, a separator, a submenu, a loading group. */
-const layoutMenu: LayoutMenuEntry[] = [
+const gettingStarted = ['overview', 'layout'];
+const components = docRoutes.filter(({ path }) => !gettingStarted.includes(path));
+
+const menu: LayoutMenuEntry[] = [
 	{
 		type: 'group',
-		label: 'library',
-		action: (
-			<Menu.GroupAction aria-label="add component">
-				<Plus />
-			</Menu.GroupAction>
-		),
-		children: navItems.map(({ label, icon, badge }) => ({ key: label, label, icon, badge })),
-	},
-	{ type: 'separator' },
-	{
-		key: 'settings',
-		label: 'settings',
-		icon: <Settings />,
-		defaultOpen: true,
-		children: [
-			{ key: 'profile', label: 'profile', icon: <User /> },
-			{ key: 'billing', label: 'billing', icon: <Bell /> },
-		],
+		label: 'getting started',
+		children: docRoutes
+			.filter(({ path }) => gettingStarted.includes(path))
+			.map(({ path, label }) => row(path, label)),
 	},
 	{
 		type: 'group',
-		label: 'loading',
-		children: [
-			{ type: 'skeleton', showIcon: true },
-			{ type: 'skeleton', showIcon: true, width: '50%' },
-			{ type: 'skeleton', showIcon: true, width: '80%' },
-		],
+		label: 'components',
+		children: components.map(({ path, label }) => row(path, label)),
 	},
 ];
 
-const hintHandle = Tooltip.createHandle<string>();
-
-const hints = [
-	{ label: 'play', hint: 'Listen to audio preview' },
-	{ label: 'timer', hint: 'Set a timer' },
-	{ label: 'delete', hint: 'Delete: this action cannot be undone' },
-];
-
-const panelHandle = Popover.createHandle<ReactNode>();
-const panels: { label: string; content: ReactNode }[] = [
-	{
-		label: 'notifications',
-		content: (
-			<>
-				<Popover.Title>notifications</Popover.Title>
-				<Popover.Description>you are all caught up. good job!</Popover.Description>
-			</>
-		),
-	},
-	{
-		label: 'activity',
-		content: (
-			<>
-				<Popover.Title>activity</Popover.Title>
-				<Popover.Description>nothing interesting happened recently.</Popover.Description>
-			</>
-		),
-	},
-	{
-		label: 'account',
-		content: (
-			<>
-				<Popover.Title>rika li</Popover.Title>
-				<Popover.Description>pro plan</Popover.Description>
-				<div className="flex flex-col gap-2 pt-2">
-					<a href="#" className="w-fit underline underline-offset-2 hover:no-underline">
-						account settings
-					</a>
-					<a href="#" className="w-fit underline underline-offset-2 hover:no-underline">
-						log out
-					</a>
-				</div>
-			</>
-		),
-	},
-];
-
-/** The docs' own example, kept verbatim as the reference the lumo dropdown is measured against. */
-const docsDropdowns = {
-	library: {
-		heading: 'Library',
-		groups: [
-			['Add to library', 'Add to favorites'],
-			['Create playlist', 'Create station'],
-		],
-	},
-	playback: {
-		heading: 'Playback',
-		groups: [
-			['Play now', 'Add to queue'],
-			['Play next', 'Play last', 'Sleep timer'],
-		],
-	},
-	share: {
-		heading: 'Share',
-		groups: [
-			['Copy link', 'Copy embed code'],
-			['Share to contacts', 'Share to social'],
-		],
-	},
-} as const;
-
-type DocsDropdownKey = keyof typeof docsDropdowns;
-
-const docsDropdownKeys = Object.keys(docsDropdowns) as DocsDropdownKey[];
-
-const docsDropdown = Dropdown.createHandle<DocsDropdownKey>();
-
+/**
+ * The shell, and the only place that knows the rail is a set of routes. Every row is a `NavLink`
+ * handed to the menu through `render`, so the url selects the row — there is no second copy of
+ * that state to keep in sync, and a reload or a shared link lands on the same page.
+ */
 export default function App() {
 	const [dark, setDark] = useState(false);
-	const [saving, setSaving] = useState(false);
-	const [drawerBox, setDrawerBox] = useState<HTMLDivElement | null>(null);
-	const [selectedKey, setSelectedKey] = useState('components');
-	const [shell, setShell] = useState<'default' | 'plain'>('default');
 	// The shell reports the fold; where it is remembered is the app's business, so the cookie is
 	// written here and never by Layout itself.
 	const [folded, setFolded] = useState(() => document.cookie.includes('layout_folded=1'));
+	const { pathname } = useLocation();
 
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', dark);
 	}, [dark]);
 
+	const selectedKey = pathname.split('/')[1] ?? '';
+	const theme = useMemo(() => ({ dark, toggle: () => setDark((current) => !current) }), [dark]);
+
 	return (
-		<Layout
-			variant={shell}
-			menu={layoutMenu}
-			selectedKey={selectedKey}
-			onSelect={setSelectedKey}
-			logo={<Layers />}
-			title="lumo-ui"
-			collapsible
-			collapsed={folded}
-			onCollapsedChange={(next) => {
-				setFolded(next);
-				document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
-			}}
-			footer={
-				<Menu.List>
-					<Menu.Item>
-						<Menu.Button icon={<User />} label="account" />
-					</Menu.Item>
-				</Menu.List>
-			}
-		>
-			<Layout.Header
+		<ThemeProvider value={theme}>
+			<Layout
+				menu={menu}
+				selectedKey={selectedKey}
+				logo={<Layers />}
 				title="lumo-ui"
-				description="base ui behaviour + token-driven styling"
-				actions={
-					<>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() =>
-								setShell((current) => (current === 'default' ? 'plain' : 'default'))
-							}
-						>
-							{shell}
-						</Button>
-						<Button variant="outline" size="sm" onClick={() => setDark((d) => !d)}>
-							{dark ? 'light' : 'dark'}
-						</Button>
-					</>
+				collapsible
+				collapsed={folded}
+				onCollapsedChange={(next) => {
+					setFolded(next);
+					document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
+				}}
+				footer={
+					<Menu.List>
+						<Menu.Item>
+							<Menu.Button icon={<User />} label="account" />
+						</Menu.Item>
+					</Menu.List>
 				}
-			/>
-			<Layout.Content>
-				<div className="mx-auto max-w-3xl space-y-10">
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">layout</h2>
-						<p className="text-xs text-muted-foreground">
-							the shell around this page is{' '}
-							<code className="rounded bg-muted px-1 py-0.5">Layout</code>: one{' '}
-							<code className="rounded bg-muted px-1 py-0.5">menu</code> array draws
-							the rail, and the header above belongs to this page — it is written
-							here, sticks to the surface it scrolls in, and is the only thing that
-							knows what this page is called. the button next to the theme toggle
-							switches the variant: <strong>default</strong> insets a card on every
-							edge, <strong>plain</strong> lets the content be the page. cmd/ctrl+b or
-							the button in the rail's corner folds it into icons — the app keeps that
-							in a cookie, so the shell reports the fold instead of choosing where it
-							lives.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">variants</h2>
-						<div className="flex flex-wrap gap-3">
-							{variants.map((variant) => (
-								<Button key={variant} variant={variant}>
-									{variant}
-								</Button>
-							))}
-						</div>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">sizes</h2>
-						<div className="flex flex-wrap items-center gap-3">
-							{sizes.map((size) => (
-								<Button key={size} size={size}>
-									{size}
-								</Button>
-							))}
-							<Button size="icon" aria-label="add">
-								<Plus />
-							</Button>
-						</div>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">states</h2>
-						<div className="flex flex-wrap gap-3">
-							<Button disabled>disabled</Button>
-							<Button variant="outline" disabled>
-								disabled outline
-							</Button>
-						</div>
-						<div className="flex flex-wrap items-center gap-3">
-							<Button loading>loading</Button>
-							<Button variant="outline" icon={<Plus />} loading>
-								add
-							</Button>
-							<Button size="icon" loading aria-label="loading icon button">
-								<Plus />
-							</Button>
-						</div>
-						<p className="text-xs text-muted-foreground">
-							tab through the buttons: focus is a 1px ring defined once in
-							<code className="mx-1 rounded bg-muted px-1 py-0.5">
-								lumo-tokens.css
-							</code>
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">interaction</h2>
-						<div className="flex flex-wrap items-center gap-3">
-							<Button
-								loading={saving}
-								onClick={() => {
-									setSaving(true);
-									setTimeout(() => setSaving(false), 1200);
-								}}
-							>
-								save draft
-							</Button>
-							<Button variant="outline">hover me</Button>
-							<Button variant="ghost">press me</Button>
-						</div>
-						<p className="text-xs text-muted-foreground">
-							hover and press are one state layer tinted by <code>currentColor</code>,
-							so every variant reacts in the right direction without its own hover
-							rule. press also nudges the button down 1px, except where{' '}
-							<code>aria-haspopup</code> says it opens a popup — an overlay is
-							positioned against that trigger's rect; tab through to see the ring.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">spinners</h2>
-						<div className="flex flex-wrap items-center gap-4 text-foreground">
-							<Spinner />
-							<Spinner className="size-6" />
-							<Spinner className="size-10 text-muted-foreground" label="saving" />
-						</div>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">tooltip</h2>
-						<Tooltip.Provider delay={300}>
-							<div className="flex flex-wrap items-center gap-3">
-								<Tooltip.Root>
-									<Tooltip.Trigger
-										render={<Button variant="outline">hover me</Button>}
-									/>
-									<Tooltip.Portal>
-										<Tooltip.Positioner>
-											<Tooltip.Popup>
-												behaviour from Base UI, appearance from tokens
-												<Tooltip.Arrow />
-											</Tooltip.Popup>
-										</Tooltip.Positioner>
-									</Tooltip.Portal>
-								</Tooltip.Root>
-								<Tooltip.Root>
-									<Tooltip.Trigger
-										render={<Button variant="ghost">bottom</Button>}
-									/>
-									<Tooltip.Portal>
-										<Tooltip.Positioner side="bottom" align="start">
-											<Tooltip.Popup>
-												with an arrow, aligned to the start edge
-												<Tooltip.Arrow />
-											</Tooltip.Popup>
-										</Tooltip.Positioner>
-									</Tooltip.Portal>
-								</Tooltip.Root>
-							</div>
-						</Tooltip.Provider>
-						<p className="text-xs text-muted-foreground">
-							one <code className="rounded bg-muted px-1 py-0.5">Provider</code>{' '}
-							shares the delay, so moving between triggers shows the next hint
-							instantly. hovering only ever previews; the same hint is announced on
-							keyboard focus.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">
-							tooltip — one popup, three triggers
-						</h2>
-						<Tooltip.Provider delay={300}>
-							<div className="flex">
-								{hints.map(({ label, hint }) => (
-									<Tooltip.Trigger
-										key={label}
-										handle={hintHandle}
-										payload={hint}
-										render={
-											<Button variant="outline" size="sm">
-												{label}
-											</Button>
-										}
-									/>
-								))}
-							</div>
-							<Tooltip.Root handle={hintHandle}>
-								{({ payload }) => (
-									<Tooltip.Portal>
-										<Tooltip.Positioner>
-											<Tooltip.Popup>
-												<Tooltip.Arrow />
-												<Tooltip.Viewport>{payload}</Tooltip.Viewport>
-											</Tooltip.Popup>
-										</Tooltip.Positioner>
-									</Tooltip.Portal>
-								)}
-							</Tooltip.Root>
-						</Tooltip.Provider>
-						<p className="text-xs text-muted-foreground">
-							hover straight across the row: the popup glides to the next trigger, its
-							content slides out the way it came, and the width animates instead of
-							jumping. that is{' '}
-							<code className="rounded bg-muted px-1 py-0.5">Viewport</code>.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">icon</h2>
-						<div className="flex flex-wrap items-center gap-3">
-							<Button icon={<Plus />}>add</Button>
-							<Button variant="outline" icon={<Pencil />}>
-								edit
-							</Button>
-							<Button variant="outline" icon={<Trash2 />}>
-								delete
-							</Button>
-							<Button variant="outline" icon={<Check />}>
-								saved
-							</Button>
-							<Button size="icon" variant="ghost" aria-label="close">
-								<X />
-							</Button>
-							<Button
-								size="icon"
-								variant="ghost"
-								aria-label="search"
-								icon={<Search />}
-							/>
-						</div>
-						<div className="flex items-center gap-3">
-							<span className="inline-flex items-center text-sm">
-								<ChevronRight className="size-[1em]" />
-							</span>
-							<span className="inline-flex items-center text-lg">
-								<ChevronRight className="size-[1em]" />
-							</span>
-							<span className="inline-flex items-center text-2xl">
-								<ChevronRight className="size-[1em]" />
-							</span>
-							<span className="inline-flex items-center text-2xl text-muted-foreground">
-								<Spinner label={null} />
-							</span>
-						</div>
-						<p className="text-xs text-muted-foreground">
-							one family, one source: a glyph arrives as itself — lucide by name,
-							sized by the slot (
-							<code className="rounded bg-muted px-1 py-0.5">[&_svg]:size-[1em]</code>
-							), so nothing can drift in grid or stroke weight; outside a slot, size
-							it like the carets above. loading is the one thing lucide cannot draw:{' '}
-							<code className="rounded bg-muted px-1 py-0.5">Spinner</code>, with{' '}
-							<code className="rounded bg-muted px-1 py-0.5">label={'{null}'}</code>{' '}
-							inside a control that announces its own state.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">collapsible</h2>
-						<Collapsible.Root className="max-w-sm rounded-lg border">
-							<Collapsible.Trigger>
-								recovery keys
-								<Collapsible.Icon />
-							</Collapsible.Trigger>
-							<Collapsible.Panel>
-								<div className="flex flex-col gap-1 px-3 pb-3 text-sm text-muted-foreground">
-									<div>alien-bean-pasta</div>
-									<div>wild-irish-burrito</div>
-									<div>horse-battery-staple</div>
-								</div>
-							</Collapsible.Panel>
-						</Collapsible.Root>
-						<p className="text-xs text-muted-foreground">
-							Base UI animates the panel from its own measured height, so the content
-							needs no fixed size. the caret reads <code>data-panel-open</code> off
-							the trigger and turns with it.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">popover</h2>
-						<Popover.Root>
-							<Popover.Trigger
-								render={<Button variant="outline">open popover</Button>}
-							/>
-							<Popover.Portal>
-								<Popover.Positioner side="bottom" align="start">
-									<Popover.Popup>
-										<Popover.Arrow />
-										<Popover.Title>deploy to production?</Popover.Title>
-										<Popover.Description>
-											the site rebuilds in about a minute. the previous build
-											stays live until the new one answers.
-										</Popover.Description>
-										<div className="mt-3 flex justify-end gap-2">
-											<Popover.Close
-												render={
-													<Button variant="ghost" size="sm">
-														cancel
-													</Button>
-												}
-											/>
-											<Popover.Close
-												render={<Button size="sm">deploy</Button>}
-											/>
-										</div>
-									</Popover.Popup>
-								</Popover.Positioner>
-							</Popover.Portal>
-						</Popover.Root>
-						<p className="text-xs text-muted-foreground">
-							unlike a dialog the page stays interactive behind it, so a click outside
-							dismisses it. the arrow reads the side Base UI chose and hangs off that
-							edge, carrying the popup's own border and fill.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">
-							popover — one popup, three detached triggers
-						</h2>
-						<div className="flex flex-wrap gap-2">
-							{panels.map(({ label, content }) => (
-								<Popover.Trigger
-									key={label}
-									handle={panelHandle}
-									payload={content}
-									render={
-										<Button variant="outline" size="sm">
-											{label}
-										</Button>
-									}
-								/>
-							))}
-						</div>
-						<Popover.Root handle={panelHandle}>
-							{({ payload }) => (
-								<Popover.Portal>
-									<Popover.Positioner sideOffset={8}>
-										<Popover.Popup>
-											<Popover.Arrow />
-											<Popover.Viewport>{payload}</Popover.Viewport>
-										</Popover.Popup>
-									</Popover.Positioner>
-								</Popover.Portal>
-							)}
-						</Popover.Root>
-						<p className="text-xs text-muted-foreground">
-							no trigger owns the popup — one handle does, and each trigger hands it
-							its own payload. the popup itself never unmounts, so moving between
-							triggers slides the old panel out the way the new one came in.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">dialog</h2>
-						<Dialog.Root>
-							<Dialog.Trigger
-								render={<Button variant="outline">open dialog</Button>}
-							/>
-							<Dialog.Portal>
-								<Dialog.Backdrop />
-								<Dialog.Viewport>
-									<Dialog.Popup>
-										<Dialog.Title>lumo-ui dialog</Dialog.Title>
-										<Dialog.Description>
-											behaviour from Base UI, appearance from tokens. nothing
-											about this look is hardcoded.
-										</Dialog.Description>
-										<div className="mt-6 flex justify-end gap-2">
-											<Dialog.Close
-												render={<Button variant="ghost">cancel</Button>}
-											/>
-											<Dialog.Close render={<Button>confirm</Button>} />
-										</div>
-									</Dialog.Popup>
-								</Dialog.Viewport>
-							</Dialog.Portal>
-						</Dialog.Root>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">drawer</h2>
-						<div className="flex flex-wrap gap-2">
-							<Drawer.Root>
-								<Drawer.Trigger
-									render={<Button variant="outline">bottom sheet</Button>}
-								/>
-								<Drawer.Portal>
-									<Drawer.Backdrop />
-									<Drawer.Viewport>
-										<Drawer.Popup>
-											<Drawer.Content>
-												<Drawer.Title>recovery keys</Drawer.Title>
-												<Drawer.Description>
-													drag the panel down — it follows the pointer and
-													lets go once you do.
-												</Drawer.Description>
-												<Separator className="my-1" />
-												<div className="flex flex-col gap-1 text-sm text-muted-foreground">
-													<div>alien-bean-pasta</div>
-													<div>wild-irish-burrito</div>
-												</div>
-												<div className="mt-4 flex justify-end gap-2">
-													<Drawer.Close
-														render={
-															<Button variant="ghost">cancel</Button>
-														}
-													/>
-													<Drawer.Close render={<Button>done</Button>} />
-												</div>
-											</Drawer.Content>
-										</Drawer.Popup>
-									</Drawer.Viewport>
-								</Drawer.Portal>
-							</Drawer.Root>
-							<Drawer.Root swipeDirection="right">
-								<Drawer.Trigger
-									render={<Button variant="outline">side panel</Button>}
-								/>
-								<Drawer.Portal>
-									<Drawer.Backdrop />
-									<Drawer.Viewport>
-										<Drawer.Popup>
-											<Drawer.Content>
-												<Drawer.Title>filters</Drawer.Title>
-												<Drawer.Description>
-													the same popup, anchored to another edge.
-												</Drawer.Description>
-												<Separator className="my-1" />
-												<div className="flex flex-col gap-2 text-sm">
-													<div>only my drafts</div>
-													<div>updated this week</div>
-												</div>
-												<div className="mt-4">
-													<Drawer.Close
-														render={
-															<Button className="w-full">
-																apply
-															</Button>
-														}
-													/>
-												</div>
-											</Drawer.Content>
-										</Drawer.Popup>
-									</Drawer.Viewport>
-								</Drawer.Portal>
-							</Drawer.Root>
-						</div>
-						<p className="text-xs text-muted-foreground">
-							one popup, four edges: <code>swipeDirection</code> names where the panel
-							sits and the way it leaves, so <code>right</code> is a right-hand sheet.
-							the drag offset arrives as a css variable, which is why the panel tracks
-							your finger without a re-render.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">
-							drawer — edge swipe and indent
-						</h2>
-						<Drawer.Provider>
-							<div
-								ref={setDrawerBox}
-								className="relative overflow-hidden rounded-lg border"
-							>
-								<Drawer.IndentBackground />
-								<Drawer.Indent>
-									<div className="flex min-h-40 items-center justify-center p-4 text-center">
-										<Drawer.Root swipeDirection="right" modal={false}>
-											<Drawer.SwipeArea className="absolute inset-y-0 right-0 w-10" />
-											<Drawer.Trigger
-												render={
-													<Button variant="outline" size="sm">
-														open, or sweep in from the right edge
-													</Button>
-												}
-											/>
-											<Drawer.Portal container={drawerBox}>
-												<Drawer.Backdrop className="absolute inset-0" />
-												<Drawer.Viewport className="absolute inset-0">
-													<Drawer.Popup>
-														<Drawer.Content>
-															<Drawer.Title>library</Drawer.Title>
-															<Drawer.Description>
-																the strip on the right edge opens
-																this without a click.
-															</Drawer.Description>
-														</Drawer.Content>
-													</Drawer.Popup>
-												</Drawer.Viewport>
-											</Drawer.Portal>
-										</Drawer.Root>
-									</div>
-								</Drawer.Indent>
-							</div>
-						</Drawer.Provider>
-						<p className="text-xs text-muted-foreground">
-							<code>Provider</code> tells <code>Indent</code> that a drawer inside it
-							is open, so the surface holding the button scales back and rounds off.
-							the portal is confined to this box, which is why the sheet stays inside
-							it — in a real app it renders to the body and covers the screen.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">separator</h2>
-						<div className="max-w-sm rounded-lg border p-4 text-sm">
-							<div>project settings</div>
-							<Separator className="my-3" />
-							<div className="flex items-center gap-3 text-xs text-muted-foreground">
-								<span>3 members</span>
-								<Separator orientation="vertical" className="h-4" />
-								<span>updated today</span>
-							</div>
-						</div>
-						<p className="text-xs text-muted-foreground">
-							a real <code>role="separator"</code> with an orientation, so it is
-							announced rather than merely drawn.
-						</p>
-					</section>
-
-					<section className="space-y-3">
-						<h2 className="text-sm font-medium text-muted-foreground">
-							dropdown — the same content, styled the way base ui's docs do it
-						</h2>
-						<div className="flex flex-wrap gap-2">
-							{docsDropdownKeys.map((key) => (
-								<Dropdown.Trigger key={key} handle={docsDropdown} payload={key}>
-									{docsDropdowns[key].heading}
-								</Dropdown.Trigger>
-							))}
-						</div>
-						<Dropdown.Root handle={docsDropdown} modal={false}>
-							{({ payload }) => (
-								<Dropdown.Portal>
-									<Dropdown.Positioner sideOffset={8} align="start">
-										<Dropdown.Popup>
-											<Dropdown.Viewport>
-												{payload &&
-													docsDropdowns[payload].groups.map(
-														(group, groupIndex) => (
-															<Fragment key={group[0]}>
-																<Dropdown.Group>
-																	{groupIndex === 0 && (
-																		<Dropdown.GroupLabel>
-																			{
-																				docsDropdowns[
-																					payload
-																				].heading
-																			}
-																		</Dropdown.GroupLabel>
-																	)}
-																	{group.map((item) => (
-																		<Dropdown.Item key={item}>
-																			{item}
-																		</Dropdown.Item>
-																	))}
-																</Dropdown.Group>
-																{groupIndex <
-																	docsDropdowns[payload].groups
-																		.length -
-																		1 && <Dropdown.Separator />}
-															</Fragment>
-														),
-													)}
-											</Dropdown.Viewport>
-										</Dropdown.Popup>
-									</Dropdown.Positioner>
-								</Dropdown.Portal>
-							)}
-						</Dropdown.Root>
-						<p className="text-xs text-muted-foreground">
-							the docs' own styling, straight from base ui's site: no radius, a hard
-							shadow, a solid block behind the highlighted row. kept here as the
-							reference — the lumo dropdown should switch triggers with the same
-							rhythm, whatever it ends up looking like.
-						</p>
-					</section>
-				</div>
-			</Layout.Content>
-		</Layout>
+			>
+				<Layout.Content className="p-0">
+					<Outlet />
+				</Layout.Content>
+			</Layout>
+		</ThemeProvider>
 	);
 }
