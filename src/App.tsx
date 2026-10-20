@@ -3,7 +3,7 @@ import { Layers, User } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutMenuEntry, type LayoutMenuItem } from '@/components/blocks/Layout';
 import { Menu } from '@/components/lumo/Menu';
-import { docRoutes } from '@/pages';
+import { docRoutes, docSections } from '@/pages';
 import { ThemeProvider } from '@/pages/theme';
 
 const to = (path: string) => `/${path}`;
@@ -16,23 +16,13 @@ const row = (path: string, label: string): LayoutMenuItem => ({
 	render: <NavLink to={to(path)} />,
 });
 
-const gettingStarted = ['overview', 'layout'];
-const components = docRoutes.filter(({ path }) => !gettingStarted.includes(path));
-
-const menu: LayoutMenuEntry[] = [
-	{
-		type: 'group',
-		label: 'getting started',
-		children: docRoutes
-			.filter(({ path }) => gettingStarted.includes(path))
-			.map(({ path, label }) => row(path, label)),
-	},
-	{
-		type: 'group',
-		label: 'components',
-		children: components.map(({ path, label }) => row(path, label)),
-	},
-];
+const menu: LayoutMenuEntry[] = docSections.map((section): LayoutMenuEntry => ({
+	type: 'group',
+	label: section,
+	children: docRoutes
+		.filter((route) => route.section === section)
+		.map(({ path, label }) => row(path, label)),
+}));
 
 /**
  * The shell, and the only place that knows the rail is a set of routes. Every row is a `NavLink`
