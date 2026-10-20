@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { CircleCheck, CircleX, Info, Lightbulb, TriangleAlert } from 'lucide-react';
+import { CircleCheck, CircleX, Info, TriangleAlert } from 'lucide-react';
 import { Spinner } from '@/components/lumo/Spinner';
 import { useToastItem } from '@/components/lumo/Toast/context';
 import { cn } from '@/lib/cn';
@@ -15,8 +15,6 @@ function glyphOf(type: string | undefined): ReactNode {
 			return <TriangleAlert />;
 		case 'info':
 			return <Info />;
-		case 'tip':
-			return <Lightbulb />;
 		case 'loading':
 			return <Spinner className="size-4" label={null} />;
 		default:
@@ -24,12 +22,12 @@ function glyphOf(type: string | undefined): ReactNode {
 	}
 }
 
-/** The three outcomes take their own ink; a hint is a remark, so it borrows the accent or nothing. */
+/** Every outcome takes its own ink; anything else falls back to the muted one. */
 function toneOf(type: string | undefined) {
 	if (type === 'success') return 'text-success';
 	if (type === 'error') return 'text-destructive';
 	if (type === 'warning') return 'text-warning';
-	if (type === 'tip') return 'text-primary';
+	if (type === 'info') return 'text-info';
 	return 'text-muted-foreground';
 }
 

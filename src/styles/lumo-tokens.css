@@ -24,6 +24,7 @@
 	--color-destructive-foreground: var(--destructive-foreground);
 	--color-success: var(--success);
 	--color-warning: var(--warning);
+	--color-info: var(--info);
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
@@ -89,6 +90,9 @@
 	/* The third outcome: read before it is acted on, so it sits between the other two in weight —
 	   loud enough not to be mistaken for a note, quiet enough not to be mistaken for a failure. */
 	--warning: oklch(0.666 0.179 58.318);
+	/* The outcome with no direction: a fact to be read. Blue is what that reads as, and it is the
+	   only hue left that means neither "worse" nor "better". */
+	--info: oklch(0.546 0.245 262.881);
 	--border: oklch(0.922 0 0);
 	--input: oklch(0.922 0 0);
 	--ring: oklch(0.708 0 0);
@@ -114,6 +118,7 @@
 	--destructive-foreground: oklch(0.205 0 0);
 	--success: oklch(0.723 0.219 149.579);
 	--warning: oklch(0.769 0.188 70.08);
+	--info: oklch(0.623 0.214 259.815);
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
 	--ring: oklch(0.556 0 0);

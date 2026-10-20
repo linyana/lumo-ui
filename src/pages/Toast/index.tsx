@@ -48,12 +48,6 @@ function Kinds() {
 			</Button>
 			<Button
 				variant="outline"
-				onClick={() => toast.add({ type: 'tip', title: 'press ⌘k to jump anywhere' })}
-			>
-				tip
-			</Button>
-			<Button
-				variant="outline"
 				onClick={() => toast.add({ type: 'info', title: 'maintenance sunday, 03:00 utc' })}
 			>
 				info
@@ -130,8 +124,8 @@ export function ToastPage() {
 					note={
 						<>
 							<code>type</code> is a plain string, and the only thing it decides is
-							the glyph and its ink. <code>warning</code> is the one that needed a
-							token of its own.
+							the glyph and its ink. Every outcome names a token; anything else falls
+							back to the muted one.
 						</>
 					}
 				>
