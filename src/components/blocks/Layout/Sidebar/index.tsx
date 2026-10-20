@@ -72,6 +72,8 @@ export function Sidebar({
 									className={subRow}
 									isActive={isActive(child.key, child.isActive)}
 									disabled={child.disabled}
+									href={child.href}
+									render={child.render}
 									onClick={() => {
 										child.onClick?.();
 										onSelect?.(child.key);
@@ -94,7 +96,8 @@ export function Sidebar({
 					className={row}
 					isActive={active}
 					disabled={item.disabled}
-					render={item.href === undefined ? undefined : <a href={item.href} />}
+					href={item.href}
+					render={item.render}
 					onClick={() => {
 						item.onClick?.();
 						onSelect?.(item.key);

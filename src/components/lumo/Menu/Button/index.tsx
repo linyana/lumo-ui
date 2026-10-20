@@ -1,5 +1,6 @@
 import { Button as BaseButton } from '@base-ui/react/button';
-import type { ComponentProps, ReactNode } from 'react';
+import { useRender } from '@base-ui/react/use-render';
+import type { ComponentProps, MouseEventHandler, MouseEvent, ReactNode } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { useMenu } from '@/components/lumo/Menu/context';
 import { Tooltip } from '@/components/lumo/Tooltip';
@@ -39,7 +40,11 @@ export const menuButtonVariants = tv({
 	},
 });
 
-export type ButtonProps = Omit<ComponentProps<typeof BaseButton>, 'className'> &
+export type ButtonProps = Omit<
+	ComponentProps<typeof BaseButton>,
+	'className' | 'render' | 'onClick'
+> &
+	Pick<ComponentProps<'a'>, 'target' | 'rel' | 'download'> &
 	VariantProps<typeof menuButtonVariants> & {
 		/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
 		className?: string;
@@ -56,8 +61,28 @@ export type ButtonProps = Omit<ComponentProps<typeof BaseButton>, 'className'> &
 		 * already opens from the row, such as a submenu popover. */
 		tooltip?: ReactNode;
 		tooltipSide?: 'top' | 'right' | 'bottom' | 'left';
+		/**
+		 * Where the row goes. Given it, the row is an anchor rather than a button — a link that
+		 * navigates, opens in a new tab, and can be copied from the context menu.
+		 */
+		href?: string;
+		/**
+		 * Draws the row with an element of your own, such as a router's link:
+		 * `render={<NavLink to="/docs" />}`. The row still supplies the href, the active state and
+		 * the classes, so navigation stays the router's business.
+		 */
+		render?: useRender.ComponentProps<'a'>['render'];
+		onClick?: MouseEventHandler<HTMLElement>;
 	};
 
+/**
+ * One navigation row: something to do, or somewhere to go. The difference is `href` — with it
+ * the row is an anchor, without it a button.
+ *
+ * A row with `href` cannot go through Base UI's button: that adds `role="button"` to anything
+ * that is not a `<button>`, which would hand a screen reader a button where the user needs a
+ * link. So the anchor is rendered directly, from the same variants object.
+ */
 export function Button({
 	className,
 	variant = 'default',
@@ -67,51 +92,102 @@ export function Button({
 	isActive = false,
 	tooltip,
 	tooltipSide = 'right',
+	href,
+	render,
+	disabled = false,
+	focusableWhenDisabled,
+	nativeButton,
+	type,
+	tabIndex,
+	onClick,
 	children,
 	...props
 }: ButtonProps) {
 	const { compact } = useMenu();
 	const initial = label?.trim().charAt(0) ?? '';
+	const isLink = href !== undefined || render !== undefined;
 
-	const button = (
-		<BaseButton
-			data-slot="menu-button"
-			data-active={isActive || undefined}
-			data-size={size}
-			className={cn(menuButtonVariants({ variant, size }), className)}
-			{...props}
-		>
-			{icon}
-			{label !== undefined && (
-				<span
-					data-slot="menu-button-label"
-					// `truncate` keeps the a11y name while `w-0` hides the text: overflow is what lets a
-					// flex item shrink past its content width, so it is the width that stops applying,
-					// not the text that disappears.
-					className="truncate group-data-[compact]:w-0"
-				>
-					{label}
-				</span>
-			)}
-			{icon === undefined && initial !== '' && (
-				<span
-					data-slot="menu-button-initial"
-					aria-hidden="true"
-					className="hidden group-data-[compact]:block"
-				>
-					{initial}
-				</span>
-			)}
-			{children}
-		</BaseButton>
-	);
+	const shared = {
+		'data-slot': 'menu-button',
+		'data-active': isActive || undefined,
+		'data-size': size,
+		className: cn(menuButtonVariants({ variant, size }), className),
+		children: (
+			<>
+				{icon}
+				{label !== undefined && (
+					<span
+						data-slot="menu-button-label"
+						// `truncate` keeps the a11y name while `w-0` hides the text: overflow is what
+						// lets a flex item shrink past its content width, so it is the width that
+						// stops applying, not the text that disappears.
+						className="truncate group-data-[compact]:w-0"
+					>
+						{label}
+					</span>
+				)}
+				{icon === undefined && initial !== '' && (
+					<span
+						data-slot="menu-button-initial"
+						aria-hidden="true"
+						className="hidden group-data-[compact]:block"
+					>
+						{initial}
+					</span>
+				)}
+				{children}
+			</>
+		),
+	};
+
+	const anchor = useRender({
+		render,
+		enabled: isLink,
+		defaultTagName: 'a',
+		props: {
+			...props,
+			...shared,
+			href,
+			// A link that draws itself has to say it is the current page. With an element of its own —
+			// a router's link — that element knows better, and `NavLink` sets its own `aria-current`
+			// after these props anyway.
+			'aria-current': render === undefined && isActive ? 'page' : undefined,
+			'data-disabled': disabled || undefined,
+			'aria-disabled': disabled || undefined,
+			// A link has no `disabled`; staying out of the tab order is what it can do about it.
+			tabIndex: disabled ? -1 : tabIndex,
+			onClick: disabled
+				? (event: MouseEvent<HTMLAnchorElement>) => event.preventDefault()
+				: onClick,
+		},
+	});
+
+	// `useRender` widens its return type to cover the branch it was told to skip, so the anchor
+	// is paired with the test that produced it.
+	const element =
+		isLink && anchor !== null ? (
+			anchor
+		) : (
+			<BaseButton
+				{...props}
+				{...shared}
+				disabled={disabled}
+				focusableWhenDisabled={focusableWhenDisabled}
+				nativeButton={nativeButton}
+				// Passing `undefined` would cancel the default Base UI applies, and a `<button>`
+				// without a type submits the form it happens to sit in.
+				type={type ?? 'button'}
+				tabIndex={tabIndex}
+				onClick={onClick}
+			/>
+		);
 
 	const hint = tooltip ?? label;
-	if (hint === undefined || hint === false || !compact) return button;
+	if (hint === undefined || hint === false || !compact) return element;
 
 	return (
 		<Tooltip.Root>
-			<Tooltip.Trigger render={button} />
+			<Tooltip.Trigger render={element} />
 			<Tooltip.Portal>
 				<Tooltip.Positioner side={tooltipSide} align="center">
 					<Tooltip.Popup>{hint}</Tooltip.Popup>
