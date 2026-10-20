@@ -5,6 +5,28 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+	/* Type: Inter carries the Latin, and the CJK families after it carry Chinese. The font
+	   FILE is not shipped here — a consumer installs `@fontsource-variable/inter` (or serves
+	   Inter some other way) and this stack picks it up; without it, the stack degrades to the
+	   system sans rather than to something broken. Tailwind's preflight resolves `html`'s
+	   font-family from `--font-sans`, so this one declaration is the whole app's type. */
+	--font-sans:
+		'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui,
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+	/* Mono: Geist Mono comes FIRST so every machine draws code in the same font — the
+	   installed monos after it are a safety net, not the intent (ui-monospace resolves to
+	   Consolas on Windows, which is thin and blurry at 12px).
+	   The CJK families sit AFTER the Latin monos on purpose: a CJK face carries Latin glyphs
+	   of its own and is full-width for characters a mono would rather own (box drawing is
+	   1.000em there against Consolas' 0.550em), so the mono has to win that race. They sit
+	   BEFORE the generic `monospace`, which always resolves and would otherwise swallow them.
+	   No `font-feature-settings` needed: Geist Mono ships without ligatures, so `!==` in a
+	   diff stays three characters. */
+	--font-mono:
+		'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
+		'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace;
+
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
