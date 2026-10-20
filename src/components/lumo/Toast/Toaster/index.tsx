@@ -11,14 +11,15 @@ import { Title } from '@/components/lumo/Toast/Title';
 import { Viewport, type ViewportProps } from '@/components/lumo/Toast/Viewport';
 
 /** A toast unless you say otherwise: its type, its words, then whatever acts on it. */
-function Interior() {
+function Interior({ toast }: { toast: ToastRootToastObject }) {
 	return (
 		<>
 			<Icon />
 			<div className="flex min-w-0 flex-1 items-start gap-2">
 				<div className="flex min-w-0 flex-1 flex-col gap-1">
 					<Title />
-					<Description />
+					{/* With no title the description is the whole message, so it takes the body size. */}
+					<Description className={toast.title === undefined ? 'text-sm' : undefined} />
 				</div>
 				<Action />
 				<Close />
@@ -44,7 +45,9 @@ export function Toaster({ className, children, ...props }: ToasterProps) {
 			<Viewport className={className} {...props}>
 				{toasts.map((toast) => (
 					<Root key={toast.id} toast={toast}>
-						<Content>{children === undefined ? <Interior /> : children(toast)}</Content>
+						<Content>
+							{children === undefined ? <Interior toast={toast} /> : children(toast)}
+						</Content>
 					</Root>
 				))}
 			</Viewport>

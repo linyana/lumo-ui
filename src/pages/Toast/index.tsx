@@ -42,6 +42,12 @@ function Kinds() {
 			</Button>
 			<Button
 				variant="outline"
+				onClick={() => toast.add({ description: 'your session expires in 2 minutes.' })}
+			>
+				description only
+			</Button>
+			<Button
+				variant="outline"
 				onClick={() => {
 					const id = toast.add({
 						title: 'file moved to trash',
