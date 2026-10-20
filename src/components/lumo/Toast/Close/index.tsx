@@ -4,11 +4,11 @@ import { X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 const classes = cn(
-	'inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-md',
+	'-my-1 inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md',
 	'text-muted-foreground',
 	'transition-colors duration-(--duration-state)',
 	'hover:bg-accent hover:text-accent-foreground',
-	'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-3',
+	'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-3.5',
 );
 
 const glyph = <X />;

@@ -3,7 +3,8 @@ import { Toast as BaseToast } from '@base-ui/react/toast';
 import { cn } from '@/lib/cn';
 
 const classes = cn(
-	'inline-flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-md px-2',
+	'-my-1 inline-flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-md px-2',
+	'bg-secondary text-secondary-foreground',
 	'text-xs font-medium whitespace-nowrap select-none',
 	'transition-colors duration-(--duration-state)',
 	'hover:bg-accent hover:text-accent-foreground',
