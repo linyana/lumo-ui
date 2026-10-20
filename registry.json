@@ -360,6 +360,51 @@
 			]
 		},
 		{
+			"name": "tabs",
+			"type": "registry:block",
+			"title": "Tabs",
+			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/Tabs/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tabs/Indicator/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/Indicator/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tabs/List/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/List/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tabs/Panel/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/Panel/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tabs/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tabs/Tab/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/Tab/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Tabs/context.ts",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Tabs/context.ts"
+				}
+			]
+		},
+		{
 			"name": "drawer",
 			"type": "registry:block",
 			"title": "Drawer",

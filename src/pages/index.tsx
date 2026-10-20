@@ -10,6 +10,7 @@ import { OverviewPage } from './Overview';
 import { PopoverPage } from './Popover';
 import { SeparatorPage } from './Separator';
 import { SpinnerPage } from './Spinner';
+import { TabsPage } from './Tabs';
 import { TooltipPage } from './Tooltip';
 
 export type DocRoute = { path: string; label: string; element: ReactElement };
@@ -26,6 +27,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'dialog', label: 'dialog', element: <DialogPage /> },
 	{ path: 'drawer', label: 'drawer', element: <DrawerPage /> },
 	{ path: 'separator', label: 'separator', element: <SeparatorPage /> },
+	{ path: 'tabs', label: 'tabs', element: <TabsPage /> },
 	{ path: 'dropdown', label: 'dropdown', element: <DropdownPage /> },
 	{ path: 'menu', label: 'menu', element: <MenuPage /> },
 ];
