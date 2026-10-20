@@ -15,19 +15,22 @@ import { TooltipPage } from './Tooltip';
 
 export type DocRoute = { path: string; label: string; element: ReactElement };
 
-/** One page per component, in the order the rail lists them. */
+/**
+ * One page per component, in the order the rail lists them: getting started first, then the
+ * components alphabetically.
+ */
 export const docRoutes: DocRoute[] = [
-	{ path: 'overview', label: 'overview', element: <OverviewPage /> },
-	{ path: 'layout', label: 'layout', element: <LayoutPage /> },
-	{ path: 'button', label: 'button', element: <ButtonPage /> },
-	{ path: 'spinner', label: 'spinner', element: <SpinnerPage /> },
-	{ path: 'tooltip', label: 'tooltip', element: <TooltipPage /> },
-	{ path: 'collapsible', label: 'collapsible', element: <CollapsiblePage /> },
-	{ path: 'popover', label: 'popover', element: <PopoverPage /> },
-	{ path: 'dialog', label: 'dialog', element: <DialogPage /> },
-	{ path: 'drawer', label: 'drawer', element: <DrawerPage /> },
-	{ path: 'separator', label: 'separator', element: <SeparatorPage /> },
-	{ path: 'tabs', label: 'tabs', element: <TabsPage /> },
-	{ path: 'dropdown', label: 'dropdown', element: <DropdownPage /> },
-	{ path: 'menu', label: 'menu', element: <MenuPage /> },
+	{ path: 'overview', label: 'Overview', element: <OverviewPage /> },
+	{ path: 'layout', label: 'Layout', element: <LayoutPage /> },
+	{ path: 'button', label: 'Button', element: <ButtonPage /> },
+	{ path: 'collapsible', label: 'Collapsible', element: <CollapsiblePage /> },
+	{ path: 'dialog', label: 'Dialog', element: <DialogPage /> },
+	{ path: 'drawer', label: 'Drawer', element: <DrawerPage /> },
+	{ path: 'dropdown', label: 'Dropdown', element: <DropdownPage /> },
+	{ path: 'menu', label: 'Menu', element: <MenuPage /> },
+	{ path: 'popover', label: 'Popover', element: <PopoverPage /> },
+	{ path: 'separator', label: 'Separator', element: <SeparatorPage /> },
+	{ path: 'spinner', label: 'Spinner', element: <SpinnerPage /> },
+	{ path: 'tabs', label: 'Tabs', element: <TabsPage /> },
+	{ path: 'tooltip', label: 'Tooltip', element: <TooltipPage /> },
 ];
