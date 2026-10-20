@@ -8,16 +8,17 @@ export type ViewportProps = Omit<ComponentProps<typeof BaseToast.Viewport>, 'cla
 };
 
 /**
- * The fixed corner the stack lives in. Every toast inside is positioned against it, so the box
- * itself stays empty and only the toasts take pointer events — a page never loses a corner to it.
+ * The fixed strip the stack hangs from: a centred line under the top edge. Every toast inside is
+ * positioned against it, so the box itself stays empty and only the toasts take pointer events —
+ * a page never loses that strip to it.
  */
 export function Viewport({ className, ...props }: ViewportProps) {
 	return (
 		<BaseToast.Viewport
 			data-slot="toast-viewport"
 			className={cn(
+				// Over-constrained left/right with auto margins is what centres it at every width.
 				'pointer-events-none fixed inset-x-4 top-4 z-50 mx-auto max-w-96',
-				'sm:inset-x-auto sm:right-4 sm:w-96',
 				className,
 			)}
 			{...props}
