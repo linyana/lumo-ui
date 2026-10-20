@@ -767,6 +767,81 @@
 					"target": "~/src/components/lumo/CodeDiff/diff.ts"
 				}
 			]
+		},
+		{
+			"name": "toast",
+			"type": "registry:block",
+			"title": "Toast",
+			"description": "Transient messages in a corner stack: behaviour from Base UI, appearance from tokens, and a Toaster that maps the queue to parts so a caller only ever queues a toast.",
+			"dependencies": ["@base-ui/react", "lucide-react"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
+			"files": [
+				{
+					"path": "src/components/lumo/Toast/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Action/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Action/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Close/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Close/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Content/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Content/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Description/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Description/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Icon/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Icon/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Portal/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Portal/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Provider/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Provider/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Root/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Root/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Title/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Title/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Toaster/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Toaster/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/Viewport/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/Viewport/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Toast/context.ts",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Toast/context.ts"
+				}
+			]
 		}
 	]
 }

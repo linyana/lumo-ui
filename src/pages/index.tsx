@@ -14,6 +14,7 @@ import { PopoverPage } from './Popover';
 import { SeparatorPage } from './Separator';
 import { SpinnerPage } from './Spinner';
 import { TabsPage } from './Tabs';
+import { ToastPage } from './Toast';
 import { TooltipPage } from './Tooltip';
 
 /** Rail sections, top to bottom: the intro, the primitives, then the shell. */
@@ -48,6 +49,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
+	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },
 	{ path: 'tooltip', label: 'Tooltip', section: 'Components', element: <TooltipPage /> },
 	{ path: 'layout', label: 'Layout', section: 'Blocks', element: <LayoutPage /> },
 ];
