@@ -1,0 +1,136 @@
+import { createHighlighterCore, type DynamicImportLanguageRegistration } from 'shiki/core';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
+
+/** A run of text sharing one style. Two colours because the theme follows `.dark`, not JS. */
+export type CodeToken = {
+	content: string;
+	light?: string;
+	dark?: string;
+	italic?: boolean;
+	bold?: boolean;
+	underline?: boolean;
+};
+
+export type CodeLine = CodeToken[];
+
+/** One grammar per file, so a consumer downloads only the languages it actually highlights. */
+const languages: Record<string, DynamicImportLanguageRegistration> = {
+	bash: () => import('shiki/langs/bash.mjs'),
+	c: () => import('shiki/langs/c.mjs'),
+	cpp: () => import('shiki/langs/cpp.mjs'),
+	csharp: () => import('shiki/langs/csharp.mjs'),
+	css: () => import('shiki/langs/css.mjs'),
+	diff: () => import('shiki/langs/diff.mjs'),
+	docker: () => import('shiki/langs/docker.mjs'),
+	go: () => import('shiki/langs/go.mjs'),
+	graphql: () => import('shiki/langs/graphql.mjs'),
+	html: () => import('shiki/langs/html.mjs'),
+	java: () => import('shiki/langs/java.mjs'),
+	javascript: () => import('shiki/langs/javascript.mjs'),
+	json: () => import('shiki/langs/json.mjs'),
+	jsonc: () => import('shiki/langs/jsonc.mjs'),
+	kotlin: () => import('shiki/langs/kotlin.mjs'),
+	less: () => import('shiki/langs/less.mjs'),
+	lua: () => import('shiki/langs/lua.mjs'),
+	markdown: () => import('shiki/langs/markdown.mjs'),
+	php: () => import('shiki/langs/php.mjs'),
+	python: () => import('shiki/langs/python.mjs'),
+	ruby: () => import('shiki/langs/ruby.mjs'),
+	rust: () => import('shiki/langs/rust.mjs'),
+	scss: () => import('shiki/langs/scss.mjs'),
+	shellscript: () => import('shiki/langs/shellscript.mjs'),
+	sql: () => import('shiki/langs/sql.mjs'),
+	svelte: () => import('shiki/langs/svelte.mjs'),
+	swift: () => import('shiki/langs/swift.mjs'),
+	toml: () => import('shiki/langs/toml.mjs'),
+	tsx: () => import('shiki/langs/tsx.mjs'),
+	typescript: () => import('shiki/langs/typescript.mjs'),
+	vue: () => import('shiki/langs/vue.mjs'),
+	xml: () => import('shiki/langs/xml.mjs'),
+	yaml: () => import('shiki/langs/yaml.mjs'),
+};
+
+/** The spellings people write, mapped onto the grammar that handles them. */
+const aliases: Record<string, string> = {
+	js: 'javascript',
+	jsx: 'javascript',
+	ts: 'typescript',
+	sh: 'bash',
+	shell: 'bash',
+	zsh: 'bash',
+	py: 'python',
+	yml: 'yaml',
+	md: 'markdown',
+	rb: 'ruby',
+	rs: 'rust',
+	kt: 'kotlin',
+	cs: 'csharp',
+	'c++': 'cpp',
+	'c#': 'csharp',
+	gql: 'graphql',
+};
+
+const themes = { light: 'github-light', dark: 'github-dark' } as const;
+
+/** `FontStyle` from vscode-textmate, which shiki reuses verbatim — a bitmask, not a list. */
+const ITALIC = 1;
+const BOLD = 2;
+const UNDERLINE = 4;
+
+/** The grammar to highlight `language` with, or `text` when we ship nothing for it. */
+export function resolveLanguage(language: string | undefined): string {
+	const name = language?.trim().toLowerCase() ?? '';
+	if (Object.hasOwn(languages, name)) return name;
+	return aliases[name] ?? 'text';
+}
+
+let pending: Promise<Awaited<ReturnType<typeof createHighlighterCore>>> | undefined;
+
+/**
+ * One highlighter for the whole page. Its grammars arrive on demand, and a failure clears the
+ * cached promise so the next block retries instead of inheriting a dead one.
+ */
+function highlighter() {
+	pending ??= createHighlighterCore({
+		engine: createJavaScriptRegexEngine(),
+		themes: [
+			() => import('shiki/themes/github-light.mjs'),
+			() => import('shiki/themes/github-dark.mjs'),
+		],
+		langs: [],
+	}).catch((error: unknown) => {
+		pending = undefined;
+		throw error;
+	});
+	return pending;
+}
+
+/** `code` split into styled lines. Never rejects on an unknown language — it falls back to text. */
+export async function highlight(code: string, language?: string): Promise<CodeLine[]> {
+	const name = resolveLanguage(language);
+	const core = await highlighter();
+	const load = Object.hasOwn(languages, name) ? languages[name] : undefined;
+	if (load) await core.loadLanguage(load);
+
+	const lines = core.codeToTokensWithThemes(code, {
+		lang: load ? name : 'text',
+		themes,
+	});
+
+	return lines.map((line) =>
+		line.map((token) => {
+			const light = token.variants.light;
+			const dark = token.variants.dark;
+			const style = (light?.fontStyle ?? 0) | (dark?.fontStyle ?? 0);
+
+			return {
+				content: token.content,
+				light: light?.color,
+				dark: dark?.color,
+				italic: (style & ITALIC) !== 0,
+				bold: (style & BOLD) !== 0,
+				underline: (style & UNDERLINE) !== 0,
+			};
+		}),
+	);
+}

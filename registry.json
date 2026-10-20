@@ -31,6 +31,20 @@
 			]
 		},
 		{
+			"name": "shiki",
+			"type": "registry:file",
+			"title": "shiki highlighter",
+			"description": "The highlighter behind Code and CodeDiff: one shared core, a grammar per file fetched on demand, and a light/dark colour pair per token so the theme can flip without re-tokenising.",
+			"dependencies": ["shiki"],
+			"files": [
+				{
+					"path": "src/lib/shiki.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/shiki.ts"
+				}
+			]
+		},
+		{
 			"name": "spinner",
 			"type": "registry:block",
 			"title": "Spinner",
@@ -642,6 +656,65 @@
 					"path": "src/components/blocks/Layout/Sidebar/index.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/blocks/Layout/Sidebar/index.tsx"
+				}
+			]
+		},
+		{
+			"name": "code",
+			"type": "registry:block",
+			"title": "Code",
+			"description": "A block of source: a header naming the file or language, a copy button, optional line numbers, and shiki highlighting whose grammars load only when a block needs them. An unknown language falls back to plain text instead of failing.",
+			"dependencies": ["shiki", "lucide-react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/button",
+				"linyana/lumo-ui/shiki"
+			],
+			"files": [
+				{
+					"path": "src/components/lumo/Code/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Code/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Code/Copy/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Code/Copy/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Code/Header/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Code/Header/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Code/Tokens/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Code/Tokens/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/Code/useCodeLines.ts",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/Code/useCodeLines.ts"
+				}
+			]
+		},
+		{
+			"name": "code-diff",
+			"type": "registry:block",
+			"title": "CodeDiff",
+			"description": "Two revisions of one file, side by side or stacked, with both line numberings, a per-side change stripe and the additions and deletions counted in the header. Shares Code's header, copy button and highlighting.",
+			"dependencies": ["diff", "tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/code"],
+			"files": [
+				{
+					"path": "src/components/lumo/CodeDiff/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/CodeDiff/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/CodeDiff/diff.ts",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/CodeDiff/diff.ts"
 				}
 			]
 		}
