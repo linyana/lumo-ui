@@ -32,10 +32,10 @@ export function Copy({ value, className }: CopyProps) {
 		<Button
 			data-slot="code-copy"
 			size="icon"
-			variant="ghost"
+			variant="secondary"
 			icon={copied ? <Check /> : <CopyIcon />}
 			aria-label={copied ? 'copied' : 'copy code'}
-			className={cn('size-7 text-muted-foreground', className)}
+			className={cn('size-7', className)}
 			onClick={() => {
 				navigator.clipboard.writeText(value).then(
 					() => setCopied(true),
@@ -164,6 +164,11 @@ export type CodeProps = Omit<ComponentProps<'div'>, 'children'> &
 		/** Wrap long lines instead of scrolling them sideways. */
 		wrap?: boolean;
 		copyable?: boolean;
+		/**
+		 * The bar above the block: what the file is, and the button taking it. Off, the code is the
+		 * whole block and `language` only chooses the grammar.
+		 */
+		header?: boolean;
 	};
 
 /** A block of source, highlighted, with a header saying what it is and a button to take it. */
@@ -175,12 +180,13 @@ export function Code({
 	showLineNumbers = false,
 	wrap = false,
 	copyable = true,
+	header = true,
 	className,
 	...props
 }: CodeProps) {
 	const lines = useCodeLines(code, language);
 	const title = fileName ?? language ?? 'code';
-	const showHeader = copyable || fileName !== undefined || language !== undefined;
+	const showHeader = header && (copyable || fileName !== undefined || language !== undefined);
 	// Without line numbers the text is the only column. With them the number column is
 	// `max-content`, so it takes exactly its widest number and no share of the leftover space;
 	// wrapped text needs `minmax(0,1fr)` to fold instead of overflow.

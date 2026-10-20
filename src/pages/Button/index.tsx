@@ -1,127 +1,295 @@
-import { useState } from 'react';
-import { Check, ChevronRight, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
-import { Button } from '@/components/lumo/ui/Button';
-import { Spinner } from '@/components/lumo/ui/Spinner';
-import { DocPage, DocSection } from '@/pages/DocPage';
+import {
+	Command,
+	DocPage,
+	DocPreview,
+	DocSection,
+	DocTabs,
+	DocTable,
+	Mono,
+	PropTable,
+	type PropNode,
+} from '@/pages/DocPage';
+import Basic from './demos/basic';
+import basicSource from './demos/basic.tsx?raw';
+import Composition from './demos/composition';
+import compositionSource from './demos/composition.tsx?raw';
+import Icon from './demos/icon';
+import iconSource from './demos/icon.tsx?raw';
+import Interaction from './demos/interaction';
+import interactionSource from './demos/interaction.tsx?raw';
+import Sizes from './demos/sizes';
+import sizesSource from './demos/sizes.tsx?raw';
+import States from './demos/states';
+import statesSource from './demos/states.tsx?raw';
+import Variants from './demos/variants';
+import variantsSource from './demos/variants.tsx?raw';
 
-const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;
-const sizes = ['sm', 'md', 'lg'] as const;
+const REPO = 'https://github.com/linyana/lumo-ui/blob/main';
+
+const files = [
+	'src/components/lumo/ui/Button.tsx',
+	'src/components/lumo/ui/Spinner.tsx',
+	'src/lib/cn.ts',
+	'src/styles/lumo-tokens.css',
+];
+
+const installTabs = [
+	{
+		value: 'cli',
+		label: 'Command',
+		content: (
+			<div className="space-y-3">
+				<Command>bunx shadcn@latest add linyana/lumo-ui/button</Command>
+				<p className="text-muted-foreground">
+					copies <Mono>Button.tsx</Mono>, and the <Mono>cn()</Mono> and{' '}
+					<Mono>Spinner</Mono> it imports. <Mono>@base-ui/react</Mono> and{' '}
+					<Mono>tailwind-variants</Mono> come from the package manager.
+				</p>
+			</div>
+		),
+	},
+	{
+		value: 'manual',
+		label: 'Manual',
+		content: (
+			<div className="space-y-3">
+				<p className="text-muted-foreground">
+					the command does three things. by hand they are: the two packages, then these
+					files, at these paths — their imports already point there.
+				</p>
+				<Command>bun add @base-ui/react tailwind-variants</Command>
+				<ul className="space-y-1.5">
+					{files.map((path) => (
+						<li key={path}>
+							<a
+								href={`${REPO}/${path}`}
+								target="_blank"
+								rel="noreferrer noopener"
+								className="font-mono underline underline-offset-4 hover:text-foreground"
+							>
+								{path}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		),
+	},
+];
+
+const buttonProps: Record<string, PropNode> = {
+	variant: {
+		type: '"default" | "secondary" | "outline" | "ghost" | "destructive" | "link"',
+		default: '"default"',
+		description:
+			'The appearance tier: default for the action a view is about, secondary and outline one step down, ghost where a button should not compete, destructive for the irreversible, link for a control that reads as text.',
+	},
+	size: {
+		type: '"sm" | "md" | "lg" | "icon"',
+		default: '"md"',
+		description:
+			'Height, and the type size that comes with it: 32 / 36 / 40. icon is the 36 square, for a button whose whole content is one glyph.',
+	},
+	icon: {
+		type: 'ReactNode',
+		default: 'null',
+		description:
+			'A leading graphic, passed as a rendered element. A spinner takes this slot while loading.',
+	},
+	loading: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'The label gives way to a spinner, the button disables, aria-busy goes on. The box keeps its size, and the focus stays on it.',
+	},
+	loadingIcon: {
+		type: 'ReactNode',
+		default: '<Spinner label={null} />',
+		description: 'Replaces the built-in spinner.',
+	},
+	disabled: {
+		type: 'boolean',
+		default: 'false',
+		description: 'Base UI’s disabled state. loading disables as well.',
+	},
+	className: {
+		type: 'string',
+		description:
+			'Merged last through cn(), so the Base UI state-callback form is not accepted here.',
+	},
+	children: {
+		type: 'ReactNode',
+		description: 'The label.',
+	},
+	'...props': {
+		type: 'Base UI ButtonProps',
+		description: 'Everything else goes to Base UI: onClick, render, type.',
+	},
+};
+
+const hookRows = [
+	['data-slot', 'button 路 button-content', 'the button, and the grid holding the label.'],
+	['data-variant', 'the current variant', 'mirrored onto the DOM for plain CSS.'],
+	['data-size', 'the current size', 'same.'],
+	['data-loading', 'present while loading', 'empty-valued, as Base UI writes its own flags.'],
+	['aria-busy', 'true while loading', 'announced instead of a second label.'],
+	[
+		'data-disabled',
+		'present while disabled',
+		'written by Base UI, including the disable that loading adds.',
+	],
+	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
+];
 
 export function ButtonPage() {
-	const [saving, setSaving] = useState(false);
-
 	return (
-		<DocPage title="button" description="tailwind-variants API, token-driven appearance">
-			<DocSection title="variants">
-				<div className="flex flex-wrap gap-3">
-					{variants.map((variant) => (
-						<Button key={variant} variant={variant}>
-							{variant}
-						</Button>
-					))}
-				</div>
-			</DocSection>
-
-			<DocSection title="sizes">
-				<div className="flex flex-wrap items-center gap-3">
-					{sizes.map((size) => (
-						<Button key={size} size={size}>
-							{size}
-						</Button>
-					))}
-					<Button size="icon" aria-label="add">
-						<Plus />
-					</Button>
-				</div>
-			</DocSection>
-
-			<DocSection title="states">
-				<div className="flex flex-wrap gap-3">
-					<Button disabled>disabled</Button>
-					<Button variant="outline" disabled>
-						disabled outline
-					</Button>
-				</div>
-				<div className="flex flex-wrap items-center gap-3">
-					<Button loading>loading</Button>
-					<Button variant="outline" icon={<Plus />} loading>
-						add
-					</Button>
-					<Button size="icon" loading aria-label="loading icon button">
-						<Plus />
-					</Button>
-				</div>
-			</DocSection>
+		<DocPage
+			title="Button"
+			description="the reference component: tailwind-variants API, tokens, data-* hooks"
+		>
+			<DocPreview name="basic.tsx" source={basicSource}>
+				<Basic />
+			</DocPreview>
 
 			<DocSection
-				title="interaction"
+				title="installation"
 				note={
 					<>
-						hover and press are one state layer tinted by <code>currentColor</code>, so
-						every variant reacts in the right direction without its own hover rule.
-						press also nudges the button down 1px, except where{' '}
-						<code>aria-haspopup</code> says it opens a popup — an overlay is positioned
-						against that trigger's rect.
+						one component, one file, no barrel: the import carries the path. there is no{' '}
+						<Mono>Button.Root</Mono> — a button has no parts, so it is the function.
+						without the theme yet, take <Mono>lumo-tokens.css</Mono> as well.
 					</>
 				}
 			>
-				<div className="flex flex-wrap items-center gap-3">
-					<Button
-						loading={saving}
-						onClick={() => {
-							setSaving(true);
-							setTimeout(() => setSaving(false), 1200);
-						}}
-					>
-						save draft
-					</Button>
-					<Button variant="outline">hover me</Button>
-					<Button variant="ghost">press me</Button>
-				</div>
+				<DocTabs tabs={installTabs} />
+			</DocSection>
+
+			<DocSection
+				title="variants"
+				note={
+					<>
+						one tier per intent, so the loudest thing on a page is the action it is
+						about. the variant is also written onto the element as{' '}
+						<Mono>data-variant</Mono>.
+					</>
+				}
+			>
+				<DocPreview name="variants.tsx" source={variantsSource}>
+					<Variants />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="sizes"
+				note={
+					<>
+						heights are 32 / 36 / 40 and the type grows with them — <Mono>text-sm</Mono>{' '}
+						twice, then <Mono>text-base</Mono>. icons follow the type, so a size is
+						never chosen twice.
+					</>
+				}
+			>
+				<DocPreview name="sizes.tsx" source={sizesSource}>
+					<Sizes />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="states"
+				note={
+					<>
+						<Mono>disabled</Mono> dims to half and stops taking the pointer.{' '}
+						<Mono>loading</Mono> is not the same thing: the label stays in the grid at
+						zero opacity so the width cannot jump, the spinner takes the icon slot when
+						there is one, and the button stays focusable — a keyboard position has to
+						survive. it is also the one state that is not dimmed, because the spinner
+						already says so.
+					</>
+				}
+			>
+				<DocPreview name="states.tsx" source={statesSource}>
+					<States />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
 				title="icon"
 				note={
 					<>
-						one family, one source: a glyph arrives as itself — lucide by name, sized by
-						the slot (<code>[&amp;_svg]:size-[1em]</code>), so nothing can drift in grid
-						or stroke weight. loading is the one thing lucide cannot draw:{' '}
-						<code>Spinner</code>, with <code>label={'{null}'}</code> inside a control
-						that announces its own state.
+						one family, one source: a glyph arrives as itself — lucide by name — and the
+						slot sizes it with <Mono>[&amp;_svg]:size-[1em]</Mono>, so grid and stroke
+						weight cannot drift and a call site never passes a size. loading is the one
+						thing lucide cannot draw: <Mono>Spinner</Mono>, with{' '}
+						<Mono>label={'{null}'}</Mono> inside a control that announces its own state.
+						a button with no text keeps its name in <Mono>aria-label</Mono>.
 					</>
 				}
 			>
-				<div className="flex flex-wrap items-center gap-3">
-					<Button icon={<Plus />}>add</Button>
-					<Button variant="outline" icon={<Pencil />}>
-						edit
-					</Button>
-					<Button variant="outline" icon={<Trash2 />}>
-						delete
-					</Button>
-					<Button variant="outline" icon={<Check />}>
-						saved
-					</Button>
-					<Button size="icon" variant="ghost" aria-label="close">
-						<X />
-					</Button>
-					<Button size="icon" variant="ghost" aria-label="search" icon={<Search />} />
-				</div>
-				<div className="flex items-center gap-3">
-					<span className="inline-flex items-center text-sm">
-						<ChevronRight className="size-[1em]" />
-					</span>
-					<span className="inline-flex items-center text-lg">
-						<ChevronRight className="size-[1em]" />
-					</span>
-					<span className="inline-flex items-center text-2xl">
-						<ChevronRight className="size-[1em]" />
-					</span>
-					<span className="inline-flex items-center text-2xl text-muted-foreground">
-						<Spinner label={null} />
-					</span>
-				</div>
+				<DocPreview name="icon.tsx" source={iconSource}>
+					<Icon />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="interaction"
+				note={
+					<>
+						hover and press are one state layer tinted by <Mono>currentColor</Mono>, so
+						every variant reacts in the right direction without a hover rule of its own
+						— filled tiers carry a darker pair, because a light tint on dark fill reads
+						weaker than it does on a surface. press also nudges the button down{' '}
+						<Mono>--press-offset</Mono>, except where <Mono>aria-haspopup</Mono> says it
+						opens a popup: an overlay is positioned against that trigger&apos;s rect.
+						the ring comes from <Mono>:focus-visible</Mono> in the token layer, and
+						reduced motion zeroes every duration and the nudge without any component
+						opting out.
+					</>
+				}
+			>
+				<DocPreview name="interaction.tsx" source={interactionSource}>
+					<Interaction />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="in a composition"
+				note={
+					<>
+						Base UI parts take a component through <Mono>render</Mono>, so this is how a
+						dialog gets its trigger — no <Mono>asChild</Mono>, no wrapper props to
+						learn. the trigger keeps <Mono>aria-haspopup</Mono>, which is exactly what
+						stops it from moving while its overlay is measured.
+					</>
+				}
+			>
+				<DocPreview name="composition.tsx" source={compositionSource}>
+					<Composition />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="api reference"
+				note={
+					<>
+						every prop is optional and the ones that matter say so on hover. everything
+						not listed here is Base UI&apos;s, passed through untouched.
+					</>
+				}
+			>
+				<PropTable props={buttonProps} />
+			</DocSection>
+
+			<DocSection
+				title="hooks"
+				note={
+					<>
+						the DOM is the API for styling: every variant and size is mirrored onto the
+						element, so a consumer can target it from plain CSS without knowing a class
+						name.
+					</>
+				}
+			>
+				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>
 		</DocPage>
 	);
