@@ -23,8 +23,6 @@ import Composition from './demos/composition';
 import compositionSource from './demos/composition.tsx?raw';
 import Icon from './demos/icon';
 import iconSource from './demos/icon.tsx?raw';
-import Interaction from './demos/interaction';
-import interactionSource from './demos/interaction.tsx?raw';
 import Sizes from './demos/sizes';
 import sizesSource from './demos/sizes.tsx?raw';
 import States from './demos/states';
@@ -123,30 +121,33 @@ const installTabs = [
 	},
 ];
 
+const usageImport = "import { Button } from '@/components/lumo/ui/Button';";
+const usageExample = `<Button variant="outline" icon={<Plus />}>
+	add
+</Button>`;
+
 const buttonProps: Record<string, PropNode> = {
 	variant: {
 		type: '"default" | "secondary" | "outline" | "ghost" | "destructive" | "link"',
 		default: '"default"',
 		description:
-			'The appearance tier: default for the action a view is about, secondary and outline one step down, ghost where a button should not compete, destructive for the irreversible, link for a control that reads as text.',
+			'The appearance tier: default for the action a view is about, secondary and outline a step down, ghost where nothing should compete, destructive for the irreversible, link for text that acts.',
 	},
 	size: {
 		type: '"sm" | "md" | "lg" | "icon"',
 		default: '"md"',
-		description:
-			'Height, and the type size that comes with it: 32 / 36 / 40. icon is the 36 square, for a button whose whole content is one glyph.',
+		description: '32 / 36 / 40 tall, with the type to match. icon is the 36 square.',
 	},
 	icon: {
 		type: 'ReactNode',
 		default: 'null',
 		description:
-			'A leading graphic, passed as a rendered element. A spinner takes this slot while loading.',
+			'A leading graphic, as a rendered element. The spinner takes this slot while loading.',
 	},
 	loading: {
 		type: 'boolean',
 		default: 'false',
-		description:
-			'The label gives way to a spinner, the button disables, aria-busy goes on. The box keeps its size, and the focus stays on it.',
+		description: 'The label gives way to a spinner, the button disables, aria-busy goes on.',
 	},
 	loadingIcon: {
 		type: 'ReactNode',
@@ -161,7 +162,7 @@ const buttonProps: Record<string, PropNode> = {
 	className: {
 		type: 'string',
 		description:
-			'Merged last through cn(), so the Base UI state-callback form is not accepted here.',
+			'Merged last through cn(), so the Base UI state-callback form is not accepted.',
 	},
 	children: {
 		type: 'ReactNode',
@@ -174,24 +175,20 @@ const buttonProps: Record<string, PropNode> = {
 };
 
 const hookRows = [
-	['data-slot', 'button 路 button-content', 'the button, and the grid holding the label.'],
+	['data-slot', 'button · button-content', 'the button, and the grid holding the label.'],
 	['data-variant', 'the current variant', 'mirrored onto the DOM for plain CSS.'],
 	['data-size', 'the current size', 'same.'],
 	['data-loading', 'present while loading', 'empty-valued, as Base UI writes its own flags.'],
 	['aria-busy', 'true while loading', 'announced instead of a second label.'],
-	[
-		'data-disabled',
-		'present while disabled',
-		'written by Base UI, including the disable that loading adds.',
-	],
+	['data-disabled', 'present while disabled', 'written by Base UI, loading included.'],
 	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
 ];
 
 export function ButtonPage() {
 	return (
 		<DocPage
-			title="Button"
-			description="the reference component: tailwind-variants API, tokens, data-* hooks"
+			title="button"
+			description="a control that starts an action: Base UI inside, tokens outside"
 		>
 			<DocPreview name="basic.tsx" source={basicSource}>
 				<Basic />
@@ -210,15 +207,16 @@ export function ButtonPage() {
 				<DocTabs tabs={installTabs} />
 			</DocSection>
 
+			<DocSection title="usage" note="one import, one element. everything else is Base UI's.">
+				<div className="space-y-3">
+					<Code code={usageImport} language="tsx" header={false} />
+					<Code code={usageExample} language="tsx" header={false} />
+				</div>
+			</DocSection>
+
 			<DocSection
 				title="variants"
-				note={
-					<>
-						one tier per intent, so the loudest thing on a page is the action it is
-						about. the variant is also written onto the element as{' '}
-						<Mono>data-variant</Mono>.
-					</>
-				}
+				note="one tier per intent, so the loudest thing on a page is the action it is about."
 			>
 				<DocPreview name="variants.tsx" source={variantsSource}>
 					<Variants />
@@ -227,13 +225,7 @@ export function ButtonPage() {
 
 			<DocSection
 				title="sizes"
-				note={
-					<>
-						heights are 32 / 36 / 40 and the type grows with them — <Mono>text-sm</Mono>{' '}
-						twice, then <Mono>text-base</Mono>. icons follow the type, so a size is
-						never chosen twice.
-					</>
-				}
+				note="32 / 36 / 40, the type growing with them. icons follow the type, so a size is never chosen twice."
 			>
 				<DocPreview name="sizes.tsx" source={sizesSource}>
 					<Sizes />
@@ -241,33 +233,12 @@ export function ButtonPage() {
 			</DocSection>
 
 			<DocSection
-				title="states"
-				note={
-					<>
-						<Mono>disabled</Mono> dims to half and stops taking the pointer.{' '}
-						<Mono>loading</Mono> is not the same thing: the label stays in the grid at
-						zero opacity so the width cannot jump, the spinner takes the icon slot when
-						there is one, and the button stays focusable — a keyboard position has to
-						survive. it is also the one state that is not dimmed, because the spinner
-						already says so.
-					</>
-				}
-			>
-				<DocPreview name="states.tsx" source={statesSource}>
-					<States />
-				</DocPreview>
-			</DocSection>
-
-			<DocSection
 				title="icon"
 				note={
 					<>
-						one family, one source: a glyph arrives as itself — lucide by name — and the
-						slot sizes it with <Mono>[&amp;_svg]:size-[1em]</Mono>, so grid and stroke
-						weight cannot drift and a call site never passes a size. loading is the one
-						thing lucide cannot draw: <Mono>Spinner</Mono>, with{' '}
-						<Mono>label={'{null}'}</Mono> inside a control that announces its own state.
-						a button with no text keeps its name in <Mono>aria-label</Mono>.
+						a glyph arrives as a rendered element — lucide by name — and the slot sizes
+						it in <Mono>em</Mono>. an icon-only button keeps its name in{' '}
+						<Mono>aria-label</Mono>.
 					</>
 				}
 			>
@@ -277,23 +248,17 @@ export function ButtonPage() {
 			</DocSection>
 
 			<DocSection
-				title="interaction"
+				title="states"
 				note={
 					<>
-						hover and press are one state layer tinted by <Mono>currentColor</Mono>, so
-						every variant reacts in the right direction without a hover rule of its own
-						— filled tiers carry a darker pair, because a light tint on dark fill reads
-						weaker than it does on a surface. press also nudges the button down{' '}
-						<Mono>--press-offset</Mono>, except where <Mono>aria-haspopup</Mono> says it
-						opens a popup: an overlay is positioned against that trigger&apos;s rect.
-						the ring comes from <Mono>:focus-visible</Mono> in the token layer, and
-						reduced motion zeroes every duration and the nudge without any component
-						opting out.
+						<Mono>disabled</Mono> dims to half and stops taking the pointer.{' '}
+						<Mono>loading</Mono> keeps the label at zero opacity so the width cannot
+						jump, swaps in the spinner, and stays focusable.
 					</>
 				}
 			>
-				<DocPreview name="interaction.tsx" source={interactionSource}>
-					<Interaction />
+				<DocPreview name="states.tsx" source={statesSource}>
+					<States />
 				</DocPreview>
 			</DocSection>
 
@@ -301,10 +266,8 @@ export function ButtonPage() {
 				title="in a composition"
 				note={
 					<>
-						Base UI parts take a component through <Mono>render</Mono>, so this is how a
-						dialog gets its trigger — no <Mono>asChild</Mono>, no wrapper props to
-						learn. the trigger keeps <Mono>aria-haspopup</Mono>, which is exactly what
-						stops it from moving while its overlay is measured.
+						Base UI parts take a component through <Mono>render</Mono> — no{' '}
+						<Mono>asChild</Mono>, no wrapper props.
 					</>
 				}
 			>
@@ -313,27 +276,13 @@ export function ButtonPage() {
 				</DocPreview>
 			</DocSection>
 
-			<DocSection
-				title="api reference"
-				note={
-					<>
-						every prop is optional and the ones that matter say so on hover. everything
-						not listed here is Base UI&apos;s, passed through untouched.
-					</>
-				}
-			>
+			<DocSection title="api reference" note="every prop is optional; the rest is Base UI's.">
 				<PropTable props={buttonProps} />
 			</DocSection>
 
 			<DocSection
 				title="hooks"
-				note={
-					<>
-						the DOM is the API for styling: every variant and size is mirrored onto the
-						element, so a consumer can target it from plain CSS without knowing a class
-						name.
-					</>
-				}
+				note="the DOM is the API for styling: variant and size are mirrored onto the element."
 			>
 				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>
