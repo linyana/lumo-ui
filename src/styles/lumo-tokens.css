@@ -74,6 +74,19 @@
 	--state-layer-fill-hover-opacity: 0.16;
 	--state-layer-fill-pressed-opacity: 0.26;
 	--press-offset: 1px;
+	/* One block of content replacing another. The two fades are deliberately not the same shape:
+	   the old one leaves on a curve that is already moving (gone inside its 150ms, softened by
+	   --blur-swap on the way), while the new one starts slowly and resolves afterwards. Fading
+	   both at one speed reads as two texts. The box around them settles on --ease-overlay in
+	   --duration-swap-out, so it is at its new height before the arriving text is legible. */
+	--ease-leave: cubic-bezier(0, 0, 0.58, 1);
+	--ease-arrive: cubic-bezier(0.25, 0.1, 0.35, 1);
+	--blur-swap: 5px;
+	--duration-swap-out: 150ms;
+	--duration-swap-in: 300ms;
+	/* How far content travels sideways when one piece of it replaces another — a tab panel,
+	   a swapped block. Read in JS as well as in CSS, so it stays in px. */
+	--shift-content: 8px;
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 	--duration-state: 150ms;
 	--duration-press: 80ms;
@@ -194,10 +207,16 @@
 @media (prefers-reduced-motion: reduce) {
 	:root {
 		--press-offset: 0;
+		--shift-content: 0px;
 		--ease-spring: linear;
 		--duration-state: 1ms;
 		--duration-press: 1ms;
 		--ease-overlay: linear;
 		--duration-overlay: 1ms;
+		--ease-leave: linear;
+		--ease-arrive: linear;
+		--blur-swap: 0px;
+		--duration-swap-out: 1ms;
+		--duration-swap-in: 1ms;
 	}
 }

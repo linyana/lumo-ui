@@ -124,7 +124,7 @@
 			"title": "Collapsible",
 			"description": "Disclosure region that expands and collapses one panel. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/transition"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Collapsible.tsx",
@@ -184,7 +184,7 @@
 			"title": "Tabs",
 			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/transition"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Tabs.tsx",
@@ -344,6 +344,21 @@
 					"path": "src/components/lumo/ui/Toast.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/ui/Toast.tsx"
+				}
+			]
+		},
+		{
+			"name": "transition",
+			"type": "registry:ui",
+			"title": "Transition",
+			"description": "A box that keeps its height to what is inside it and eases to each new one — continuously, so a reflow or a swap does not move the page beneath it. Fade, travel and blur are opt-in.",
+			"dependencies": ["motion"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Transition.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Transition.tsx"
 				}
 			]
 		}

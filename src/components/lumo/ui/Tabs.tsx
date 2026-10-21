@@ -1,7 +1,8 @@
-import { createContext, useContext, type ComponentProps, useMemo } from 'react';
+import { createContext, useContext, useMemo, useState, type ComponentProps } from 'react';
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
+import { Transition, type TransitionDirection, type TransitionOptions } from './Transition';
 
 export type TabsVariant = 'rounded' | 'square' | 'point';
 export type TabsSize = 'sm' | 'md' | 'lg';
@@ -9,6 +10,8 @@ export type TabsSize = 'sm' | 'md' | 'lg';
 export type TabsContextValue = {
 	variant: TabsVariant;
 	size: TabsSize;
+	/** Which way the last activation went, so a panel's swap can travel with the tabs. */
+	activationDirection?: TransitionDirection;
 };
 
 export const TabsContext = createContext<TabsContextValue>({ variant: 'rounded', size: 'md' });
@@ -111,12 +114,39 @@ export function List({ className, variant, ...props }: ListProps) {
 	);
 }
 
-export type PanelProps = ComponentProps<typeof BaseTabs.Panel>;
+export type PanelProps = Omit<ComponentProps<typeof BaseTabs.Panel>, 'className'> & {
+	/**
+	 * What the panel's contents do when they change. It always eases its height; `false` opts out
+	 * of the wrapper altogether, which also drops that.
+	 */
+	transition?: TransitionOptions | false;
+	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
+	className?: string;
+};
 
-export function Panel({ className, ...props }: PanelProps) {
+const NO_TRANSITION: TransitionOptions = {};
+
+/**
+ * A panel whose contents sit in a `Transition`. Each panel keeps its own value, so a panel of
+ * its own never swaps — but one panel answering for every tab (`value` following the active
+ * one) swaps its contents, and the root has already told it which way the tabs moved.
+ */
+export function Panel({
+	className,
+	transition = NO_TRANSITION,
+	value,
+	children,
+	...props
+}: PanelProps) {
+	const { activationDirection } = useTabs();
+	const swap = transition === false ? null : transition;
+	const direction = swap?.fade === true ? (swap.direction ?? activationDirection) : undefined;
+	const own = value == null ? undefined : String(value);
+
 	return (
 		<BaseTabs.Panel
 			data-slot="tabs-panel"
+			value={value}
 			// Every panel claims the one cell after the list, so the panel leaving and the panel
 			// arriving overlap for the length of the transition instead of stacking end to end.
 			className={cn(
@@ -125,14 +155,27 @@ export function Panel({ className, ...props }: PanelProps) {
 				'transition-[opacity,translate]',
 				'duration-(--duration-overlay) ease-(--ease-overlay)',
 				'data-starting-style:opacity-0 data-ending-style:opacity-0 data-ending-style:pointer-events-none',
-				'data-starting-style:data-[activation-direction=left]:-translate-x-2',
-				'data-starting-style:data-[activation-direction=right]:translate-x-2',
-				'data-ending-style:data-[activation-direction=left]:translate-x-2',
-				'data-ending-style:data-[activation-direction=right]:-translate-x-2',
+				'data-starting-style:data-[activation-direction=left]:-translate-x-(--shift-content)',
+				'data-starting-style:data-[activation-direction=right]:translate-x-(--shift-content)',
+				'data-ending-style:data-[activation-direction=left]:translate-x-(--shift-content)',
+				'data-ending-style:data-[activation-direction=right]:-translate-x-(--shift-content)',
 				className,
 			)}
 			{...props}
-		/>
+		>
+			{swap === null ? (
+				children
+			) : (
+				<Transition
+					value={swap.value ?? own}
+					fade={swap.fade}
+					direction={direction}
+					blur={swap.blur}
+				>
+					{children}
+				</Transition>
+			)}
+		</BaseTabs.Panel>
 	);
 }
 
@@ -145,10 +188,15 @@ export function Root({
 	className,
 	variant = 'rounded',
 	size = 'md',
+	onValueChange,
 	children,
 	...props
 }: RootProps) {
-	const context = useMemo(() => ({ variant, size }), [variant, size]);
+	const [activationDirection, setActivationDirection] = useState<TransitionDirection>();
+	const context = useMemo(
+		() => ({ variant, size, activationDirection }),
+		[variant, size, activationDirection],
+	);
 
 	return (
 		<TabsContext.Provider value={context}>
@@ -156,6 +204,16 @@ export function Root({
 				data-slot="tabs"
 				data-variant={variant}
 				data-size={size}
+				// The direction is worth keeping: a panel that swaps its contents travels with the
+				// tabs, and no consumer should have to re-read the event to know that.
+				onValueChange={(next, details) => {
+					setActivationDirection(
+						details.activationDirection === 'none'
+							? undefined
+							: details.activationDirection,
+					);
+					onValueChange?.(next, details);
+				}}
 				className={cn(
 					'grid grid-cols-1 gap-4',
 					'data-[orientation=vertical]:grid-cols-[auto_1fr] data-[orientation=vertical]:items-start',

@@ -17,6 +17,7 @@ import { SpinnerPage } from './Spinner';
 import { TabsPage } from './Tabs';
 import { ToastPage } from './Toast';
 import { TooltipPage } from './Tooltip';
+import { TransitionPage } from './Transition';
 
 /** Rail sections, top to bottom: the intro, the primitives, then the shell. */
 export const docSections = ['Getting Started', 'Components', 'Blocks'] as const;
@@ -58,5 +59,11 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
 	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },
 	{ path: 'tooltip', label: 'Tooltip', section: 'Components', element: <TooltipPage /> },
+	{
+		path: 'transition',
+		label: 'Transition',
+		section: 'Components',
+		element: <TransitionPage />,
+	},
 	{ path: 'layout', label: 'Layout', section: 'Blocks', element: <LayoutPage /> },
 ];

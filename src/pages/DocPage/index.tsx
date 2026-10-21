@@ -331,10 +331,23 @@ export function DocPreview({ name, source, children }: DocPreviewProps) {
 
 export type DocTabItem = { value: string; label: string; content: ReactNode };
 
-/** A choice of routes to the same place: the command, or the files by hand. */
+/**
+ * A choice of routes to the same place: the command, or the files by hand.
+ *
+ * One panel, not one per route: the bodies differ in length, and a panel of its own would leave
+ * the page jumping between them. The swap eases the height and travels with the tabs.
+ */
 export function DocTabs({ tabs }: { tabs: DocTabItem[] }) {
+	const [value, setValue] = useState(tabs[0]?.value);
+	const active = tabs.find((tab) => tab.value === value) ?? tabs[0];
+
 	return (
-		<Tabs.Root defaultValue={tabs[0]?.value} variant="square" className="gap-2">
+		<Tabs.Root
+			value={value}
+			onValueChange={(next) => setValue(next)}
+			variant="square"
+			className="gap-2"
+		>
 			<Tabs.List className="shadow-none">
 				{tabs.map((tab) => (
 					<Tabs.Tab key={tab.value} value={tab.value}>
@@ -343,11 +356,9 @@ export function DocTabs({ tabs }: { tabs: DocTabItem[] }) {
 				))}
 				<Tabs.Indicator />
 			</Tabs.List>
-			{tabs.map((tab) => (
-				<Tabs.Panel key={tab.value} value={tab.value} className="space-y-3">
-					{tab.content}
-				</Tabs.Panel>
-			))}
+			<Tabs.Panel value={value} transition={{ fade: true }}>
+				<div className="space-y-3">{active?.content}</div>
+			</Tabs.Panel>
 		</Tabs.Root>
 	);
 }

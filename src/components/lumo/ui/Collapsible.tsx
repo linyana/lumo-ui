@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/cn';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
+import { Transition, type TransitionOptions } from './Transition';
 
 export type IconProps = ComponentProps<typeof ChevronRight>;
 
@@ -22,9 +23,25 @@ export function Icon({ className, ...props }: IconProps) {
 	);
 }
 
-export type PanelProps = ComponentProps<typeof BaseCollapsible.Panel>;
+export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'className'> & {
+	/**
+	 * What the panel's contents do when they change. It always eases its height — give it a
+	 * `value` and the body is swapped when that value changes, rather than when the panel opens.
+	 * `false` opts out of the wrapper altogether, which also drops the height easing.
+	 */
+	transition?: TransitionOptions | false;
+	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
+	className?: string;
+};
 
-export function Panel({ className, ...props }: PanelProps) {
+const NO_TRANSITION: TransitionOptions = {};
+
+/**
+ * Base UI animates the panel itself from 0 to its measured height; the body inside is a
+ * `Transition`, so a body that changes size once it is open eases to the new height instead of
+ * jumping, and a body given an identity is swapped rather than replaced.
+ */
+export function Panel({ className, transition = NO_TRANSITION, children, ...props }: PanelProps) {
 	return (
 		<BaseCollapsible.Panel
 			data-slot="collapsible-panel"
@@ -36,7 +53,9 @@ export function Panel({ className, ...props }: PanelProps) {
 				className,
 			)}
 			{...props}
-		/>
+		>
+			{transition === false ? children : <Transition {...transition}>{children}</Transition>}
+		</BaseCollapsible.Panel>
 	);
 }
 

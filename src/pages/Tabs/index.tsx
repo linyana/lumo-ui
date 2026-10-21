@@ -1,11 +1,50 @@
+import { useState } from 'react';
 import { Tabs } from '@/components/lumo/ui/Tabs';
-import { DocPage, DocSection } from '@/pages/DocPage';
+import { DocPage, DocSection, Mono } from '@/pages/DocPage';
 
 const items = [
 	{ value: 'overview', label: 'overview', content: 'workspace stats and activity.' },
 	{ value: 'activity', label: 'activity', content: 'whom changed what, and when.' },
 	{ value: 'settings', label: 'settings', content: 'profile and preferences.' },
 ];
+
+const notes = [
+	{
+		value: 'overview',
+		body: 'nine members, three of them invited this week. the busiest hour is eleven, and nothing has failed since the last deploy.',
+	},
+	{
+		value: 'activity',
+		body: 'mira renamed the project, joe deleted two keys, and the nightly job ran late once.',
+	},
+	{ value: 'settings', body: 'profile and preferences.' },
+];
+
+/**
+ * One panel, not one per tab: the panel stays open and its contents are swapped, so the height
+ * follows the content. `fade` is all it takes — the root has already told the swap which way the
+ * tabs moved.
+ */
+function SwappedPanel() {
+	const [value, setValue] = useState(notes[0]!.value);
+	const note = notes.find((item) => item.value === value) ?? notes[0]!;
+
+	return (
+		<Tabs.Root value={value} onValueChange={(next) => setValue(next)} className="max-w-sm">
+			<Tabs.List>
+				{notes.map(({ value: tab }) => (
+					<Tabs.Tab key={tab} value={tab}>
+						{tab}
+					</Tabs.Tab>
+				))}
+				<Tabs.Indicator />
+			</Tabs.List>
+			<Tabs.Panel value={value} transition={{ fade: true }} className="text-muted-foreground">
+				{note.body}
+			</Tabs.Panel>
+		</Tabs.Root>
+	);
+}
 
 export function TabsPage() {
 	return (
@@ -92,6 +131,24 @@ export function TabsPage() {
 						deleting a workspace cannot be undone.
 					</Tabs.Panel>
 				</Tabs.Root>
+			</DocSection>
+
+			<DocSection
+				title="one panel, swapped content"
+				note={
+					<>
+						panels of their own already cross-fade, since Base UI keeps the one that is
+						leaving mounted for the length of its transition. every panel also wraps its
+						contents in <Mono>Transition</Mono>, so the height follows what is inside
+						instead of the panel re-measuring itself. when the content is what changes —
+						one panel, whose body comes from somewhere else — give it{' '}
+						<Mono>transition={'{{ fade: true }}'}</Mono> and it swaps, travelling in the
+						direction the tabs moved. <Mono>transition={'{false}'}</Mono> leaves the
+						contents alone.
+					</>
+				}
+			>
+				<SwappedPanel />
 			</DocSection>
 		</DocPage>
 	);
