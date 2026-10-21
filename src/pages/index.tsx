@@ -14,6 +14,7 @@ import { PopoverPage } from './Popover';
 import { ScrollAreaPage } from './ScrollArea';
 import { SeparatorPage } from './Separator';
 import { SpinnerPage } from './Spinner';
+import { StepsPage } from './Steps';
 import { TabsPage } from './Tabs';
 import { ToastPage } from './Toast';
 import { TooltipPage } from './Tooltip';
@@ -56,6 +57,7 @@ export const docRoutes: DocRoute[] = [
 	},
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
+	{ path: 'steps', label: 'Steps', section: 'Components', element: <StepsPage /> },
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
 	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },
 	{ path: 'tooltip', label: 'Tooltip', section: 'Components', element: <TooltipPage /> },

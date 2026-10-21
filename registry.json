@@ -179,6 +179,21 @@
 			]
 		},
 		{
+			"name": "steps",
+			"type": "registry:ui",
+			"title": "Steps",
+			"description": "A sequence of steps as an ordered list: one current index makes the items before it finish and the ones after wait, and the connector is drawn by the item so the spacing is never placed by hand.",
+			"dependencies": ["lucide-react", "tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Steps.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Steps.tsx"
+				}
+			]
+		},
+		{
 			"name": "tabs",
 			"type": "registry:ui",
 			"title": "Tabs",
