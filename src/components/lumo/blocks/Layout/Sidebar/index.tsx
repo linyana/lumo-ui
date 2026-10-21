@@ -2,6 +2,7 @@ import { PanelLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/lumo/ui/Button';
 import { Menu } from '@/components/lumo/ui/Menu';
+import { ScrollArea } from '@/components/lumo/ui/ScrollArea';
 import { cn } from '@/lib/cn';
 import type { LayoutMenuEntry, LayoutMenuItem } from '../types';
 
@@ -201,12 +202,14 @@ export function Sidebar({
 					)}
 				</div>
 			)}
-			<Menu.Root
-				compact={collapsed}
-				className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
-			>
-				{renderEntries(menu)}
-			</Menu.Root>
+			<ScrollArea.Root className="flex-1">
+				<ScrollArea.Viewport>
+					<ScrollArea.Content>
+						<Menu.Root compact={collapsed}>{renderEntries(menu)}</Menu.Root>
+					</ScrollArea.Content>
+				</ScrollArea.Viewport>
+				<ScrollArea.Scrollbar />
+			</ScrollArea.Root>
 			{footer !== undefined && (
 				<div data-slot="layout-footer" className="shrink-0 p-2">
 					<Menu.Root compact={collapsed}>{footer}</Menu.Root>

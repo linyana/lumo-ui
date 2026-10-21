@@ -11,6 +11,7 @@ import { LayoutPage } from './Layout';
 import { MenuPage } from './Menu';
 import { OverviewPage } from './Overview';
 import { PopoverPage } from './Popover';
+import { ScrollAreaPage } from './ScrollArea';
 import { SeparatorPage } from './Separator';
 import { SpinnerPage } from './Spinner';
 import { TabsPage } from './Tabs';
@@ -46,6 +47,12 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'dropdown', label: 'Dropdown', section: 'Components', element: <DropdownPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'popover', label: 'Popover', section: 'Components', element: <PopoverPage /> },
+	{
+		path: 'scroll-area',
+		label: 'ScrollArea',
+		section: 'Components',
+		element: <ScrollAreaPage />,
+	},
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },

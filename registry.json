@@ -245,12 +245,31 @@
 			]
 		},
 		{
+			"name": "scroll-area",
+			"type": "registry:ui",
+			"title": "ScrollArea",
+			"description": "A pane that scrolls under the platform's overlay bar: instead of the box's own, a track drawn over the content that stays out of sight until the pane is scrolled or pointed at. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/ScrollArea.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/ScrollArea.tsx"
+				}
+			]
+		},
+		{
 			"name": "layout",
 			"type": "registry:block",
 			"title": "Layout",
 			"description": "The app shell: a sidebar drawn from a menu array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
 			"dependencies": ["tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/menu"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/menu",
+				"linyana/lumo-ui/scroll-area"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/blocks/Layout/index.tsx",
