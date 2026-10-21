@@ -18,6 +18,20 @@
 			]
 		},
 		{
+			"name": "motion",
+			"type": "registry:file",
+			"title": "motion presets",
+			"description": "The springs the library moves with, in one place, and a hook that drops them when the reader asked for less motion. Required by Tabs, Collapsible and Transition; installed automatically as a dependency.",
+			"dependencies": ["motion"],
+			"files": [
+				{
+					"path": "src/lib/motion.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/motion.ts"
+				}
+			]
+		},
+		{
 			"name": "theme",
 			"type": "registry:file",
 			"title": "lumo-ui theme tokens",
@@ -124,7 +138,11 @@
 			"title": "Collapsible",
 			"description": "Disclosure region that expands and collapses one panel. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/transition"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/motion",
+				"linyana/lumo-ui/transition"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Collapsible.tsx",
@@ -197,9 +215,13 @@
 			"name": "tabs",
 			"type": "registry:ui",
 			"title": "Tabs",
-			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them. Behaviour from Base UI, appearance from tokens.",
+			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them — stacked and cross-fading, or all of them side by side on a track that is slid to the selected one. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/transition"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/motion",
+				"linyana/lumo-ui/transition"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Tabs.tsx",
@@ -367,7 +389,7 @@
 			"type": "registry:ui",
 			"title": "Transition",
 			"description": "A box that keeps its size to what is inside it and eases to each new one — continuously, so a reflow, a late font or a swap does not move the page beneath it. Measured: no fade, no travel, no second copy of the text.",
-			"dependencies": [],
+			"dependencies": ["motion"],
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{

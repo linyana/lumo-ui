@@ -1,18 +1,49 @@
-import { createContext, useContext, useMemo, type ComponentProps } from 'react';
+import {
+	Children,
+	createContext,
+	isValidElement,
+	useCallback,
+	useContext,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+	type ComponentProps,
+	type ReactNode,
+} from 'react';
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
+import { motion, type HTMLMotionProps } from 'motion/react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
+import { springSize, springSlide, useSpring } from '@/lib/motion';
 import { Transition } from './Transition';
 
 export type TabsVariant = 'rounded' | 'square' | 'point';
 export type TabsSize = 'sm' | 'md' | 'lg';
 
+/** Whatever a `Tabs.Tab` is held to — the same values Base UI accepts. */
+export type TabsValue = ComponentProps<typeof BaseTabs.Tab>['value'];
+
 export type TabsContextValue = {
 	variant: TabsVariant;
 	size: TabsSize;
+	/** The tab that is selected, so a part can tell whether it is the one on screen. */
+	activeValue: TabsValue | undefined;
 };
 
-export const TabsContext = createContext<TabsContextValue>({ variant: 'rounded', size: 'md' });
+export const TabsContext = createContext<TabsContextValue>({
+	variant: 'rounded',
+	size: 'md',
+	activeValue: undefined,
+});
+
+/** Whether a `Panel` is inside `Panels`, where it is one lane of a track rather than a stack. */
+const TrackContext = createContext(false);
+
+/** A lane is named by the value of the panel in it, so a reorder is a move rather than a remount. */
+function paneKey(pane: ReactNode, lane: number) {
+	return isValidElement<{ value?: TabsValue }>(pane) ? (pane.props.value ?? lane) : lane;
+}
 
 /** The variant and size set on `Tabs.Root`, which every part inherits unless it overrides one. */
 export function useTabs() {
@@ -123,10 +154,43 @@ export type PanelProps = Omit<ComponentProps<typeof BaseTabs.Panel>, 'className'
 };
 
 /**
+ * A panel in a `Panels` track: Base UI still owns it — its id, its `aria-labelledby`, `inert` while
+ * it is not the selected one — but `hidden` is taken off it, because a panel that is never in the
+ * layout cannot be slid out of the way. Instead it stays in its lane, out of sight past the clip,
+ * and out of focus by being `inert`.
+ */
+function TrackPanel({ className, transition = true, value, children, ...props }: PanelProps) {
+	return (
+		<BaseTabs.Panel
+			value={value}
+			keepMounted
+			render={({ hidden, ...panelProps }) => (
+				<div
+					{...panelProps}
+					data-slot="tabs-panel"
+					className={cn(
+						'min-w-0 text-sm outline-none',
+						// Blurred until it is the lane on screen: that is what makes the one arriving read
+						// as arriving, coming into focus as it lands. Two filters named, so there is a pair
+						// to move between — `inert` is Base UI's word for "not the selected one".
+						'transition-[filter] duration-(--duration-state) ease-(--ease-overlay)',
+						'[filter:blur(0px)] inert:[filter:blur(var(--blur-inactive))]',
+						className,
+					)}
+				>
+					{transition === false ? children : <Transition>{children}</Transition>}
+				</div>
+			)}
+			{...props}
+		/>
+	);
+}
+
+/**
  * A panel whose contents sit in a `Transition`. Content that changes size — a body answered for
  * every tab, a list that gains a line — eases to its new size instead of jumping.
  */
-export function Panel({ className, transition = true, value, children, ...props }: PanelProps) {
+function StackedPanel({ className, transition = true, value, children, ...props }: PanelProps) {
 	return (
 		<BaseTabs.Panel
 			data-slot="tabs-panel"
@@ -152,19 +216,143 @@ export function Panel({ className, transition = true, value, children, ...props 
 	);
 }
 
+/** The panel for the lane it is in: in a track it is slid, stacked it is cross-faded. */
+export function Panel(props: PanelProps) {
+	const tracked = useContext(TrackContext);
+	return tracked ? <TrackPanel {...props} /> : <StackedPanel {...props} />;
+}
+
+/** Border and padding of the track: what the lanes do not cover, and the box is still big for. */
+function frame(box: HTMLElement) {
+	const style = getComputedStyle(box);
+	const px = (value: string) => Number.parseFloat(value) || 0;
+	return (
+		px(style.paddingTop) +
+		px(style.paddingBottom) +
+		px(style.borderTopWidth) +
+		px(style.borderBottomWidth)
+	);
+}
+
+export type PanelsProps = Omit<HTMLMotionProps<'div'>, 'children'> & {
+	/** One `Tabs.Panel` per tab, in the order the tabs are in. */
+	children: ReactNode;
+};
+
+/**
+ * Every panel at once, side by side on one track that is slid to the selected one — so the panel
+ * arriving and the panel leaving travel together, instead of one fading over the other. The box
+ * holding the track is only as tall as the lane on screen, and follows it as the track moves.
+ *
+ * `overflow: clip` is what hides the lanes that are not the selected one; nothing inside a panel
+ * can therefore hang out of it.
+ */
+export function Panels({ className, children, ...props }: PanelsProps) {
+	const { activeValue } = useTabs();
+	const slide = useSpring(springSlide);
+	const size = useSpring(springSize);
+
+	const panes = Children.toArray(children);
+	const selected = panes.findIndex(
+		(pane) => isValidElement<{ value?: TabsValue }>(pane) && pane.props.value === activeValue,
+	);
+	const index = Math.max(0, selected);
+	const boxRef = useRef<HTMLDivElement | null>(null);
+	const laneRefs = useRef<Array<HTMLDivElement | null>>([]);
+	const [height, setHeight] = useState<number>();
+
+	const measure = useCallback(() => {
+		const box = boxRef.current;
+		const lane = laneRefs.current[index];
+		if (box === null || lane === null || lane === undefined) return;
+
+		// Rounded to a device pixel, so a fractional lane height does not keep re-triggering this.
+		const ratio = window.devicePixelRatio || 1;
+		const next = Math.ceil((lane.getBoundingClientRect().height + frame(box)) * ratio) / ratio;
+
+		setHeight((previous) =>
+			previous !== undefined && Math.abs(previous - next) < 0.5 ? previous : next,
+		);
+	}, [index]);
+
+	useLayoutEffect(() => {
+		measure();
+		const lane = laneRefs.current[index];
+		if (lane === null || lane === undefined) return;
+
+		// Inside a frame, because this sets the height of the box the lane is measured against.
+		const observer = new ResizeObserver(() => requestAnimationFrame(measure));
+		observer.observe(lane);
+		return () => observer.disconnect();
+	}, [index, measure]);
+
+	return (
+		<motion.div
+			ref={boxRef}
+			data-slot="tabs-panels"
+			initial={false}
+			animate={height === undefined ? {} : { height }}
+			transition={size}
+			className={cn('overflow-clip', className)}
+			{...props}
+		>
+			<motion.div
+				data-slot="tabs-track"
+				initial={false}
+				animate={{ x: `${index * -100}%` }}
+				transition={slide}
+				className="flex items-start"
+			>
+				<TrackContext.Provider value>
+					{panes.map((pane, lane) => (
+						<div
+							key={paneKey(pane, lane)}
+							data-slot="tabs-lane"
+							ref={(element) => {
+								laneRefs.current[lane] = element;
+							}}
+							className="w-full shrink-0"
+						>
+							{pane}
+						</div>
+					))}
+				</TrackContext.Provider>
+			</motion.div>
+		</motion.div>
+	);
+}
+
 export type RootProps = ComponentProps<typeof BaseTabs.Root> & {
 	variant?: TabsVariant;
 	size?: TabsSize;
 };
 
+/**
+ * Base UI owns the value. It is mirrored here because a part that is not a Base UI part — the
+ * track that has to know how many lanes to the left the selected one is — has to read it too.
+ */
 export function Root({
 	className,
 	variant = 'rounded',
 	size = 'md',
+	value,
+	defaultValue,
+	onValueChange,
 	children,
 	...props
 }: RootProps) {
-	const context = useMemo(() => ({ variant, size }), [variant, size]);
+	const [selected, setSelected] = useState<TabsValue>(defaultValue);
+
+	const handleValueChange = useCallback(
+		(next: TabsValue, details: Parameters<NonNullable<RootProps['onValueChange']>>[1]) => {
+			setSelected(next);
+			onValueChange?.(next, details);
+		},
+		[onValueChange],
+	);
+
+	const activeValue = value !== undefined ? value : selected;
+	const context = useMemo(() => ({ variant, size, activeValue }), [variant, size, activeValue]);
 
 	return (
 		<TabsContext.Provider value={context}>
@@ -172,6 +360,9 @@ export function Root({
 				data-slot="tabs"
 				data-variant={variant}
 				data-size={size}
+				value={value}
+				defaultValue={defaultValue}
+				onValueChange={handleValueChange}
 				className={cn(
 					'grid grid-cols-1 gap-4',
 					'data-[orientation=vertical]:grid-cols-[auto_1fr] data-[orientation=vertical]:items-start',
@@ -241,7 +432,10 @@ export const Tabs = {
 	Root,
 	List,
 	Tab,
+	/** Panels stacked in one cell, cross-fading as they take over from each other. */
 	Panel,
+	/** Panels side by side on a track, slid to the selected one. Wrap the `Panel`s in this. */
+	Panels,
 	/** The moving highlight. One per `Tabs.List`. */
 	Indicator,
 };

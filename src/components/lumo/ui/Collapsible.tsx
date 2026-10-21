@@ -1,7 +1,9 @@
 import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
-import { cn } from '@/lib/cn';
+import { motion, type HTMLMotionProps } from 'motion/react';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
+import { cn } from '@/lib/cn';
+import { springSize, useSpring } from '@/lib/motion';
 import { Transition } from './Transition';
 
 export type IconProps = ComponentProps<typeof ChevronRight>;
@@ -34,25 +36,37 @@ export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'cla
 };
 
 /**
- * Base UI animates the panel itself from 0 to its measured height; the body inside is a
- * `Transition`, so a body that changes size once it is open eases to the new size instead of
- * jumping.
+ * The panel is opened and closed by a spring rather than by a transition: `height: 0` and
+ * `height: auto` are two ends of the same number to the animation, so a body that is swapped while
+ * the panel is open is followed too, and a reversal mid-flight turns around from where it is.
+ *
+ * Base UI still measures and owns the panel — its id, the trigger's `aria-controls`, the state
+ * attributes. Only `hidden` is taken off it, because a panel that is never in the layout cannot be
+ * animated between two heights; `inert` keeps the closed one out of the way instead.
  */
 export function Panel({ className, transition = true, children, ...props }: PanelProps) {
+	const spring = useSpring(springSize);
+
 	return (
 		<BaseCollapsible.Panel
-			data-slot="collapsible-panel"
-			className={cn(
-				'overflow-hidden',
-				'h-(--collapsible-panel-height)',
-				'transition-[height] duration-(--duration-state) ease-(--ease-overlay)',
-				'data-starting-style:h-0 data-ending-style:h-0',
-				className,
+			keepMounted
+			render={({ hidden, ...panelProps }, state) => (
+				<motion.div
+					// Base UI types these as a plain element's, and two of them — `onAnimationStart`,
+					// `onDrag` — mean something else to an animated one.
+					{...(panelProps as unknown as HTMLMotionProps<'div'>)}
+					initial={false}
+					animate={{ height: state.open ? 'auto' : 0 }}
+					transition={spring}
+					inert={!state.open}
+					className={cn('overflow-clip', className)}
+					data-slot="collapsible-panel"
+				>
+					{transition === false ? children : <Transition>{children}</Transition>}
+				</motion.div>
 			)}
 			{...props}
-		>
-			{transition === false ? children : <Transition>{children}</Transition>}
-		</BaseCollapsible.Panel>
+		/>
 	);
 }
 

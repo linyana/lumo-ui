@@ -62,13 +62,16 @@ export function CollapsiblePage() {
 				title="recovery keys"
 				note={
 					<>
-						Base UI animates the panel from its own measured height, so the content
-						needs no fixed size. the caret reads{' '}
+						the panel is opened and closed by a spring rather than by a CSS transition:
+						<Mono>0</Mono> and <Mono>auto</Mono> are two ends of the same number to the
+						animation, so a body that changes while the panel is open is followed too,
+						and turning around mid-flight turns from where it is. the caret reads{' '}
 						<code className="rounded bg-muted px-1 py-0.5">data-panel-open</code> off
 						the trigger and turns with it. every panel wraps its contents in a{' '}
 						<Mono>Transition</Mono> — that keeps the height honest when a body changes
 						size while the panel is open, and <Mono>transition={'{false}'}</Mono> opts
-						out of it.
+						out of it. the panel stays in the DOM while closed — that is what there is
+						to animate — so it is <Mono>inert</Mono> until it opens.
 					</>
 				}
 			>

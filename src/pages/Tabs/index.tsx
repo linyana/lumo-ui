@@ -21,6 +21,32 @@ const notes = [
 ];
 
 /**
+ * Every panel on one track: the one arriving and the one leaving travel together, and the box
+ * holding them is only ever as tall as the lane on screen.
+ */
+function TrackedPanels() {
+	return (
+		<Tabs.Root defaultValue="overview" className="max-w-sm">
+			<Tabs.List>
+				{items.map(({ value, label }) => (
+					<Tabs.Tab key={value} value={value}>
+						{label}
+					</Tabs.Tab>
+				))}
+				<Tabs.Indicator />
+			</Tabs.List>
+			<Tabs.Panels>
+				{notes.map(({ value, body }) => (
+					<Tabs.Panel key={value} value={value} className="text-muted-foreground">
+						{body}
+					</Tabs.Panel>
+				))}
+			</Tabs.Panels>
+		</Tabs.Root>
+	);
+}
+
+/**
  * One panel, not one per tab: the panel stays open and its contents are replaced, so the box
  * eases to the size of what is now inside it.
  */
@@ -130,6 +156,22 @@ export function TabsPage() {
 						deleting a workspace cannot be undone.
 					</Tabs.Panel>
 				</Tabs.Root>
+			</DocSection>
+
+			<DocSection
+				title="one track, slid sideways"
+				note={
+					<>
+						wrap the panels in <Mono>Tabs.Panels</Mono> and they stop taking turns: they
+						sit side by side on one track, and the track is slid to the selected lane,
+						so the panel arriving and the panel leaving travel together. the box holding
+						the track is only as tall as the lane on screen and follows it as the track
+						moves; the lanes out of sight are blurred and <Mono>inert</Mono>. everything
+						inside a panel is clipped to it — nothing can hang out of the edge.
+					</>
+				}
+			>
+				<TrackedPanels />
 			</DocSection>
 
 			<DocSection

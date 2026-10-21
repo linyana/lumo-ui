@@ -7,7 +7,7 @@
 		"perf": "warn"
 	},
 	"rules": {
-		"no-unused-vars": "warn",
+		"no-unused-vars": ["warn", { "ignoreRestSiblings": true }],
 		"react/react-in-jsx-scope": "off",
 		"import/no-unassigned-import": "off",
 		"no-await-in-loop": "off"

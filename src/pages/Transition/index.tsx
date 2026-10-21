@@ -30,8 +30,8 @@ const installTabs = [
 			<div className="space-y-3">
 				<Command>bunx shadcn@latest add linyana/lumo-ui/transition</Command>
 				<p className="text-muted-foreground">
-					copies <Mono>Transition.tsx</Mono>, and the <Mono>cn()</Mono> it imports.
-					Nothing else — it is React and the platform.
+					copies <Mono>Transition.tsx</Mono>, the <Mono>cn()</Mono> it imports, and{' '}
+					<Mono>motion</Mono> as a dependency of the box, not of the measurement.
 				</p>
 			</div>
 		),
