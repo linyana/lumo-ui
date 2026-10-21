@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Layers, Moon, Sun, User } from 'lucide-react';
+import { Moon, Sun, User } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutMenuEntry, type LayoutMenuItem } from '@/components/lumo/blocks/Layout';
 import { Menu } from '@/components/lumo/ui/Menu';
@@ -59,7 +59,7 @@ export default function App() {
 					variant="default"
 					menu={menu}
 					selectedKey={selectedKey}
-					logo={<Layers />}
+					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
 					title="lumo-ui"
 					collapsible
 					collapsed={folded}

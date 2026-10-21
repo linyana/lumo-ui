@@ -1,4 +1,3 @@
-import { Layers } from 'lucide-react';
 import { DocPage, DocSection } from '@/pages/DocPage';
 
 export function OverviewPage() {
@@ -41,7 +40,7 @@ export function OverviewPage() {
 					<li>The consumer's className merges last, through cn().</li>
 				</ol>
 				<div className="flex items-center gap-2 pt-2 text-sm">
-					<Layers className="size-4 text-muted-foreground" />
+					<img src="/logo.svg" alt="" className="size-4 shrink-0" />
 					<span className="text-muted-foreground">lumo-ui 0.1.0</span>
 				</div>
 			</DocSection>
