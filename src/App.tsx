@@ -56,7 +56,7 @@ export default function App() {
 		<ThemeProvider value={theme}>
 			<DocNeighborsProvider value={neighbors}>
 				<Layout
-					variant="plain"
+					variant="default"
 					menu={menu}
 					selectedKey={selectedKey}
 					logo={<Layers />}
