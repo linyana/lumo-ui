@@ -35,12 +35,13 @@ export default function Size() {
 				))}
 			</div>
 			<div className="rounded-md border p-3">
-				<Transition value={value}>
+				<Transition>
 					<p className="text-sm text-muted-foreground">{note.body}</p>
 				</Transition>
 			</div>
 			<p className="text-sm text-muted-foreground">
-				no fade, no travel: the text is replaced and the box is what moves.
+				the content is replaced in place and the box is what moves: it measures what is
+				inside it and eases to the new height.
 			</p>
 		</div>
 	);

@@ -356,7 +356,7 @@ export function DocTabs({ tabs }: { tabs: DocTabItem[] }) {
 				))}
 				<Tabs.Indicator />
 			</Tabs.List>
-			<Tabs.Panel value={value} transition={{ fade: true }}>
+			<Tabs.Panel value={value}>
 				<div className="space-y-3">{active?.content}</div>
 			</Tabs.Panel>
 		</Tabs.Root>

@@ -366,8 +366,8 @@
 			"name": "transition",
 			"type": "registry:ui",
 			"title": "Transition",
-			"description": "A box that keeps its height to what is inside it and eases to each new one — continuously, so a reflow or a swap does not move the page beneath it. Fade, travel and blur are opt-in.",
-			"dependencies": ["motion"],
+			"description": "A box that keeps its size to what is inside it and eases to each new one — continuously, so a reflow, a late font or a swap does not move the page beneath it. Measured: no fade, no travel, no second copy of the text.",
+			"dependencies": [],
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
 				{

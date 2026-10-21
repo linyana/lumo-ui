@@ -4,19 +4,26 @@ import { Transition } from '@/components/lumo/ui/Transition';
 
 const notes = [
 	{
-		value: 'draft',
-		label: 'draft',
-		body: 'nothing is published yet. the editor writes here, and the page stays private until you say otherwise — no feeds, no search, no sitemap entry, and no way for anyone outside the workspace to reach it.',
+		value: 'idle',
+		label: 'idle',
+		headline: 'waiting',
+		detail: 'nothing is running.',
 	},
 	{
-		value: 'review',
-		label: 'review',
-		body: 'two readers at a time can comment, and their names stay hidden until the note is accepted.',
+		value: 'running',
+		label: 'running',
+		headline: 'indexing 1,248 files',
+		detail: 'three workers, no failures so far.',
 	},
-	{ value: 'published', label: 'published', body: 'live.' },
+	{
+		value: 'done',
+		label: 'done',
+		headline: 'indexed',
+		detail: 'done in 4s.',
+	},
 ];
 
-export default function Fade() {
+export default function Width() {
 	const [value, setValue] = useState(notes[0]!.value);
 	const note = notes.find((item) => item.value === value) ?? notes[0]!;
 
@@ -35,13 +42,16 @@ export default function Fade() {
 				))}
 			</div>
 			<div className="rounded-md border p-3">
-				<Transition value={value} fade blur>
-					<p className="text-sm text-muted-foreground">{note.body}</p>
+				{/* `w-fit`: nothing else sizes this box, so the content does — in both directions. */}
+				<Transition className="w-fit">
+					<div className="space-y-0.5">
+						<div className="text-sm font-medium">{note.headline}</div>
+						<p className="text-sm text-muted-foreground">{note.detail}</p>
+					</div>
 				</Transition>
 			</div>
 			<p className="text-sm text-muted-foreground">
-				the old text leaves in 150ms and is softened on the way out, so it never sits behind
-				the new one as a second text.
+				the box is sized by its content here, so the width glides with the height.
 			</p>
 		</div>
 	);

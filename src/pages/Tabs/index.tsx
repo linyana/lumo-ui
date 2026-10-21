@@ -21,9 +21,8 @@ const notes = [
 ];
 
 /**
- * One panel, not one per tab: the panel stays open and its contents are swapped, so the height
- * follows the content. `fade` is all it takes — the root has already told the swap which way the
- * tabs moved.
+ * One panel, not one per tab: the panel stays open and its contents are replaced, so the box
+ * eases to the size of what is now inside it.
  */
 function SwappedPanel() {
 	const [value, setValue] = useState(notes[0]!.value);
@@ -39,7 +38,7 @@ function SwappedPanel() {
 				))}
 				<Tabs.Indicator />
 			</Tabs.List>
-			<Tabs.Panel value={value} transition={{ fade: true }} className="text-muted-foreground">
+			<Tabs.Panel value={value} className="text-muted-foreground">
 				{note.body}
 			</Tabs.Panel>
 		</Tabs.Root>
@@ -139,12 +138,12 @@ export function TabsPage() {
 					<>
 						panels of their own already cross-fade, since Base UI keeps the one that is
 						leaving mounted for the length of its transition. every panel also wraps its
-						contents in <Mono>Transition</Mono>, so the height follows what is inside
-						instead of the panel re-measuring itself. when the content is what changes —
-						one panel, whose body comes from somewhere else — give it{' '}
-						<Mono>transition={'{{ fade: true }}'}</Mono> and it swaps, travelling in the
-						direction the tabs moved. <Mono>transition={'{false}'}</Mono> leaves the
-						contents alone.
+						contents in <Mono>Transition</Mono>, so a body that changes eases to the new
+						size instead of the panel re-measuring itself. when the content is what
+						changes — one panel, whose body comes from somewhere else — nothing else is
+						needed: the box follows the new size wherever it lands.{' '}
+						<Mono>transition={'{false}'}</Mono> opts of the wrapper, which also drops
+						that.
 					</>
 				}
 			>

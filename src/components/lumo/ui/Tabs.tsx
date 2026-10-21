@@ -1,8 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ComponentProps } from 'react';
+import { createContext, useContext, useMemo, type ComponentProps } from 'react';
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
-import { Transition, type TransitionDirection, type TransitionOptions } from './Transition';
+import { Transition } from './Transition';
 
 export type TabsVariant = 'rounded' | 'square' | 'point';
 export type TabsSize = 'sm' | 'md' | 'lg';
@@ -10,8 +10,6 @@ export type TabsSize = 'sm' | 'md' | 'lg';
 export type TabsContextValue = {
 	variant: TabsVariant;
 	size: TabsSize;
-	/** Which way the last activation went, so a panel's swap can travel with the tabs. */
-	activationDirection?: TransitionDirection;
 };
 
 export const TabsContext = createContext<TabsContextValue>({ variant: 'rounded', size: 'md' });
@@ -116,33 +114,19 @@ export function List({ className, variant, ...props }: ListProps) {
 
 export type PanelProps = Omit<ComponentProps<typeof BaseTabs.Panel>, 'className'> & {
 	/**
-	 * What the panel's contents do when they change. It always eases its height; `false` opts out
-	 * of the wrapper altogether, which also drops that.
+	 * Whether the panel's contents sit in a `Transition`, whose box eases to their size. `false`
+	 * opts out of the wrapper altogether, which also drops that.
 	 */
-	transition?: TransitionOptions | false;
+	transition?: boolean;
 	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
 	className?: string;
 };
 
-const NO_TRANSITION: TransitionOptions = {};
-
 /**
- * A panel whose contents sit in a `Transition`. Each panel keeps its own value, so a panel of
- * its own never swaps — but one panel answering for every tab (`value` following the active
- * one) swaps its contents, and the root has already told it which way the tabs moved.
+ * A panel whose contents sit in a `Transition`. Content that changes size — a body answered for
+ * every tab, a list that gains a line — eases to its new size instead of jumping.
  */
-export function Panel({
-	className,
-	transition = NO_TRANSITION,
-	value,
-	children,
-	...props
-}: PanelProps) {
-	const { activationDirection } = useTabs();
-	const swap = transition === false ? null : transition;
-	const direction = swap?.fade === true ? (swap.direction ?? activationDirection) : undefined;
-	const own = value == null ? undefined : String(value);
-
+export function Panel({ className, transition = true, value, children, ...props }: PanelProps) {
 	return (
 		<BaseTabs.Panel
 			data-slot="tabs-panel"
@@ -163,18 +147,7 @@ export function Panel({
 			)}
 			{...props}
 		>
-			{swap === null ? (
-				children
-			) : (
-				<Transition
-					value={swap.value ?? own}
-					fade={swap.fade}
-					direction={direction}
-					blur={swap.blur}
-				>
-					{children}
-				</Transition>
-			)}
+			{transition === false ? children : <Transition>{children}</Transition>}
 		</BaseTabs.Panel>
 	);
 }
@@ -188,15 +161,10 @@ export function Root({
 	className,
 	variant = 'rounded',
 	size = 'md',
-	onValueChange,
 	children,
 	...props
 }: RootProps) {
-	const [activationDirection, setActivationDirection] = useState<TransitionDirection>();
-	const context = useMemo(
-		() => ({ variant, size, activationDirection }),
-		[variant, size, activationDirection],
-	);
+	const context = useMemo(() => ({ variant, size }), [variant, size]);
 
 	return (
 		<TabsContext.Provider value={context}>
@@ -204,16 +172,6 @@ export function Root({
 				data-slot="tabs"
 				data-variant={variant}
 				data-size={size}
-				// The direction is worth keeping: a panel that swaps its contents travels with the
-				// tabs, and no consumer should have to re-read the event to know that.
-				onValueChange={(next, details) => {
-					setActivationDirection(
-						details.activationDirection === 'none'
-							? undefined
-							: details.activationDirection,
-					);
-					onValueChange?.(next, details);
-				}}
 				className={cn(
 					'grid grid-cols-1 gap-4',
 					'data-[orientation=vertical]:grid-cols-[auto_1fr] data-[orientation=vertical]:items-start',

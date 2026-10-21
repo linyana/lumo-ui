@@ -1,67 +1,22 @@
-import { AnimatePresence, motion, type Variants } from 'motion/react';
-import {
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState,
-	type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
-/** The side the new content travels in from; the old one leaves the other way. */
-export type TransitionDirection = 'left' | 'right' | 'up' | 'down';
-
-export type TransitionOptions = {
-	/**
-	 * Identity of the content. Changing it swaps it — and swap is what the fade, the travel and
-	 * the blur are attached to. Leave it out and the box only follows the size of one block.
-	 */
-	value?: string | number;
-	/** Cross-fade the old out and the new in. Off by default: the size is the whole show. */
-	fade?: boolean;
-	/** The side the new content arrives from. Needs `fade`, because a slide alone is two texts
-	 *  passing each other. */
-	direction?: TransitionDirection;
-	/** Soften what leaves, so it reads as motion and not as a second text underneath. Leave it
-	 *  off when the new content shares lines with the old: a shared line is drawn twice during
-	 *  the swap, and softening one of the two copies reads as a focus pull on it. */
-	blur?: boolean;
-};
-
-export type TransitionProps = TransitionOptions & {
+export type TransitionProps = {
+	/** Merged last through `cn()`, onto the box whose size glides. */
 	className?: string;
+	/** One block of content. Its size is what the box follows. */
 	children: ReactNode;
 };
 
 type Bezier = [number, number, number, number];
 
+/** The size the box was last told to be. No width means the page sizes it, not the content. */
+type Size = { width: number | undefined; height: number };
+
+/** What sizes the box: the content, or the page. Decided once, when content has a size. */
+type Mode = 'page' | 'content';
+
 const LINEAR: Bezier = [0, 0, 1, 1];
-
-type Timing = {
-	/** The child on its way out: short, already moving, so it is gone before the new one lands. */
-	leave: { duration: number; ease: Bezier };
-	/** The child arriving: longer, and slow to start, so it resolves after the old one is gone. */
-	arrive: { duration: number; ease: Bezier };
-	/**
-	 * The box changing size. It runs on the leave beat, so it has reached the new height while the
-	 * arriving text is still faint — lines are then not revealed one at a time under the reader.
-	 */
-	morph: { duration: number; ease: Bezier };
-	/** Pixels the content travels. */
-	shift: number;
-	/** Pixels of blur on the way out. */
-	blur: number;
-};
-
-const NONE: Timing = {
-	leave: { duration: 0, ease: LINEAR },
-	arrive: { duration: 0, ease: LINEAR },
-	morph: { duration: 0, ease: LINEAR },
-	shift: 0,
-	blur: 0,
-};
 
 /** A token in pixels, or zero when it is missing — never NaN, which would poison the layout. */
 const px = (value: string) => Number.parseFloat(value) || 0;
@@ -71,218 +26,205 @@ function bezier(value: string, fallback: Bezier): Bezier {
 	return points?.length === 4 && points.every(Number.isFinite) ? (points as Bezier) : fallback;
 }
 
-const cssEase = (ease: Bezier) => `cubic-bezier(${ease.join(', ')})`;
-
-/**
- * Timing is read off the tokens rather than written here, so a theme — and the
- * `prefers-reduced-motion` block in the tokens file, which zeroes every duration — reaches the
- * animation without the component knowing anything about either.
- */
-function readTiming(): Timing {
-	if (typeof document === 'undefined') return NONE;
-	const token = getComputedStyle(document.documentElement);
-	const out = px(token.getPropertyValue('--duration-swap-out')) / 1000;
-	const into = px(token.getPropertyValue('--duration-swap-in')) / 1000;
+/** Border and padding: what the content does not cover, and the box still has to be big for. */
+function frame(box: HTMLElement) {
+	const style = getComputedStyle(box);
+	const x =
+		px(style.paddingLeft) +
+		px(style.paddingRight) +
+		px(style.borderLeftWidth) +
+		px(style.borderRightWidth);
+	const y =
+		px(style.paddingTop) +
+		px(style.paddingBottom) +
+		px(style.borderTopWidth) +
+		px(style.borderBottomWidth);
 
 	return {
-		leave: {
-			duration: out,
-			ease: bezier(token.getPropertyValue('--ease-leave'), LINEAR),
-		},
-		arrive: {
-			duration: into,
-			ease: bezier(token.getPropertyValue('--ease-arrive'), LINEAR),
-		},
-		morph: {
-			// Shorter than the fade on purpose: the box is at its new height by the time the arriving
-			// text is legible, so the lines are not revealed one by one under the reader's eye.
-			duration: out,
-			ease: bezier(token.getPropertyValue('--ease-overlay'), LINEAR),
-		},
-		shift: px(token.getPropertyValue('--shift-content')),
-		blur: px(token.getPropertyValue('--blur-swap')),
+		x,
+		y,
+		/** The inline size that makes the border box the size given, whatever `box-sizing` is. */
+		fit: (size: number, run: number) => (style.boxSizing === 'border-box' ? size : size - run),
 	};
 }
 
-/** The offset the arriving content starts at, by the side it comes from. */
-const from = (side: TransitionDirection | undefined, shift: number) => ({
-	x: side === 'left' ? -shift : side === 'right' ? shift : 0,
-	y: side === 'up' ? -shift : side === 'down' ? shift : 0,
-});
-
-/** And the offset the content on its way out ends at: the other side. */
-const away = (side: TransitionDirection | undefined, shift: number) => ({
-	x: side === 'left' ? shift : side === 'right' ? -shift : 0,
-	y: side === 'up' ? shift : side === 'down' ? -shift : 0,
-});
+/**
+ * The width the box has to work with: the parent's content box, margins taken out, or `null` when
+ * there is no block parent to hand one over.
+ */
+function room(box: HTMLElement): number | null {
+	const parent = box.parentElement;
+	if (parent === null || parent.clientWidth === 0) return null;
+	const out = getComputedStyle(parent);
+	const own = getComputedStyle(box);
+	return (
+		parent.clientWidth -
+		px(out.paddingLeft) -
+		px(out.paddingRight) -
+		px(own.marginLeft) -
+		px(own.marginRight)
+	);
+}
 
 /**
- * A box that holds one block of content and keeps its height to what is inside it.
- *
- * By default that is all it does: the height is measured and eased, so content that changes
- * around it does not jump, and a swap lands at the new size without the page beneath it moving.
- * The fade, the travel and the blur are opt-in — a box that eases its size is the quiet default,
- * and a cross-fade is a thing you ask for.
+ * Read from the tokens at the moment a glide starts, so a theme — and the
+ * `prefers-reduced-motion` block in the tokens file, which collapses every duration — reaches it
+ * without the component knowing about either.
  */
-export function Transition({ value, fade, direction, blur, className, children }: TransitionProps) {
-	const key = value === undefined ? 'content' : String(value);
-	const fading = fade === true;
+function readGlide(): { duration: number; ease: Bezier } {
+	if (typeof document === 'undefined') return { duration: 0, ease: LINEAR };
+	const token = getComputedStyle(document.documentElement);
+	return {
+		duration: px(token.getPropertyValue('--duration-size')) / 1000,
+		ease: bezier(token.getPropertyValue('--ease-overlay'), LINEAR),
+	};
+}
 
-	// Re-read when the content changes rather than once on mount: the tokens carry the answer to
-	// prefers-reduced-motion, and that can change while the page is open. Adjusting state during
-	// render keeps the timing stable between swaps, so nothing downstream re-runs on a plain
-	// re-render.
-	const [timing, setTiming] = useState(readTiming);
-	const [seen, setSeen] = useState(key);
-	if (seen !== key) {
-		setSeen(key);
-		setTiming(readTiming());
-	}
+/** Whether two targets ask for the same size — a repeat measurement rather than a change. */
+function same(a: Size, b: Size) {
+	if (Math.abs(a.height - b.height) >= 0.5) return false;
+	if (a.width === undefined || b.width === undefined) return a.width === b.width;
+	return Math.abs(a.width - b.width) < 0.5;
+}
 
+/** Whether the box is already the size measured — a child sizing itself off the box, not a change. */
+function at(live: DOMRect, size: Size) {
+	if (Math.abs(live.height - size.height) >= 0.5) return false;
+	return size.width === undefined || Math.abs(live.width - size.width) < 0.5;
+}
+
+/**
+ * A box that holds one block of content and keeps its size to what is inside it.
+ *
+ * The height is the box's own: measured, and eased to each new one, so content that grows,
+ * shrinks or re-wraps — a swap, a late font, a list that gains a line — never moves the page
+ * beneath it. The width belongs to the page whenever the page sizes the box, and is measured and
+ * eased the same way when it is the content that sizes it (a `w-fit` pill, a chip).
+ *
+ * The content is replaced in place, not remounted: no fade, no travel, no second copy of the
+ * same text underneath — a clip and a measured glide are the whole of it.
+ */
+export function Transition({ className, children }: TransitionProps) {
 	const boxRef = useRef<HTMLDivElement>(null);
-	/** The node each key last put on the page, so a swap measures the right one. */
-	const nodes = useRef(new Map<string, HTMLDivElement>());
-	/** The height the box is meant to be, so a swap knows where it is starting from. */
-	const height = useRef<number | undefined>(undefined);
+	const contentRef = useRef<HTMLDivElement>(null);
+	/** The size the box is meant to be, so a measurement can tell a change from a repeat. */
+	const target = useRef<Size | undefined>(undefined);
+	const mode = useRef<Mode | undefined>(undefined);
 	const glide = useRef<Animation | null>(null);
-	// The latest node to arrive, used as a re-render trigger: a box with no `value` has no key to
-	// watch, and its contents can still be replaced from the outside.
-	const [content, setContent] = useState<HTMLDivElement | null>(null);
 
-	// `AnimatePresence` detaches the child it is still holding, so the map only ever gains an
-	// entry per key: going back to a value whose child is still on its way out revives that child
-	// instead of mounting one, and the node measured is the node still on the page.
-	const attachContent = useCallback((node: HTMLDivElement | null) => {
-		if (node === null) return;
-		const own = node.dataset.value ?? '';
-		nodes.current.set(own, node);
-		setContent(node);
-		return () => {
-			if (nodes.current.get(own) === node) nodes.current.delete(own);
+	const follow = useCallback(() => {
+		const box = boxRef.current;
+		const content = contentRef.current;
+		if (box === null || content === null) return;
+
+		// Where the box is now, not where the last glide was heading: an interrupted one continues
+		// from what is on screen.
+		const live = box.getBoundingClientRect();
+		const edge = frame(box);
+		const limit = room(box);
+
+		// A box the page sizes keeps the width the page gives it, and only its height is the box's
+		// to ease. A box the content sizes is measured in both directions — and the answer to which
+		// one it is does not change, so it is asked once.
+		//
+		// Not laid out yet — inside a closed dialog or a hidden tab — so not a size to decide on.
+		if (mode.current === undefined && content.getBoundingClientRect().height === 0) return;
+
+		let width: number | undefined;
+		if (mode.current !== 'page') {
+			// `max-content`, both to ask the content how wide it wants to be — free of the width the
+			// box is pinned at now, which would only wrap what it measured — and, once that is the
+			// answer, to keep asking: a change of content then changes this element's own size, and
+			// that is what the observer below is watching for.
+			content.style.width = 'max-content';
+			const natural = content.getBoundingClientRect().width + edge.x;
+			const fits = limit === null || natural <= limit + 0.5;
+			const own = mode.current === 'content' || Math.abs(natural - live.width) < 0.5;
+			if (own && fits) {
+				mode.current = 'content';
+				width = natural;
+			} else {
+				// Content that wants more room than the page has is the page's to give, and it wraps
+				// there, which is what `w-fit` would have computed anyway.
+				mode.current = 'page';
+				content.style.removeProperty('width');
+			}
+		}
+
+		if (width === undefined) box.style.removeProperty('width');
+		else box.style.width = `${edge.fit(width, edge.x)}px`;
+
+		// Read after the width, because the width is what the height wraps in.
+		const next: Size = { width, height: content.getBoundingClientRect().height + edge.y };
+
+		const previous = target.current;
+		if (previous !== undefined && same(previous, next)) return;
+		// A child that sizes itself off the box (`h-full`) would re-aim the glide at wherever the
+		// box currently is, and park it there.
+		if (glide.current !== null && at(live, next)) return;
+
+		target.current = next;
+		box.style.height = `${edge.fit(next.height, edge.y)}px`;
+
+		const { duration, ease } = readGlide();
+		const travels =
+			Math.abs(live.height - next.height) >= 0.5 ||
+			(next.width !== undefined && Math.abs(live.width - next.width) >= 0.5);
+		if (previous === undefined || !travels || duration <= 0) {
+			glide.current?.cancel();
+			glide.current = null;
+			box.style.removeProperty('overflow');
+			delete box.dataset.swapping;
+			return;
+		}
+
+		const from: Keyframe = { height: `${edge.fit(live.height, edge.y)}px` };
+		const to: Keyframe = { height: `${edge.fit(next.height, edge.y)}px` };
+		if (next.width !== undefined && Math.abs(live.width - next.width) >= 0.5) {
+			from.width = `${edge.fit(live.width, edge.x)}px`;
+			to.width = `${edge.fit(next.width, edge.x)}px`;
+		}
+
+		// Clipped only while the box is a size the content is not.
+		box.style.overflow = 'clip';
+		box.dataset.swapping = '';
+		glide.current?.cancel();
+		const animation = box.animate([from, to], {
+			duration: duration * 1000,
+			easing: `cubic-bezier(${ease.join(', ')})`,
+		});
+		glide.current = animation;
+		const parked = () => {
+			if (glide.current !== animation) return;
+			glide.current = null;
+			box.style.removeProperty('overflow');
+			delete box.dataset.swapping;
 		};
+		animation.finished.then(parked, parked);
 	}, []);
 
 	useLayoutEffect(() => {
-		const box = boxRef.current;
-		// The node for this key, not merely the latest arrival: going back to a value whose child
-		// is still on its way out revives a node that never re-mounted.
-		const node = nodes.current.get(key) ?? content;
-		if (box === null || node === null) return;
+		const content = contentRef.current;
+		if (content === null) return;
 
-		// The child is measured, not the box: the box is mid-glide while it glides. A box that
-		// carries its own padding or border still needs room for it, being border-box.
-		const extent = () => {
-			const style = getComputedStyle(box);
-			return (
-				node.getBoundingClientRect().height +
-				px(style.paddingTop) +
-				px(style.paddingBottom) +
-				px(style.borderTopWidth) +
-				px(style.borderBottomWidth)
-			);
-		};
-
-		const show = (next: number) => {
-			// A first measurement of zero means the content is not laid out yet — inside a closed
-			// dialog or a hidden tab — not that it is empty.
-			if (height.current === undefined && next === 0) return;
-			// The target the box was already aiming at is the target it keeps: a glide in flight
-			// is left to finish rather than re-aimed at the same height.
-			if (height.current !== undefined && Math.abs(height.current - next) < 0.5) return;
-			// Where the box is now, not where the last glide was heading — an interrupted swap
-			// continues from what is on screen.
-			const start =
-				height.current === undefined
-					? undefined
-					: glide.current === null
-						? height.current
-						: box.getBoundingClientRect().height;
-			height.current = next;
-			box.style.height = `${next}px`;
-			if (start === undefined || Math.abs(start - next) < 0.5) return;
-			glide.current?.cancel();
-			// Clipped only while the box is a size the content is not.
-			box.style.overflow = 'clip';
-			box.dataset.swapping = '';
-			const animation = box.animate([{ height: `${start}px` }, { height: `${next}px` }], {
-				duration: timing.morph.duration * 1000,
-				easing: cssEase(timing.morph.ease),
-			});
-			glide.current = animation;
-			const settle = () => {
-				if (glide.current !== animation) return;
-				glide.current = null;
-				box.style.removeProperty('overflow');
-				delete box.dataset.swapping;
-			};
-			animation.finished.then(settle, settle);
-		};
-
-		show(extent());
-		// Anything inside that changes size mid-glide re-targets it rather than snapping.
-		const observer = new ResizeObserver(() => {
-			const next = extent();
-			// A child that sizes itself off the box (h-full) would otherwise re-target the glide
-			// to wherever the box currently is, and park it there.
-			if (glide.current !== null && Math.abs(next - box.getBoundingClientRect().height) < 0.5)
-				return;
-			show(next);
-		});
-		observer.observe(node);
+		follow();
+		// Anything inside that changes size re-targets the glide rather than snapping: content that
+		// wraps at a new width, a font that arrives late, a list that gains a line.
+		const observer = new ResizeObserver(follow);
+		observer.observe(content);
 		return () => observer.disconnect();
-	}, [key, timing, content]);
+	}, [follow]);
 
 	useEffect(() => () => glide.current?.cancel(), []);
 
-	const { arrive, leave, shift, blur: pixels } = timing;
-	const soften = blur === true ? pixels : 0;
-	const contentVariants: Variants = useMemo(
-		() => ({
-			enter: (side: TransitionDirection | undefined) => ({
-				opacity: 0,
-				...from(side, shift),
-				transition: arrive,
-			}),
-			idle: { opacity: 1, x: 0, y: 0, transition: arrive },
-			exit: (side: TransitionDirection | undefined) => ({
-				opacity: 0,
-				...away(side, shift),
-				// Only on the way out: a node that stays must not keep a filter on itself, which
-				// would become a containing block for everything inside it.
-				...(soften > 0 ? { filter: `blur(${soften}px)` } : null),
-				transition: leave,
-			}),
-		}),
-		[arrive, leave, shift, soften],
-	);
-
-	const swapping = fading
-		? {
-				custom: direction,
-				variants: contentVariants,
-				initial: 'enter',
-				animate: 'idle',
-				exit: 'exit',
-			}
-		: {};
-
 	return (
-		// Relative, so the node on its way out is placed against the box it is leaving.
+		// Relative, so an absolutely positioned child lands against the box it is measured in.
 		<div ref={boxRef} data-slot="transition" className={cn('relative', className)}>
-			<AnimatePresence initial={false} mode="popLayout" custom={direction}>
-				<motion.div
-					key={key}
-					ref={attachContent}
-					data-slot="transition-content"
-					data-value={key}
-					// flow-root keeps the margins of what is inside inside, so the height measured
-					// here is the height the content actually takes.
-					className="flow-root"
-					{...swapping}
-				>
-					{children}
-				</motion.div>
-			</AnimatePresence>
+			{/* flow-root keeps the margins of what is inside inside, so what is measured here is the
+			    size the content actually takes. */}
+			<div ref={contentRef} data-slot="transition-content" className="flow-root">
+				{children}
+			</div>
 		</div>
 	);
 }

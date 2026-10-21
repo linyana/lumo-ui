@@ -2,7 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/cn';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
-import { Transition, type TransitionOptions } from './Transition';
+import { Transition } from './Transition';
 
 export type IconProps = ComponentProps<typeof ChevronRight>;
 
@@ -25,23 +25,20 @@ export function Icon({ className, ...props }: IconProps) {
 
 export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'className'> & {
 	/**
-	 * What the panel's contents do when they change. It always eases its height — give it a
-	 * `value` and the body is swapped when that value changes, rather than when the panel opens.
-	 * `false` opts out of the wrapper altogether, which also drops the height easing.
+	 * Whether the body sits in a `Transition`, so a body that changes size once the panel is open
+	 * eases to the new size instead of jumping. `false` opts out of the wrapper altogether.
 	 */
-	transition?: TransitionOptions | false;
+	transition?: boolean;
 	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
 	className?: string;
 };
 
-const NO_TRANSITION: TransitionOptions = {};
-
 /**
  * Base UI animates the panel itself from 0 to its measured height; the body inside is a
- * `Transition`, so a body that changes size once it is open eases to the new height instead of
- * jumping, and a body given an identity is swapped rather than replaced.
+ * `Transition`, so a body that changes size once it is open eases to the new size instead of
+ * jumping.
  */
-export function Panel({ className, transition = NO_TRANSITION, children, ...props }: PanelProps) {
+export function Panel({ className, transition = true, children, ...props }: PanelProps) {
 	return (
 		<BaseCollapsible.Panel
 			data-slot="collapsible-panel"
@@ -54,7 +51,7 @@ export function Panel({ className, transition = NO_TRANSITION, children, ...prop
 			)}
 			{...props}
 		>
-			{transition === false ? children : <Transition {...transition}>{children}</Transition>}
+			{transition === false ? children : <Transition>{children}</Transition>}
 		</BaseCollapsible.Panel>
 	);
 }

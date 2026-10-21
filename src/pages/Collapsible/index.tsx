@@ -19,7 +19,7 @@ const bodies = {
 	},
 };
 
-/** The panel keeps its value while open, so a body that changes is swapped and not re-rendered. */
+/** The panel stays open while a body is replaced, so the box eases from one size to the other. */
 function SwappedBody() {
 	const [mode, setMode] = useState<keyof typeof bodies>('short');
 	const body = bodies[mode];
@@ -43,7 +43,7 @@ function SwappedBody() {
 					recovery keys
 					<Collapsible.Icon />
 				</Collapsible.Trigger>
-				<Collapsible.Panel transition={{ value: mode }}>
+				<Collapsible.Panel>
 					<div className="flex flex-col gap-1 px-3 pt-3 pb-3 font-mono text-sm text-muted-foreground">
 						{body.lines.map((line) => (
 							<div key={line}>{line}</div>
@@ -66,8 +66,9 @@ export function CollapsiblePage() {
 						needs no fixed size. the caret reads{' '}
 						<code className="rounded bg-muted px-1 py-0.5">data-panel-open</code> off
 						the trigger and turns with it. every panel wraps its contents in a{' '}
-						<Mono>Transition</Mono> — with nothing enabled, as here, that only keeps the
-						height honest; the fade and the swap are opt-in, below.
+						<Mono>Transition</Mono> — that keeps the height honest when a body changes
+						size while the panel is open, and <Mono>transition={'{false}'}</Mono> opts
+						out of it.
 					</>
 				}
 			>
@@ -91,12 +92,10 @@ export function CollapsiblePage() {
 				note={
 					<>
 						the contents of every panel sit in a <Mono>Transition</Mono>, so a body that
-						changes size once the panel is open eases to the new height instead of
-						jumping. give it a <Mono>value</Mono> and the body is swapped when that
-						value changes — <Mono>fade</Mono> sends the old one out as the new one
-						arrives, and <Mono>transition={'{false}'}</Mono> opts out of the wrapper
-						altogether. no <Mono>blur</Mono> here on purpose: these bodies share their
-						first line, and softening a line that is drawn twice reads as a flicker.
+						changes size once the panel is open eases to the new size instead of
+						jumping. replacing the body needs nothing else: the box measures what is
+						inside it and glides from its own height to the new one.{' '}
+						<Mono>transition={'{false}'}</Mono> opts out of the wrapper altogether.
 					</>
 				}
 			>
