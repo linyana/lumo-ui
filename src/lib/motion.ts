@@ -5,12 +5,19 @@ import { useReducedMotion, type Transition } from 'motion/react';
  * once instead of at every call site — and `useSpring` is how a component asks for one.
  */
 
-/** A box following the size of what is inside it: a panel opening, a track taking a new height. */
+/**
+ * A box following the size of what is inside it: a panel opening, a track taking a new height.
+ *
+ * The damping is what decides whether it stops at the size or goes past it — `2 × √stiffness` is
+ * critical, and anything under that overshoots by about `exp(-πζ/√(1-ζ²))`, which on a tall panel
+ * is a visible few pixels of wobble at the end. 30 against 300 was ζ 0.87, so it overshot; 36 is
+ * ζ 1.04 and lands on the number. A spring given both stiffness and damping ignores `bounce`,
+ * which is why the pair is the whole story here.
+ */
 export const springSize: Transition = {
 	type: 'spring',
 	stiffness: 300,
-	damping: 30,
-	bounce: 0,
+	damping: 36,
 	restDelta: 0.01,
 };
 
