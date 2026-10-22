@@ -1,5 +1,5 @@
-import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, type Transition as MotionTransition } from 'motion/react';
+import { useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
+import { animate } from 'motion/react';
 import { cn } from '@/lib/cn';
 
 export type TransitionProps = {
@@ -17,10 +17,9 @@ type Size = { width?: number; height: number };
 /** What sizes the box: the content, or the page. Decided once, when content has a size. */
 type Mode = 'page' | 'content';
 
-const LINEAR: Bezier = [0, 0, 1, 1];
+type Glide = { duration: number; ease: Bezier };
 
-/** A change that is not a glide: the first measurement, a mode settling. */
-const REST: MotionTransition = { duration: 0 };
+const LINEAR: Bezier = [0, 0, 1, 1];
 
 /** A token in pixels, or zero when it is missing — never NaN, which would poison the layout. */
 const px = (value: string) => Number.parseFloat(value) || 0;
@@ -75,8 +74,8 @@ function room(box: HTMLElement): number | null {
  * `prefers-reduced-motion` block in the tokens file, which collapses every duration — reaches it
  * without the component knowing about either.
  */
-function readGlide(): MotionTransition {
-	if (typeof document === 'undefined') return REST;
+function readGlide(): Glide {
+	if (typeof document === 'undefined') return { duration: 0, ease: LINEAR };
 	const token = getComputedStyle(document.documentElement);
 	return {
 		duration: px(token.getPropertyValue('--duration-size')) / 1000,
@@ -103,11 +102,6 @@ function travels(live: DOMRect, size: Size) {
 	return size.width !== undefined && Math.abs(live.width - size.width) >= 0.5;
 }
 
-/** What the box is doing: the size it is meant to be, and how it gets there. */
-type Glide = { size?: Size; timing: MotionTransition; moving: boolean };
-
-const STILL: Glide = { timing: REST, moving: false };
-
 /**
  * A box that holds one block of content and keeps its size to what is inside it.
  *
@@ -115,6 +109,10 @@ const STILL: Glide = { timing: REST, moving: false };
  * shrinks or re-wraps — a swap, a late font, a list that gains a line — never moves the page
  * beneath it. The width belongs to the page whenever the page sizes the box, and is measured and
  * glided the same way when it is the content that sizes it (a `w-fit` pill, a chip).
+ *
+ * The glide starts in the measurement itself, not a render later: a measurement arrives from a
+ * `ResizeObserver` — outside React — so the clip and the first frame of the animation have to be
+ * written in the same task, or the new content shows past the old height for a frame.
  *
  * The content is replaced in place, not remounted: no fade, no travel, no second copy of the
  * same text underneath — a clip and a measured glide are the whole of it.
@@ -125,8 +123,7 @@ export function Transition({ className, children }: TransitionProps) {
 	/** The size the box is meant to be, so a measurement can tell a change from a repeat. */
 	const target = useRef<Size | undefined>(undefined);
 	const mode = useRef<Mode | undefined>(undefined);
-	const gliding = useRef(false);
-	const [glide, setGlide] = useState<Glide>(STILL);
+	const glide = useRef<ReturnType<typeof animate> | null>(null);
 
 	const follow = useCallback(() => {
 		const box = boxRef.current;
@@ -177,14 +174,44 @@ export function Transition({ className, children }: TransitionProps) {
 		if (previous !== undefined && same(previous, next)) return;
 		// A child that sizes itself off the box (`h-full`) would re-aim the glide at wherever the
 		// box currently is, and park it there.
-		if (gliding.current && at(live, next)) return;
+		if (glide.current !== null && at(live, next)) return;
 
 		target.current = next;
-		const travel = previous !== undefined && travels(live, next);
-		gliding.current = travel;
+		glide.current?.stop();
+		glide.current = null;
+
+		const from: Record<string, number> = { height: edge.fit(live.height, edge.y) };
+		const to: Record<string, number> = { height: edge.fit(next.height, edge.y) };
+		if (next.width === undefined) box.style.removeProperty('width');
+		else {
+			from.width = edge.fit(live.width, edge.x);
+			to.width = edge.fit(next.width, edge.x);
+		}
+
 		// Clipped only while the box is a size the content is not, so an overlay hanging out of the
-		// content is not cut off once everything has settled.
-		setGlide({ size: next, timing: travel ? readGlide() : REST, moving: travel });
+		// content is not cut off once everything has settled. Written here, before the frame paints.
+		const travel = previous !== undefined && travels(live, next);
+		if (!travel) {
+			box.style.height = `${to.height}px`;
+			if (to.width !== undefined) box.style.width = `${to.width}px`;
+			box.style.removeProperty('overflow');
+			return;
+		}
+
+		box.style.overflow = 'clip';
+		const { duration, ease } = readGlide();
+		const size =
+			from.width !== undefined && to.width !== undefined && from.width !== to.width
+				? { height: [from.height, to.height], width: [from.width, to.width] }
+				: { height: [from.height, to.height] };
+		const running = animate(box, size, { duration, ease });
+		glide.current = running;
+		const park = () => {
+			if (glide.current !== running) return;
+			glide.current = null;
+			box.style.removeProperty('overflow');
+		};
+		running.then(park, park);
 	}, []);
 
 	useLayoutEffect(() => {
@@ -199,26 +226,16 @@ export function Transition({ className, children }: TransitionProps) {
 		return () => observer.disconnect();
 	}, [follow]);
 
+	useEffect(() => () => glide.current?.stop(), []);
+
 	return (
 		// Relative, so an absolutely positioned child lands against the box it is measured in.
-		<motion.div
-			ref={boxRef}
-			data-slot="transition"
-			data-moving={glide.moving ? '' : undefined}
-			initial={false}
-			animate={glide.size ?? {}}
-			transition={glide.timing}
-			onAnimationComplete={() => {
-				gliding.current = false;
-				setGlide((current) => (current.moving ? { ...current, moving: false } : current));
-			}}
-			className={cn('relative data-moving:overflow-clip', className)}
-		>
+		<div ref={boxRef} data-slot="transition" className={cn('relative', className)}>
 			{/* flow-root keeps the margins of what is inside inside, so what is measured here is the
 			    size the content actually takes. */}
 			<div ref={contentRef} data-slot="transition-content" className="flow-root">
 				{children}
 			</div>
-		</motion.div>
+		</div>
 	);
 }
