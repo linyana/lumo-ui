@@ -1,58 +1,28 @@
-import { KeyRound, Truck, Users } from 'lucide-react';
-import { Steps } from '@/components/lumo/ui/Steps';
+import { Code } from '@/components/lumo/ui/Code';
+import type { DocFile } from '@/pages/DocPage';
+/* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
+import stepsSource from '@/components/lumo/ui/Steps.tsx?raw';
+import cnSource from '@/lib/cn.ts?raw';
 import {
-	Command,
+	DocInstall,
 	DocPage,
+	DocPreview,
 	DocSection,
 	DocTable,
-	DocTabs,
 	Mono,
 	PropTable,
 	type PropNode,
 } from '@/pages/DocPage';
+import Basic from './demos/basic';
+import basicSource from './demos/basic.tsx?raw';
+import Dots from './demos/dots';
+import dotsSource from './demos/dots.tsx?raw';
+import Failed from './demos/failed';
+import failedSource from './demos/failed.tsx?raw';
+import Vertical from './demos/vertical';
+import verticalSource from './demos/vertical.tsx?raw';
 
-const REPO = 'https://github.com/linyana/lumo-ui/blob/main';
-
-const files = ['src/components/lumo/ui/Steps.tsx', 'src/lib/cn.ts'];
-
-const installTabs = [
-	{
-		value: 'cli',
-		label: 'Command',
-		content: (
-			<div className="space-y-3">
-				<Command>bunx shadcn@latest add linyana/lumo-ui/steps</Command>
-				<p className="text-muted-foreground">
-					copies <Mono>Steps.tsx</Mono> and the <Mono>cn()</Mono> it imports.{' '}
-					<Mono>lucide-react</Mono> comes from the package manager.
-				</p>
-			</div>
-		),
-	},
-	{
-		value: 'manual',
-		label: 'Manual',
-		content: (
-			<div className="space-y-3">
-				<Command>bun add lucide-react tailwind-variants</Command>
-				<ul className="space-y-1.5">
-					{files.map((path) => (
-						<li key={path}>
-							<a
-								href={`${REPO}/${path}`}
-								target="_blank"
-								rel="noreferrer noopener"
-								className="font-mono underline underline-offset-4 hover:text-foreground"
-							>
-								{path}
-							</a>
-						</li>
-					))}
-				</ul>
-			</div>
-		),
-	},
-];
+const files: DocFile[] = [{ path: 'src/components/lumo/ui/Steps.tsx', code: stepsSource }];
 
 const rootProps: Record<string, PropNode> = {
 	current: {
@@ -107,7 +77,7 @@ const hookRows = [
 	[
 		'data-slot="steps-separator"',
 		'the line to the next step',
-		'aria-hidden; it is hidden on the last item by CSS, so no caller has to place one.',
+		'aria-hidden; hidden on the last item by CSS, so no caller has to place one.',
 	],
 	[
 		'data-slot="steps-content"',
@@ -122,11 +92,26 @@ const hookRows = [
 	['data-slot="steps-description"', 'the detail under it', 'always muted.'],
 ];
 
+const usageImport = "import { Steps } from '@/components/lumo/ui/Steps';";
+const usageExample = `<Steps.Root current={1}>
+	<Steps.Item>
+		<Steps.Title>account</Steps.Title>
+		<Steps.Description>email and password</Steps.Description>
+	</Steps.Item>
+	<Steps.Item>
+		<Steps.Title>workspace</Steps.Title>
+	</Steps.Item>
+</Steps.Root>`;
+
 export function StepsPage() {
 	return (
 		<DocPage title="steps" description="a sequence of steps, with the one you are on marked">
+			<DocPreview name="basic.tsx" source={basicSource}>
+				<Basic />
+			</DocPreview>
+
 			<DocSection
-				title="install"
+				title="installation"
 				note={
 					<>
 						one file, no Base UI: there is no behaviour to borrow beyond an{' '}
@@ -135,35 +120,27 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<DocTabs tabs={installTabs} />
+				<DocInstall
+					name="steps"
+					packages={['lucide-react', 'tailwind-variants']}
+					files={files}
+					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+				/>
 			</DocSection>
 
 			<DocSection
-				title="a sequence"
+				title="usage"
 				note={
 					<>
-						<Mono>current</Mono> is the whole state: everything before it is{' '}
-						<Mono>finish</Mono> and draws a check, it is <Mono>process</Mono> and marks
-						itself <Mono>aria-current=&quot;step&quot;</Mono>, everything after waits.
-						the connector reports the step it leaves, so a finished step trails the
-						primary colour and a waiting one trails the border.
+						items have to be direct children of the root: that is where each one reads
+						its position from, so no caller states an index.
 					</>
 				}
 			>
-				<Steps.Root current={1} className="max-w-2xl">
-					<Steps.Item>
-						<Steps.Title>account</Steps.Title>
-						<Steps.Description>email and password</Steps.Description>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>workspace</Steps.Title>
-						<Steps.Description>name and region</Steps.Description>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>invite</Steps.Title>
-						<Steps.Description>who joins first</Steps.Description>
-					</Steps.Item>
-				</Steps.Root>
+				<div className="space-y-3">
+					<Code code={usageImport} language="tsx" header={false} />
+					<Code code={usageExample} language="tsx" header={false} />
+				</div>
 			</DocSection>
 
 			<DocSection
@@ -176,23 +153,9 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<Steps.Root current={1} orientation="vertical" className="max-w-sm text-sm">
-					<Steps.Item>
-						<Steps.Title>draft</Steps.Title>
-						<Steps.Description>the author writes, the editor reads.</Steps.Description>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>review</Steps.Title>
-						<Steps.Description>
-							two approvals, or one from the owner. comments land in the thread and
-							nothing else moves.
-						</Steps.Description>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>publish</Steps.Title>
-						<Steps.Description>scheduled, or now.</Steps.Description>
-					</Steps.Item>
-				</Steps.Root>
+				<DocPreview name="vertical.tsx" source={verticalSource}>
+					<Vertical />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
@@ -206,62 +169,29 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<Steps.Root current={1} className="max-w-2xl">
-					<Steps.Item>
-						<Steps.Title>build</Steps.Title>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>test</Steps.Title>
-					</Steps.Item>
-					<Steps.Item status="error">
-						<Steps.Title>deploy</Steps.Title>
-						<Steps.Description>exited 1 after 12s</Steps.Description>
-					</Steps.Item>
-				</Steps.Root>
+				<DocPreview name="failed.tsx" source={failedSource}>
+					<Failed />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
 				title="dots, and glyphs"
 				note={
 					<>
-						<Mono>variant=&quot;dot&quot;</Mono> keeps the circle&apos;s box and paints
-						a dot in it, because the connector is positioned from that box. an{' '}
+						<Mono>variant=&quot;dot&quot;</Mono> keeps the circle’s box and paints a dot
+						in it, because the connector is positioned from that box. an{' '}
 						<Mono>icon</Mono> is a rendered element in the same slot as the number, so
 						it grows with the type — no size to pass.
 					</>
 				}
 			>
-				<div className="grid gap-8 sm:grid-cols-2">
-					<Steps.Root variant="dot" orientation="vertical" className="text-sm">
-						<Steps.Item>
-							<Steps.Title>requirements</Steps.Title>
-							<Steps.Description>what has to be true first</Steps.Description>
-						</Steps.Item>
-						<Steps.Item>
-							<Steps.Title>installation</Steps.Title>
-							<Steps.Description>two commands, one file</Steps.Description>
-						</Steps.Item>
-						<Steps.Item>
-							<Steps.Title>usage</Steps.Title>
-							<Steps.Description>compose, do not configure</Steps.Description>
-						</Steps.Item>
-					</Steps.Root>
-					<Steps.Root current={1} orientation="vertical" size="sm">
-						<Steps.Item icon={<KeyRound />}>
-							<Steps.Title>sign in</Steps.Title>
-						</Steps.Item>
-						<Steps.Item icon={<Users />}>
-							<Steps.Title>pick a team</Steps.Title>
-						</Steps.Item>
-						<Steps.Item icon={<Truck />}>
-							<Steps.Title>ship it</Steps.Title>
-						</Steps.Item>
-					</Steps.Root>
-				</div>
+				<DocPreview name="dots.tsx" source={dotsSource}>
+					<Dots />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
-				title="props"
+				title="api reference"
 				note={
 					<>
 						every part takes the props of the element it renders, so{' '}

@@ -1,7 +1,104 @@
-import { CalendarClock, Plus } from 'lucide-react';
-import { Button } from '@/components/lumo/ui/Button';
-import { Card } from '@/components/lumo/ui/Card';
-import { DocPage, DocSection } from '@/pages/DocPage';
+import { Code } from '@/components/lumo/ui/Code';
+import type { DocFile } from '@/pages/DocPage';
+/* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
+import cardSource from '@/components/lumo/ui/Card.tsx?raw';
+import cnSource from '@/lib/cn.ts?raw';
+import {
+	DocInstall,
+	DocPage,
+	DocPreview,
+	DocSection,
+	DocTable,
+	Mono,
+	PropTable,
+	type PropNode,
+} from '@/pages/DocPage';
+import Basic from './demos/basic';
+import basicSource from './demos/basic.tsx?raw';
+import Flush from './demos/flush';
+import flushSource from './demos/flush.tsx?raw';
+import Sizes from './demos/sizes';
+import sizesSource from './demos/sizes.tsx?raw';
+import Stretch from './demos/stretch';
+import stretchSource from './demos/stretch.tsx?raw';
+
+const files: DocFile[] = [{ path: 'src/components/lumo/ui/Card.tsx', code: cardSource }];
+
+const rootProps: Record<string, PropNode> = {
+	size: {
+		type: '"sm" | "md"',
+		default: '"md"',
+		description:
+			'The padding and the gap between parts. Set once on the root: every part reads it back off the root, so a dense list of cards changes at one place.',
+	},
+	className: {
+		type: 'string',
+		description: 'Merged last through cn(), onto the surface itself.',
+	},
+	'...props': {
+		type: 'HTMLDivElement props',
+		description: 'The root is a plain div: onClick, aria-*, data-* all land on it.',
+	},
+};
+
+const partRows = [
+	[
+		'Card.Header',
+		'a grid of its own',
+		'one column, or two once an action is present — the action then sits opposite the title and its description.',
+	],
+	[
+		'Card.Title',
+		'a div, not a heading',
+		'the level that is right for a card is the page’s to know.',
+	],
+	['Card.Description', 'muted text', 'one line under the title, in the same column.'],
+	[
+		'Card.Action',
+		'the corner slot',
+		'spans both rows, so it hangs beside the title and the description rather than under them.',
+	],
+	[
+		'Card.Content',
+		'the body',
+		'takes the slack in a stretched card, which keeps footers aligned.',
+	],
+	[
+		'Card.Footer',
+		'a row at the bottom',
+		'flex, gap-2, no divider — a footer that wants one adds border-t.',
+	],
+];
+
+const hookRows = [
+	['data-slot="card"', 'the surface', 'a div; the card adds the look, nothing else.'],
+	['data-size', 'sm | md', 'on the root, and read by every part through group-data-[size=…].'],
+	[
+		'data-slot="card-header"',
+		'the top block',
+		'a grid; two columns only when an action is there.',
+	],
+	['data-slot="card-title"', 'its name', 'text-base font-semibold, overridable like any div.'],
+	['data-slot="card-description"', 'the line under it', 'text-sm text-muted-foreground.'],
+	['data-slot="card-action"', 'the corner slot', 'column two, rows one to two.'],
+	['data-slot="card-content"', 'the body', 'flex-1, so a stretched card keeps its footer down.'],
+	['data-slot="card-footer"', 'the bottom row', 'flex items-center gap-2.'],
+];
+
+const usageImport = "import { Card } from '@/components/lumo/ui/Card';";
+const usageExample = `<Card.Root>
+	<Card.Header>
+		<Card.Title>scheduled reports</Card.Title>
+		<Card.Description>weekly snapshots.</Card.Description>
+		<Card.Action>
+			<Button variant="ghost" size="sm">edit</Button>
+		</Card.Action>
+	</Card.Header>
+	<Card.Content>every monday at 09:00</Card.Content>
+	<Card.Footer className="justify-end">
+		<Button size="sm">new report</Button>
+	</Card.Footer>
+</Card.Root>`;
 
 export function CardPage() {
 	return (
@@ -9,68 +106,54 @@ export function CardPage() {
 			title="card"
 			description="one surface, one subject, with its own header and footer"
 		>
+			<DocPreview name="basic.tsx" source={basicSource}>
+				<Basic />
+			</DocPreview>
+
 			<DocSection
-				title="anatomy"
+				title="installation"
 				note={
 					<>
-						parts, not props: a header holds the title, the description and an action
-						that moves itself to the opposite column, so nothing has to be positioned by
-						hand.
+						one file, every part a function in it. no Base UI here: a card has nothing
+						to announce and nothing to trap, so what is left is layout.
 					</>
 				}
 			>
-				<Card.Root className="max-w-sm">
-					<Card.Header>
-						<Card.Title>scheduled reports</Card.Title>
-						<Card.Description>weekly snapshots, no manual exports.</Card.Description>
-						<Card.Action>
-							<Button variant="ghost" size="sm">
-								edit
-							</Button>
-						</Card.Action>
-					</Card.Header>
-					<Card.Content className="text-sm text-muted-foreground">
-						<div className="flex items-center gap-2">
-							<CalendarClock className="size-4 shrink-0" />
-							<span>every monday at 09:00 · 4 recipients</span>
-						</div>
-					</Card.Content>
-					<Card.Footer className="justify-end">
-						<Button variant="outline" size="sm">
-							preview
-						</Button>
-						<Button size="sm" icon={<Plus />}>
-							new report
-						</Button>
-					</Card.Footer>
-				</Card.Root>
+				<DocInstall
+					name="card"
+					packages={['tailwind-variants']}
+					files={files}
+					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+				/>
 			</DocSection>
 
 			<DocSection
-				title="small"
+				title="usage"
 				note={
 					<>
-						<code>size</code> is set once on the root and read back by every part, so a
+						parts, not props: a header holds the title, the description and an action
+						that moves itself to the opposite column, so nothing is positioned by hand.
+					</>
+				}
+			>
+				<div className="space-y-3">
+					<Code code={usageImport} language="tsx" header={false} />
+					<Code code={usageExample} language="tsx" header={false} />
+				</div>
+			</DocSection>
+
+			<DocSection
+				title="sizes"
+				note={
+					<>
+						<Mono>size</Mono> is set once on the root and read back by every part, so a
 						dense list of cards only changes at the top.
 					</>
 				}
 			>
-				<div className="flex flex-wrap gap-4">
-					<Card.Root size="sm" className="w-64">
-						<Card.Header>
-							<Card.Title>drafts</Card.Title>
-							<Card.Description>unsent replies</Card.Description>
-						</Card.Header>
-						<Card.Content className="text-2xl font-semibold">12</Card.Content>
-					</Card.Root>
-					<Card.Root size="sm" className="w-64">
-						<Card.Header>
-							<Card.Title>queued</Card.Title>
-							<Card.Description>waiting on the queue</Card.Description>
-						</Card.Header>
-						<Card.Content className="text-2xl font-semibold">3</Card.Content>
-					</Card.Root>
-				</div>
+				<DocPreview name="sizes.tsx" source={sizesSource}>
+					<Sizes />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
@@ -78,22 +161,54 @@ export function CardPage() {
 				note={
 					<>
 						the card draws no divider and no padding of its own between parts — a footer
-						that needs one adds <code>border-t pt-6</code>, and a table or an image goes
+						that needs one adds <Mono>border-t pt-6</Mono>, and a table or an image goes
 						edge to edge by cancelling the horizontal padding.
 					</>
 				}
 			>
-				<Card.Root className="max-w-sm py-0">
-					<Card.Content className="px-0 pt-6">
-						<div className="h-24 rounded-t-[inherit] bg-muted" />
-					</Card.Content>
-					<Card.Content className="text-sm">
-						an image sits flush against the card's top corners.
-					</Card.Content>
-					<Card.Footer className="border-t pt-4 pb-4 text-xs text-muted-foreground">
-						footer with a divider
-					</Card.Footer>
-				</Card.Root>
+				<DocPreview name="flush.tsx" source={flushSource}>
+					<Flush />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="equal heights"
+				note={
+					<>
+						<Mono>Content</Mono> grows into the slack of a stretched card, so a footer
+						stays on the bottom edge however short the body is and two cards in one row
+						share an outline.
+					</>
+				}
+			>
+				<DocPreview name="stretch.tsx" source={stretchSource}>
+					<Stretch />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="api reference"
+				note="the root is where the one prop lives; every other part is a div with an opinion about layout."
+			>
+				<div className="space-y-6">
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Card.Root</Mono> — the surface
+						</p>
+						<PropTable props={rootProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">the parts</p>
+						<DocTable head={['part', 'is', 'notes']} mono={[0]} rows={partRows} />
+					</div>
+				</div>
+			</DocSection>
+
+			<DocSection
+				title="hooks"
+				note="each part names itself, so a stylesheet can reach one without a class of its own."
+			>
+				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>
 		</DocPage>
 	);

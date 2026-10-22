@@ -1,61 +1,296 @@
 import { Code } from '@/components/lumo/ui/Code';
-import { DocPage, DocSection } from '@/pages/DocPage';
+import type { DocFile } from '@/pages/DocPage';
+/* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
+import codeSource from '@/components/lumo/ui/Code.tsx?raw';
+import buttonSource from '@/components/lumo/ui/Button.tsx?raw';
+import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
+import cnSource from '@/lib/cn.ts?raw';
+import shikiSource from '@/lib/shiki.ts?raw';
+import {
+	DocInstall,
+	DocPage,
+	DocPreview,
+	DocSection,
+	DocTable,
+	Mono,
+	PropTable,
+	type PropNode,
+} from '@/pages/DocPage';
+import Basic from './demos/basic';
+import basicSource from './demos/basic.tsx?raw';
+import LineNumbers from './demos/line-numbers';
+import lineNumbersSource from './demos/line-numbers.tsx?raw';
+import Surfaces from './demos/surfaces';
+import surfacesSource from './demos/surfaces.tsx?raw';
+import Unknown from './demos/unknown';
+import unknownSource from './demos/unknown.tsx?raw';
+import Wrap from './demos/wrap';
+import wrapSource from './demos/wrap.tsx?raw';
 
-const source = [
-	"import { clsx, type ClassValue } from 'clsx';",
-	"import { twMerge } from 'tailwind-merge';",
-	'',
-	'/** Merges class names, last one wins. */',
-	'export function cn(...inputs: ClassValue[]) {',
-	'\treturn twMerge(clsx(inputs));',
-	'}',
-].join('\n');
+const files: DocFile[] = [{ path: 'src/components/lumo/ui/Code.tsx', code: codeSource }];
 
-const long = [
-	'const message =',
-	"\t'every line here is longer than the block it sits in, which is the whole point of the demo';",
-	'export default message;',
-].join('\n');
+const codeProps: Record<string, PropNode> = {
+	code: {
+		required: true,
+		type: 'string',
+		description: 'The source itself, newlines and all. Nothing reads it but the highlighter.',
+	},
+	language: {
+		type: 'string',
+		description:
+			'Grammar to highlight with, by name or by the spellings people write — ts, sh, yml. Anything we do not ship falls back to plain text instead of failing.',
+	},
+	fileName: {
+		type: 'string',
+		description: 'Shown in the header instead of the language, which then sits beside it.',
+	},
+	variant: {
+		type: '"filled" | "outlined" | "ghost"',
+		default: '"outlined"',
+		description: 'The surface: muted, bordered on the page, or nothing at all.',
+	},
+	showLineNumbers: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'A column of numbers, max-content wide so it takes only its widest number, with the text in the slack.',
+	},
+	wrap: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'Folds long lines instead of scrolling them sideways; the block stays as wide as the page.',
+	},
+	copyable: {
+		type: 'boolean',
+		default: 'true',
+		description:
+			'The button in the header, which takes the whole block and says so for a moment.',
+	},
+	header: {
+		type: 'boolean',
+		default: 'true',
+		description:
+			'The bar above the block. Off, the code is the whole block and language only picks the grammar.',
+	},
+	className: {
+		type: 'string',
+		description: 'Merged last through cn(), onto the block itself.',
+	},
+	'...props': {
+		type: 'HTMLDivElement props',
+		description: 'The block is a div: id, data-*, aria-* all land on it.',
+	},
+};
+
+const hookRows = [
+	['data-slot="code"', 'the block', 'a div carrying the variant’s colours.'],
+	['data-variant', 'filled | outlined | ghost', 'mirrored onto it, so plain CSS can reach it.'],
+	['data-slot="code-header"', 'the bar above', 'min-h-9, border-b unless the block is ghost.'],
+	[
+		'data-slot="code-title"',
+		'the file or the language',
+		'truncates; the language follows it when both are given.',
+	],
+	[
+		'data-slot="code-body"',
+		'the pre',
+		'scrolls on its own, so the page never moves sideways for it.',
+	],
+	['data-slot="code-line"', 'one line', 'a grid cell; an empty line still occupies its row.'],
+	[
+		'data-slot="code-line-number"',
+		'its number',
+		'select-none, so copying the code does not take the numbers.',
+	],
+	[
+		'data-slot="code-token"',
+		'a run of one style',
+		'colour arrives as --code-light and --code-dark, and .dark picks.',
+	],
+	[
+		'data-slot="code-copy"',
+		'the copy button',
+		'a Button, size icon, so it loads when the clipboard is slow.',
+	],
+];
+
+const languages = [
+	'bash',
+	'c',
+	'cpp',
+	'csharp',
+	'css',
+	'diff',
+	'docker',
+	'go',
+	'graphql',
+	'html',
+	'java',
+	'javascript',
+	'json',
+	'jsonc',
+	'kotlin',
+	'less',
+	'lua',
+	'markdown',
+	'php',
+	'python',
+	'ruby',
+	'rust',
+	'scss',
+	'shellscript',
+	'sql',
+	'svelte',
+	'swift',
+	'toml',
+	'tsx',
+	'typescript',
+	'vue',
+	'xml',
+	'yaml',
+];
+
+const usageImport = "import { Code } from '@/components/lumo/ui/Code';";
+const usageExample = `<Code
+	code={source}
+	language="ts"
+	fileName="cn.ts"
+	showLineNumbers
+/>`;
 
 export function CodePage() {
 	return (
 		<DocPage title="code" description="source, coloured, with a way to take it">
+			<DocPreview name="basic.tsx" source={basicSource}>
+				<Basic />
+			</DocPreview>
+
 			<DocSection
-				title="a file, its language, and a copy button"
-				note="the grammar is fetched the first time a block asks for it; until then the same lines render unstyled, so nothing reflows."
+				title="installation"
+				note={
+					<>
+						the block is one file; the highlighter behind it is another, and it is the
+						half that carries the weight. <Mono>Code</Mono> also borrows{' '}
+						<Mono>Button</Mono> for the copy.
+					</>
+				}
 			>
-				<Code code={source} language="ts" fileName="cn.ts" />
+				<DocInstall
+					name="code"
+					packages={['shiki', 'lucide-react', 'tailwind-variants']}
+					files={files}
+					reaches={[
+						{ path: 'src/lib/shiki.ts', code: shikiSource },
+						{ path: 'src/components/lumo/ui/Button.tsx', code: buttonSource },
+						{
+							path: 'src/components/lumo/ui/Spinner.tsx',
+							code: spinnerSource,
+						},
+						{ path: 'src/lib/cn.ts', code: cnSource },
+					]}
+				/>
 			</DocSection>
+
 			<DocSection
-				title="with line numbers"
-				note="numbers are a column, not part of the text."
+				title="usage"
+				note="one string, one grammar. the header names the file and takes the whole block."
 			>
-				<Code code={source} language="typescript" showLineNumbers />
+				<div className="space-y-3">
+					<Code code={usageImport} language="tsx" header={false} />
+					<Code code={usageExample} language="tsx" header={false} />
+				</div>
 			</DocSection>
+
 			<DocSection
-				title="three surfaces"
+				title="line numbers"
+				note={
+					<>
+						numbers are a column, not part of the text: wide as the widest number and no
+						wider, and out of the way when the block is copied.
+					</>
+				}
+			>
+				<DocPreview name="line-numbers.tsx" source={lineNumbersSource}>
+					<LineNumbers />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="surfaces"
 				note="the same block on a filled, an outlined and a bare background."
 			>
-				<div className="space-y-4">
-					<Code code={source} language="ts" fileName="cn.ts" variant="filled" />
-					<Code code={source} language="ts" fileName="cn.ts" variant="outlined" />
-					<Code code={source} language="ts" fileName="cn.ts" variant="ghost" />
-				</div>
+				<DocPreview name="surfaces.tsx" source={surfacesSource}>
+					<Surfaces />
+				</DocPreview>
 			</DocSection>
+
 			<DocSection
 				title="wrapping"
-				note="long lines scroll sideways by default; with `wrap` they fold and the block stays narrow."
+				note={
+					<>
+						long lines scroll sideways by default; with <Mono>wrap</Mono> they fold and
+						the block stays as narrow as the page leaves it.
+					</>
+				}
 			>
-				<div className="space-y-4">
-					<Code code={long} language="ts" fileName="scroll.ts" />
-					<Code code={long} language="ts" fileName="wrap.ts" wrap />
-				</div>
+				<DocPreview name="wrap.tsx" source={wrapSource}>
+					<Wrap />
+				</DocPreview>
 			</DocSection>
+
 			<DocSection
 				title="a language we do not ship"
-				note="falls back to plain text rather than failing: the block still reads, just without colour."
+				note={
+					<>
+						<Mono>resolveLanguage</Mono> answers <Mono>text</Mono> for anything it does
+						not know, so the block still reads — just without colour.
+					</>
+				}
 			>
-				<Code code={source} language="brainfuck" fileName="unknown.bf" />
+				<DocPreview name="unknown.tsx" source={unknownSource}>
+					<Unknown />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="languages"
+				note={
+					<>
+						one grammar per name, fetched the first time a block asks for it — a page of
+						TypeScript never downloads the PHP one. these are the names that carry a
+						grammar, and the spellings people write are folded onto them:{' '}
+						<Mono>ts</Mono> → <Mono>typescript</Mono>, <Mono>sh</Mono> →{' '}
+						<Mono>bash</Mono>, <Mono>yml</Mono> → <Mono>yaml</Mono>, <Mono>py</Mono> →{' '}
+						<Mono>python</Mono>, <Mono>jsx</Mono> and <Mono>js</Mono> →{' '}
+						<Mono>javascript</Mono>, <Mono>rs</Mono> → <Mono>rust</Mono>,{' '}
+						<Mono>md</Mono> → <Mono>markdown</Mono>.
+					</>
+				}
+			>
+				<p className="flex flex-wrap gap-1.5 font-mono text-xs text-muted-foreground">
+					{languages.map((name) => (
+						<span key={name} className="rounded-sm bg-muted px-1.5 py-0.5">
+							{name}
+						</span>
+					))}
+				</p>
+			</DocSection>
+
+			<DocSection title="api reference" note="the code is the only required prop.">
+				<PropTable props={codeProps} />
+			</DocSection>
+
+			<DocSection
+				title="hooks"
+				note={
+					<>
+						colour rides on two custom properties per token rather than on a class, so
+						switching the theme repaints and never re-tokenises.
+					</>
+				}
+			>
+				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>
 		</DocPage>
 	);

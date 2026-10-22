@@ -1,96 +1,222 @@
-import { Fragment } from 'react';
-import { Dropdown } from '@/components/lumo/ui/Dropdown';
-import { DocPage, DocSection } from '@/pages/DocPage';
+import { Code } from '@/components/lumo/ui/Code';
+import type { DocFile } from '@/pages/DocPage';
+/* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
+import dropdownSource from '@/components/lumo/ui/Dropdown.tsx?raw';
+import cnSource from '@/lib/cn.ts?raw';
+import {
+	DocInstall,
+	DocPage,
+	DocPreview,
+	DocSection,
+	DocTable,
+	Mono,
+	PropTable,
+	type PropNode,
+} from '@/pages/DocPage';
+import Basic from './demos/basic';
+import basicSource from './demos/basic.tsx?raw';
+import Detached from './demos/detached';
+import detachedSource from './demos/detached.tsx?raw';
 
-/** The docs' own example, kept verbatim as the reference the lumo dropdown is measured against. */
-const docsDropdowns = {
-	library: {
-		heading: 'Library',
-		groups: [
-			['Add to library', 'Add to favorites'],
-			['Create playlist', 'Create station'],
-		],
+const files: DocFile[] = [{ path: 'src/components/lumo/ui/Dropdown.tsx', code: dropdownSource }];
+
+const rootProps: Record<string, PropNode> = {
+	open: {
+		type: 'boolean',
+		description: 'The menu, controlled. Leave it out and the root keeps the state itself.',
 	},
-	playback: {
-		heading: 'Playback',
-		groups: [
-			['Play now', 'Add to queue'],
-			['Play next', 'Play last', 'Sleep timer'],
-		],
+	defaultOpen: {
+		type: 'boolean',
+		default: 'false',
+		description: 'Where it starts, uncontrolled.',
 	},
-	share: {
-		heading: 'Share',
-		groups: [
-			['Copy link', 'Copy embed code'],
-			['Share to contacts', 'Share to social'],
-		],
+	onOpenChange: {
+		type: '(open: boolean, event, reason) => void',
+		description: 'Fires on the trigger, on a click outside, and on escape.',
 	},
-} as const;
+	modal: {
+		type: 'boolean',
+		default: 'true',
+		description:
+			'Whether the page behind is inert while the menu is open. Off, the menu follows a scroll of the page it belongs to — which is what a menu on a long page wants.',
+	},
+	loop: {
+		type: 'boolean',
+		default: 'true',
+		description: 'Whether arrow keys wrap at the ends.',
+	},
+};
 
-type DocsDropdownKey = keyof typeof docsDropdowns;
+const partRows = [
+	['Dropdown.Root', 'the state', 'one root per menu, or one for many triggers through handle.'],
+	[
+		'Dropdown.Trigger',
+		'the row you click',
+		'a button, h-8, with the state layer every control has.',
+	],
+	['Dropdown.Portal', 'where it is mounted', 'the body, so nothing can clip the popup.'],
+	[
+		'Dropdown.Positioner',
+		'where it points',
+		'the offset, the side and the flip, in Base UI’s hands.',
+	],
+	[
+		'Dropdown.Popup',
+		'the panel',
+		'rounded-lg, bordered, from 90% as it arrives; sized to the row it holds.',
+	],
+	[
+		'Dropdown.Viewport',
+		'the sliding window',
+		'one popup can hold several panels; the old slides out the way the new came in.',
+	],
+	['Dropdown.Group', 'a block of rows', 'grouped for the arrow keys as well as the eye.'],
+	['Dropdown.GroupLabel', 'its name', 'muted, not focusable.'],
+	[
+		'Dropdown.Item',
+		'one action',
+		'highlighted by Base UI, which is what the background follows.',
+	],
+	['Dropdown.Separator', 'a line between groups', 'mx-1, h-px.'],
+];
 
-const docsDropdownKeys = Object.keys(docsDropdowns) as DocsDropdownKey[];
+const hookRows = [
+	['data-slot="dropdown-trigger"', 'the row you click', 'data-pressed while the menu is open.'],
+	[
+		'data-slot="dropdown-popup"',
+		'the panel',
+		'w-(--popup-width), so a wider panel is wider, not a wider box.',
+	],
+	['data-highlighted', 'on one item', 'written by Base UI as the keyboard or the pointer moves.'],
+	['data-pressed', 'on the trigger', 'the state layer’s hover weight, held while open.'],
+	[
+		'data-starting-style · data-ending-style',
+		'entering / leaving',
+		'scale-90 and opacity-0; data-instant drops the travel.',
+	],
+	[
+		'--popup-width · --popup-height',
+		'the current panel’s size',
+		'set by the viewport, so the popup eases between panels.',
+	],
+	[
+		'data-activation-direction',
+		'left | right | up | down',
+		'on the viewport; which way the panels slide.',
+	],
+];
 
-const docsDropdown = Dropdown.createHandle<DocsDropdownKey>();
+const usageImport = "import { Dropdown } from '@/components/lumo/ui/Dropdown';";
+const usageExample = `<Dropdown.Root>
+	<Dropdown.Trigger>share</Dropdown.Trigger>
+	<Dropdown.Portal>
+		<Dropdown.Positioner sideOffset={8} align="start">
+			<Dropdown.Popup>
+				<Dropdown.Group>
+					<Dropdown.GroupLabel>share</Dropdown.GroupLabel>
+					<Dropdown.Item onClick={copyLink}>copy link</Dropdown.Item>
+				</Dropdown.Group>
+				<Dropdown.Separator />
+				<Dropdown.Item>share to social</Dropdown.Item>
+			</Dropdown.Popup>
+		</Dropdown.Positioner>
+	</Dropdown.Portal>
+</Dropdown.Root>`;
 
 export function DropdownPage() {
 	return (
 		<DocPage
 			title="dropdown"
-			description="actions on a trigger, with groups, separators and submenus"
+			description="actions on a trigger, with groups, separators and one popup many triggers can share"
 		>
+			<DocPreview name="basic.tsx" source={basicSource}>
+				<Basic />
+			</DocPreview>
+
 			<DocSection
-				title="the same content, styled the way base ui's docs do it"
+				title="installation"
 				note={
 					<>
-						the docs' own styling, straight from base ui's site: no radius, a hard
-						shadow, a solid block behind the highlighted row. kept here as the reference
-						— the lumo dropdown should switch triggers with the same rhythm, whatever it
-						ends up looking like.
+						one file. the keyboard, the flip, the dismissal and the typeahead are Base
+						UI’s; what is here is the surface and the row.
 					</>
 				}
 			>
-				<div className="flex flex-wrap gap-2">
-					{docsDropdownKeys.map((key) => (
-						<Dropdown.Trigger key={key} handle={docsDropdown} payload={key}>
-							{docsDropdowns[key].heading}
-						</Dropdown.Trigger>
-					))}
+				<DocInstall
+					name="dropdown"
+					packages={['@base-ui/react']}
+					files={files}
+					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+				/>
+			</DocSection>
+
+			<DocSection
+				title="usage"
+				note="a trigger, a portal, a positioner, a popup. the positioner is what Base UI moves."
+			>
+				<div className="space-y-3">
+					<Code code={usageImport} language="tsx" header={false} />
+					<Code code={usageExample} language="tsx" header={false} />
 				</div>
-				<Dropdown.Root handle={docsDropdown} modal={false}>
-					{({ payload }) => (
-						<Dropdown.Portal>
-							<Dropdown.Positioner sideOffset={8} align="start">
-								<Dropdown.Popup>
-									<Dropdown.Viewport>
-										{payload &&
-											docsDropdowns[payload].groups.map(
-												(group, groupIndex) => (
-													<Fragment key={group[0]}>
-														<Dropdown.Group>
-															{groupIndex === 0 && (
-																<Dropdown.GroupLabel>
-																	{docsDropdowns[payload].heading}
-																</Dropdown.GroupLabel>
-															)}
-															{group.map((item) => (
-																<Dropdown.Item key={item}>
-																	{item}
-																</Dropdown.Item>
-															))}
-														</Dropdown.Group>
-														{groupIndex <
-															docsDropdowns[payload].groups.length -
-																1 && <Dropdown.Separator />}
-													</Fragment>
-												),
-											)}
-									</Dropdown.Viewport>
-								</Dropdown.Popup>
-							</Dropdown.Positioner>
-						</Dropdown.Portal>
-					)}
-				</Dropdown.Root>
+			</DocSection>
+
+			<DocSection
+				title="one popup, three triggers"
+				note={
+					<>
+						no trigger owns the popup — one <Mono>handle</Mono> does, and each trigger
+						hands it its own payload. the popup never unmounts, so moving between
+						triggers slides the old panel out the way the new one came in, and the box
+						eases from one width to the other.
+					</>
+				}
+			>
+				<DocPreview name="detached.tsx" source={detachedSource}>
+					<Detached />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="what is not here"
+				note={
+					<>
+						no rows that check, no rows that nest. Base UI has both —{' '}
+						<Mono>CheckboxItem</Mono>, <Mono>RadioItem</Mono> and <Mono>Submenu</Mono> —
+						and each is a one-line export and a class away; the dropdown stays the list
+						of actions, and navigation rows are <Mono>Menu</Mono>’s job.
+					</>
+				}
+			>
+				<p className="text-sm text-muted-foreground">
+					an <Mono>Item</Mono> closes the menu when it is chosen. Give it{' '}
+					<Mono>closeOnClick={'{false}'}</Mono> to keep it open, which is what a row with
+					a switch of its own would need.
+				</p>
+			</DocSection>
+
+			<DocSection
+				title="api reference"
+				note="the root takes Base UI’s props; every other part is a styled element."
+			>
+				<div className="space-y-6">
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Dropdown.Root</Mono> — the state
+						</p>
+						<PropTable props={rootProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">the parts</p>
+						<DocTable head={['part', 'is', 'notes']} mono={[0]} rows={partRows} />
+					</div>
+				</div>
+			</DocSection>
+
+			<DocSection
+				title="hooks"
+				note="the popup’s size is a variable the viewport sets, which is how one box holds panels of different widths."
+			>
+				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>
 		</DocPage>
 	);

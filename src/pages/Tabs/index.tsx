@@ -1,163 +1,219 @@
-import { useState } from 'react';
-import { Tabs } from '@/components/lumo/ui/Tabs';
-import { DocPage, DocPreview, DocSection, Mono } from '@/pages/DocPage';
+import { Code } from '@/components/lumo/ui/Code';
+import type { DocFile } from '@/pages/DocPage';
+/* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
+import tabsSource from '@/components/lumo/ui/Tabs.tsx?raw';
+import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
+import cnSource from '@/lib/cn.ts?raw';
+import motionSource from '@/lib/motion.ts?raw';
+import {
+	DocInstall,
+	DocPage,
+	DocPreview,
+	DocSection,
+	DocTable,
+	Mono,
+	PropTable,
+	type PropNode,
+} from '@/pages/DocPage';
+import Basic from './demos/basic';
+import basicSource from './demos/basic.tsx?raw';
 import Request from './demos/request';
 import requestSource from './demos/request.tsx?raw';
+import Sizes from './demos/sizes';
+import sizesSource from './demos/sizes.tsx?raw';
+import Swapped from './demos/swapped';
+import swappedSource from './demos/swapped.tsx?raw';
+import Tracked from './demos/tracked';
+import trackedSource from './demos/tracked.tsx?raw';
+import Variants from './demos/variants';
+import variantsSource from './demos/variants.tsx?raw';
+import Vertical from './demos/vertical';
+import verticalSource from './demos/vertical.tsx?raw';
 
-const items = [
-	{ value: 'overview', label: 'overview', content: 'workspace stats and activity.' },
-	{ value: 'activity', label: 'activity', content: 'whom changed what, and when.' },
-	{ value: 'settings', label: 'settings', content: 'profile and preferences.' },
+const files: DocFile[] = [{ path: 'src/components/lumo/ui/Tabs.tsx', code: tabsSource }];
+
+const rootProps: Record<string, PropNode> = {
+	variant: {
+		type: '"rounded" | "square" | "point"',
+		default: '"rounded"',
+		description:
+			'The skin, and the shape of the indicator with it: a pill in a muted track, a bar on the list’s edge, or a dot under the label.',
+	},
+	size: {
+		type: '"sm" | "md" | "lg"',
+		default: '"md"',
+		description: '28 / 32 / 36 tall. One size on the root reaches every part it wraps.',
+	},
+	orientation: {
+		type: '"horizontal" | "vertical"',
+		default: '"horizontal"',
+		description:
+			'Which way the tabs run. The indicator reads it off the list, so the same element follows either way.',
+	},
+	value: {
+		type: 'TabsValue',
+		description: 'The open tab, controlled — any value a Tab was given.',
+	},
+	defaultValue: {
+		type: 'TabsValue',
+		description: 'Where it starts, uncontrolled.',
+	},
+	onValueChange: {
+		type: '(value, details) => void',
+		description: 'Fires on a click and on the arrow keys.',
+	},
+};
+
+const panelProps: Record<string, PropNode> = {
+	value: {
+		required: true,
+		type: 'TabsValue',
+		description:
+			'Which tab opens it. A panel and its tab are tied together by this and nothing else.',
+	},
+	transition: {
+		type: 'boolean',
+		default: 'true',
+		description:
+			'Wraps the contents in a Transition, so a body that changes size eases to the new one. false opts out, which also drops the ease.',
+	},
+	className: {
+		type: 'string',
+		description: 'Merged with cn(), so a Base UI state callback is not accepted here.',
+	},
+};
+
+const partRows = [
+	['Tabs.Root', 'the state, and the grid', 'a row of tabs over a panel, or a column beside one.'],
+	['Tabs.List', 'the row of tabs', 'the track’s padding, gap and hairline, by variant.'],
+	['Tabs.Tab', 'one tab', 'a button; disabled is half opacity and no pointer.'],
+	[
+		'Tabs.Indicator',
+		'the moving highlight',
+		'one per list — it is placed from --active-tab-*, so nothing here is per-tab.',
+	],
+	['Tabs.Panel', 'one panel', 'stacked and cross-faded, unless it is in Panels.'],
+	[
+		'Tabs.Panels',
+		'every panel at once',
+		'one track, slid to the selected lane; the box is only as tall as the lane on screen.',
+	],
 ];
 
-const notes = [
-	{
-		value: 'overview',
-		body: 'nine members, three of them invited this week. the busiest hour is eleven, and nothing has failed since the last deploy.',
-	},
-	{
-		value: 'activity',
-		body: 'mira renamed the project, joe deleted two keys, and the nightly job ran late once.',
-	},
-	{ value: 'settings', body: 'profile and preferences.' },
+const hookRows = [
+	['data-slot="tabs"', 'the root', 'a grid; orientation decides how many columns.'],
+	[
+		'data-variant · data-size',
+		'on the root, the list, each tab and the indicator',
+		'mirrored for plain CSS.',
+	],
+	[
+		'--active-tab-top · -left · -width · -height',
+		'the selected tab’s box',
+		'written by Base UI, read by the indicator’s transform.',
+	],
+	['data-active', 'on the selected tab', 'what the label’s colour follows.'],
+	[
+		'data-slot="tabs-panel"',
+		'one panel',
+		'the leaving one keeps its place for the length of the fade.',
+	],
+	[
+		'data-starting-style · data-ending-style',
+		'entering / leaving',
+		'opacity and a sideways shift, by activation direction.',
+	],
+	[
+		'data-slot="tabs-track" · lanes',
+		'the sliding track, and each lane',
+		'translate-x is the lane index; the box’s height follows the lane on screen.',
+	],
+	[
+		'inert',
+		'on the lanes out of sight',
+		'they stay mounted to be slid, and stay out of the tab order.',
+	],
 ];
 
-/**
- * Every panel on one track: the one arriving and the one leaving travel together, and the box
- * holding them is only ever as tall as the lane on screen.
- */
-function TrackedPanels() {
-	return (
-		<Tabs.Root defaultValue="overview" className="max-w-sm">
-			<Tabs.List>
-				{items.map(({ value, label }) => (
-					<Tabs.Tab key={value} value={value}>
-						{label}
-					</Tabs.Tab>
-				))}
-				<Tabs.Indicator />
-			</Tabs.List>
-			<Tabs.Panels>
-				{notes.map(({ value, body }) => (
-					<Tabs.Panel key={value} value={value} className="text-muted-foreground">
-						{body}
-					</Tabs.Panel>
-				))}
-			</Tabs.Panels>
-		</Tabs.Root>
-	);
-}
-
-/**
- * One panel, not one per tab: the panel stays open and its contents are replaced, so the box
- * eases to the size of what is now inside it.
- */
-function SwappedPanel() {
-	const [value, setValue] = useState(notes[0]!.value);
-	const note = notes.find((item) => item.value === value) ?? notes[0]!;
-
-	return (
-		<Tabs.Root value={value} onValueChange={(next) => setValue(next)} className="max-w-sm">
-			<Tabs.List>
-				{notes.map(({ value: tab }) => (
-					<Tabs.Tab key={tab} value={tab}>
-						{tab}
-					</Tabs.Tab>
-				))}
-				<Tabs.Indicator />
-			</Tabs.List>
-			<Tabs.Panel value={value} className="text-muted-foreground">
-				{note.body}
-			</Tabs.Panel>
-		</Tabs.Root>
-	);
-}
+const usageImport = "import { Tabs } from '@/components/lumo/ui/Tabs';";
+const usageExample = `<Tabs.Root defaultValue="overview">
+	<Tabs.List>
+		<Tabs.Tab value="overview">overview</Tabs.Tab>
+		<Tabs.Tab value="activity">activity</Tabs.Tab>
+		<Tabs.Indicator />
+	</Tabs.List>
+	<Tabs.Panel value="overview">workspace stats.</Tabs.Panel>
+	<Tabs.Panel value="activity">who changed what.</Tabs.Panel>
+</Tabs.Root>`;
 
 export function TabsPage() {
 	return (
 		<DocPage title="tabs" description="one panel at a time, chosen from a row of tabs">
+			<DocPreview name="basic.tsx" source={basicSource}>
+				<Basic />
+			</DocPreview>
+
+			<DocSection
+				title="installation"
+				note={
+					<>
+						Base UI owns the selection and measures the active tab; the two springs and
+						the measured box come from <Mono>motion</Mono> — the same ones{' '}
+						<Mono>Transition</Mono> uses, which is why a panel’s body eases to its own
+						size.
+					</>
+				}
+			>
+				<DocInstall
+					name="tabs"
+					packages={['@base-ui/react', 'motion']}
+					files={files}
+					reaches={[
+						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
+						{ path: 'src/lib/motion.ts', code: motionSource },
+						{ path: 'src/lib/cn.ts', code: cnSource },
+					]}
+				/>
+			</DocSection>
+
+			<DocSection
+				title="usage"
+				note="one list, one indicator, one panel per tab. the values are the link between them."
+			>
+				<div className="space-y-3">
+					<Code code={usageImport} language="tsx" header={false} />
+					<Code code={usageExample} language="tsx" header={false} />
+				</div>
+			</DocSection>
+
 			<DocSection
 				title="three indicators, one measurement"
 				note={
 					<>
 						each variant is the same element wearing a different skin: a pill, a bar on
-						the list's edge, or a dot. Base UI measures the active tab and hands the
-						result over as{' '}
-						<code className="rounded bg-muted px-1 py-0.5">--active-tab-*</code>, so
-						nothing here is per-tab.
+						the list’s edge, or a dot. Base UI measures the active tab and hands the
+						result over as <Mono>--active-tab-*</Mono>, so nothing here is per-tab.
 					</>
 				}
 			>
-				<div className="space-y-6">
-					{(['rounded', 'square', 'point'] as const).map((variant) => (
-						<Tabs.Root
-							key={variant}
-							variant={variant}
-							defaultValue="overview"
-							className="max-w-sm"
-						>
-							<Tabs.List>
-								{items.map(({ value, label }) => (
-									<Tabs.Tab key={value} value={value}>
-										{label}
-									</Tabs.Tab>
-								))}
-								<Tabs.Indicator />
-							</Tabs.List>
-							{items.map(({ value, content }) => (
-								<Tabs.Panel
-									key={value}
-									value={value}
-									className="text-muted-foreground"
-								>
-									{content}
-								</Tabs.Panel>
-							))}
-						</Tabs.Root>
-					))}
-				</div>
+				<DocPreview name="variants.tsx" source={variantsSource}>
+					<Variants />
+				</DocPreview>
 			</DocSection>
+
 			<DocSection title="sizes" note="one size on the root reaches every part it wraps.">
-				<div className="space-y-4">
-					{(['sm', 'md', 'lg'] as const).map((size) => (
-						<Tabs.Root
-							key={size}
-							size={size}
-							defaultValue="overview"
-							className="max-w-sm"
-						>
-							<Tabs.List>
-								{items.map(({ value, label }) => (
-									<Tabs.Tab key={value} value={value}>
-										{label}
-									</Tabs.Tab>
-								))}
-								<Tabs.Indicator />
-							</Tabs.List>
-						</Tabs.Root>
-					))}
-				</div>
+				<DocPreview name="sizes.tsx" source={sizesSource}>
+					<Sizes />
+				</DocPreview>
 			</DocSection>
+
 			<DocSection
 				title="vertical, with a disabled tab"
 				note="orientation moves the whole control, and the same indicator follows it."
 			>
-				<Tabs.Root defaultValue="general" orientation="vertical" className="max-w-sm">
-					<Tabs.List>
-						<Tabs.Tab value="general">general</Tabs.Tab>
-						<Tabs.Tab value="billing" disabled>
-							billing
-						</Tabs.Tab>
-						<Tabs.Tab value="danger">danger zone</Tabs.Tab>
-						<Tabs.Indicator />
-					</Tabs.List>
-					<Tabs.Panel value="general" className="text-muted-foreground">
-						workspace name, url and icon.
-					</Tabs.Panel>
-					<Tabs.Panel value="danger" className="text-muted-foreground">
-						deleting a workspace cannot be undone.
-					</Tabs.Panel>
-				</Tabs.Root>
+				<DocPreview name="vertical.tsx" source={verticalSource}>
+					<Vertical />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
@@ -173,7 +229,9 @@ export function TabsPage() {
 					</>
 				}
 			>
-				<TrackedPanels />
+				<DocPreview name="tracked.tsx" source={trackedSource}>
+					<Tracked />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
@@ -183,15 +241,13 @@ export function TabsPage() {
 						panels of their own already cross-fade, since Base UI keeps the one that is
 						leaving mounted for the length of its transition. every panel also wraps its
 						contents in <Mono>Transition</Mono>, so a body that changes eases to the new
-						size instead of the panel re-measuring itself. when the content is what
-						changes — one panel, whose body comes from somewhere else — nothing else is
-						needed: the box follows the new size wherever it lands.{' '}
-						<Mono>transition={'{false}'}</Mono> opts of the wrapper, which also drops
-						that.
+						size instead of being re-measured.
 					</>
 				}
 			>
-				<SwappedPanel />
+				<DocPreview name="swapped.tsx" source={swappedSource}>
+					<Swapped />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection
@@ -199,7 +255,7 @@ export function TabsPage() {
 				note={
 					<>
 						the usual body has to be asked for before it can say anything, and the
-						answer is what has a size: the panel opens at the placeholder's height, the
+						answer is what has a size: the panel opens at the placeholder’s height, the
 						request lands, and the box eases from one to the other. the switch never
 						waits for it. <Mono>key={'{value}'}</Mono> on the body is what asks again on
 						every visit — drop it and the answer is reused, kept by the panel that
@@ -210,6 +266,37 @@ export function TabsPage() {
 				<DocPreview name="request.tsx" source={requestSource}>
 					<Request />
 				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="api reference"
+				note="the root and the panel are the two that decide anything."
+			>
+				<div className="space-y-6">
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Tabs.Root</Mono> — the state and the skin
+						</p>
+						<PropTable props={rootProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Tabs.Panel</Mono> — one panel
+						</p>
+						<PropTable props={panelProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">the parts</p>
+						<DocTable head={['part', 'is', 'notes']} mono={[0]} rows={partRows} />
+					</div>
+				</div>
+			</DocSection>
+
+			<DocSection
+				title="hooks"
+				note="the indicator is placed from variables Base UI writes, so a tab never has to know its own geometry."
+			>
+				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>
 		</DocPage>
 	);

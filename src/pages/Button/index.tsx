@@ -1,17 +1,14 @@
 import { Code } from '@/components/lumo/ui/Code';
-import { Steps } from '@/components/lumo/ui/Steps';
-import { cn } from '@/lib/cn';
+import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import buttonSource from '@/components/lumo/ui/Button.tsx?raw';
 import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
 import cnSource from '@/lib/cn.ts?raw';
-import tokensSource from '@/styles/lumo-tokens.css?raw';
 import {
-	Command,
+	DocInstall,
 	DocPage,
 	DocPreview,
 	DocSection,
-	DocTabs,
 	DocTable,
 	Mono,
 	PropTable,
@@ -30,101 +27,7 @@ import statesSource from './demos/states.tsx?raw';
 import Variants from './demos/variants';
 import variantsSource from './demos/variants.tsx?raw';
 
-/**
- * One file of the manual: the path it goes to in the header, its source below it, and a button
- * that takes the whole thing. A file taller than the cap scrolls inside its own box with the path
- * held at the top, so a 200-line token file does not push the next step off the page.
- */
-function Source({ path, code }: { path: string; code: string }) {
-	return (
-		<Code
-			code={code}
-			language={path.split('.').pop()}
-			fileName={path}
-			showLineNumbers
-			wrap
-			className={cn(
-				'max-h-100 overflow-y-auto',
-				'[&_[data-slot=code-header]]:sticky [&_[data-slot=code-header]]:top-0',
-				'[&_[data-slot=code-header]]:z-1 [&_[data-slot=code-header]]:bg-background',
-			)}
-		/>
-	);
-}
-
-const installTabs = [
-	{
-		value: 'cli',
-		label: 'Command',
-		content: (
-			<div className="space-y-3">
-				<Command>bunx shadcn@latest add linyana/lumo-ui/button</Command>
-				<p className="text-muted-foreground">
-					copies <Mono>Button.tsx</Mono>, and the <Mono>cn()</Mono> and{' '}
-					<Mono>Spinner</Mono> it imports. <Mono>@base-ui/react</Mono> and{' '}
-					<Mono>tailwind-variants</Mono> come from the package manager.
-				</p>
-			</div>
-		),
-	},
-	{
-		value: 'manual',
-		label: 'Manual',
-		content: (
-			<div className="space-y-4">
-				<p className="text-muted-foreground">
-					the command does four things, in order. by hand they are:
-				</p>
-				<Steps.Root orientation="vertical">
-					<Steps.Item>
-						<Steps.Title>install the packages</Steps.Title>
-						<Steps.Description>
-							Base UI carries the behaviour, tailwind-variants the variant API, and{' '}
-							<Mono>cn()</Mono> its two halves.
-						</Steps.Description>
-						<Command>
-							bun add @base-ui/react clsx tailwind-merge tailwind-variants
-						</Command>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>copy the component</Steps.Title>
-						<Steps.Description>
-							its imports already read <Mono>@/…</Mono>, so it goes where they point.
-						</Steps.Description>
-						<Source path="src/components/lumo/ui/Button.tsx" code={buttonSource} />
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>copy what it reaches for</Steps.Title>
-						<Steps.Description>
-							the spinner that takes its loading slot, and the class merge behind{' '}
-							<Mono>className</Mono>.
-						</Steps.Description>
-						<div className="space-y-3">
-							<Source
-								path="src/components/lumo/ui/Spinner.tsx"
-								code={spinnerSource}
-							/>
-							<Source path="src/lib/cn.ts" code={cnSource} />
-						</div>
-					</Steps.Item>
-					<Steps.Item>
-						<Steps.Title>bring the tokens</Steps.Title>
-						<Steps.Description>
-							skip this one if the project already defines <Mono>--primary</Mono>,{' '}
-							<Mono>--radius</Mono> and the rest — the button then wears its colours.
-						</Steps.Description>
-						<Source path="src/styles/lumo-tokens.css" code={tokensSource} />
-					</Steps.Item>
-				</Steps.Root>
-			</div>
-		),
-	},
-];
-
-const usageImport = "import { Button } from '@/components/lumo/ui/Button';";
-const usageExample = `<Button variant="outline" icon={<Plus />}>
-	add
-</Button>`;
+const files: DocFile[] = [{ path: 'src/components/lumo/ui/Button.tsx', code: buttonSource }];
 
 const buttonProps: Record<string, PropNode> = {
 	variant: {
@@ -184,6 +87,11 @@ const hookRows = [
 	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
 ];
 
+const usageImport = "import { Button } from '@/components/lumo/ui/Button';";
+const usageExample = `<Button variant="outline" icon={<Plus />}>
+	add
+</Button>`;
+
 export function ButtonPage() {
 	return (
 		<DocPage
@@ -204,7 +112,15 @@ export function ButtonPage() {
 					</>
 				}
 			>
-				<DocTabs tabs={installTabs} />
+				<DocInstall
+					name="button"
+					packages={['@base-ui/react', 'tailwind-variants']}
+					files={files}
+					reaches={[
+						{ path: 'src/components/lumo/ui/Spinner.tsx', code: spinnerSource },
+						{ path: 'src/lib/cn.ts', code: cnSource },
+					]}
+				/>
 			</DocSection>
 
 			<DocSection title="usage" note="one import, one element. everything else is Base UI's.">

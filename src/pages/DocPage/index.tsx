@@ -12,9 +12,11 @@ import {
 import { Link } from 'react-router';
 import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
+import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { cn } from '@/lib/cn';
+import tokensSource from '@/styles/lumo-tokens.css?raw';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
 export function sectionId(title: string) {
@@ -172,6 +174,187 @@ export function Command({ children }: { children: string }) {
 			<Copy value={children} />
 		</div>
 	);
+}
+
+export type DocFile = { path: string; code: string };
+
+/**
+ * One file of the manual: the path it goes to in the header, its source below it, and a button
+ * that takes the whole thing. A file taller than the cap scrolls inside its own box with the path
+ * held at the top, so a 200-line token file does not push the next step off the page.
+ */
+export function Source({ path, code }: DocFile) {
+	return (
+		<Code
+			code={code}
+			language={path.split('.').pop()}
+			fileName={path}
+			showLineNumbers
+			wrap
+			className={cn(
+				'max-h-100 overflow-y-auto',
+				'[&_[data-slot=code-header]]:sticky [&_[data-slot=code-header]]:top-0',
+				'[&_[data-slot=code-header]]:z-1 [&_[data-slot=code-header]]:bg-background',
+			)}
+		/>
+	);
+}
+
+/** The file's own name, which is what a reader recognises it by: `Button.tsx`, not its path. */
+function fileName(path: string) {
+	return path.split('/').pop() ?? path;
+}
+
+/** `a`, `a and b`, `a, b and c` — read out rather than cut off with an ellipsis. */
+function list(names: string[]): string {
+	if (names.length <= 1) return names.join('');
+	return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+}
+
+/** A helper is called; a component is named. The only difference a sentence has to make. */
+function reachName(path: string) {
+	const name = fileName(path).replace(/\.\w+$/, '');
+	return name === 'cn' ? 'cn()' : name;
+}
+
+/** A stable empty list, so the default prop does not make a new array on every render. */
+const NO_FILES: DocFile[] = [];
+
+export type DocInstallProps = {
+	/** The registry item the CLI takes, as `linyana/lumo-ui/<name>`. */
+	name: string;
+	/** npm packages the copied files import. */
+	packages: string[];
+	/** The component's own files, in the order the CLI copies them. */
+	files: DocFile[];
+	/** What those files reach for, when it is more than `cn()`. */
+	reaches?: DocFile[];
+	/** The one sentence under the command. Written from the manifest unless given. */
+	note?: ReactNode;
+	/** The sentence above the reached files, for a chain longer than the list can say. */
+	reachesNote?: ReactNode;
+	/** Whether the manual ends on the tokens. A helper that only merges classes does not need them. */
+	tokens?: boolean;
+};
+
+/**
+ * The two routes to the same component: the command, or the files by hand. Every page's
+ * installation section is this block, so what differs between two components is the manifest and
+ * nothing else — and a page that copies a file the manual forgets cannot happen.
+ */
+export function DocInstall({
+	name,
+	packages,
+	files,
+	reaches = NO_FILES,
+	note,
+	reachesNote,
+	tokens = true,
+}: DocInstallProps) {
+	const own = files.map((file) => fileName(file.path));
+	const reached = reaches.map((file) => reachName(file.path));
+	const steps = [packages.length > 0, true, reaches.length > 0, tokens].filter(Boolean).length;
+	const counted = ['no', 'one', 'two', 'three', 'four'][steps] ?? 'a few';
+
+	const tabs: DocTabItem[] = [
+		{
+			value: 'cli',
+			label: 'Command',
+			content: (
+				<div className="space-y-3">
+					<Command>{`bunx shadcn@latest add linyana/lumo-ui/${name}`}</Command>
+					<p className="text-muted-foreground">
+						{note ?? (
+							<>
+								copies <Mono>{list(own)}</Mono>
+								{reached.length > 0 && (
+									<>
+										, and the files it reaches for: <Mono>{list(reached)}</Mono>
+									</>
+								)}
+								.{' '}
+								{packages.length > 0 && (
+									<>
+										<Mono>{list(packages)}</Mono>
+										{packages.length === 1 ? ' comes' : ' come'} from the
+										package manager.
+									</>
+								)}
+							</>
+						)}
+					</p>
+				</div>
+			),
+		},
+		{
+			value: 'manual',
+			label: 'Manual',
+			content: (
+				<div className="space-y-4">
+					<p className="text-muted-foreground">
+						<>
+							the command does {counted} {steps === 1 ? 'thing' : 'things'}, in order.
+							by hand they are:
+						</>
+					</p>
+					<Steps.Root orientation="vertical">
+						{packages.length > 0 && (
+							<Steps.Item>
+								<Steps.Title>install the packages</Steps.Title>
+								<Steps.Description>
+									what the files below import, from the package manager.
+								</Steps.Description>
+								<Command>{`bun add ${packages.join(' ')}`}</Command>
+							</Steps.Item>
+						)}
+						<Steps.Item>
+							<Steps.Title>copy the component</Steps.Title>
+							<Steps.Description>
+								its imports already read <Mono>@/…</Mono>, so it goes where they
+								point.
+							</Steps.Description>
+							<div className="space-y-3">
+								{files.map((file) => (
+									<Source key={file.path} path={file.path} code={file.code} />
+								))}
+							</div>
+						</Steps.Item>
+						{reaches.length > 0 && (
+							<Steps.Item>
+								<Steps.Title>copy what it reaches for</Steps.Title>
+								<Steps.Description>
+									{reachesNote ?? (
+										<>
+											the {list(reached)} it imports, without which it does
+											not compile.
+										</>
+									)}
+								</Steps.Description>
+								<div className="space-y-3">
+									{reaches.map((file) => (
+										<Source key={file.path} path={file.path} code={file.code} />
+									))}
+								</div>
+							</Steps.Item>
+						)}
+						{tokens && (
+							<Steps.Item>
+								<Steps.Title>bring the tokens</Steps.Title>
+								<Steps.Description>
+									skip this one if the project already defines{' '}
+									<Mono>--primary</Mono>, <Mono>--radius</Mono> and the rest — the
+									component then wears its colours.
+								</Steps.Description>
+								<Source path="src/styles/lumo-tokens.css" code={tokensSource} />
+							</Steps.Item>
+						)}
+					</Steps.Root>
+				</div>
+			),
+		},
+	];
+
+	return <DocTabs tabs={tabs} />;
 }
 
 /**

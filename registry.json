@@ -170,7 +170,7 @@
 			"name": "dropdown",
 			"type": "registry:ui",
 			"title": "Dropdown",
-			"description": "A dropdown of actions on a trigger, with groups, separators, checkbox and radio rows and nested submenus. Behaviour from Base UI, appearance from tokens.",
+			"description": "A dropdown of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
