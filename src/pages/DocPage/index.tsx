@@ -331,20 +331,74 @@ export function DocPreview({ name, source, children }: DocPreviewProps) {
 
 export type DocTabItem = { value: string; label: string; content: ReactNode };
 
+/** A pending idle slot, whatever scheduler ended up giving it out. */
+type Idle = { cancel: () => void };
+
+/** An idle slot, or the next best thing where the browser has none to give. */
+function whenIdle(task: () => void): Idle {
+	if (typeof requestIdleCallback === 'function') {
+		const handle = requestIdleCallback(task);
+		return { cancel: () => cancelIdleCallback(handle) };
+	}
+	const handle = setTimeout(task, 300);
+	return { cancel: () => clearTimeout(handle) };
+}
+
 /**
  * A choice of routes to the same place: the command, or the files by hand.
  *
- * One panel, not one per route: the bodies differ in length, and a panel of its own would leave
- * the page jumping between them. The swap eases the height and travels with the tabs.
+ * One track, not one panel: the routes sit side by side and the track is slid to the open one, so
+ * the body arriving and the body leaving travel together, sideways, with the indicator. The box
+ * holding them is only ever as tall as the lane on screen and follows it to the next lane's
+ * height — which is a number the browser already knows, because the lane was laid out, not
+ * measured by hand.
+ *
+ * A route stays mounted once it is there, and the rest are mounted for the reader before they ask,
+ * one per idle slot: that work has to happen somewhere. Done on the click it is the one thing the
+ * slide cannot survive; done while the page is idle it costs nobody a frame of anything. The
+ * content handed to a lane that is still empty is nothing, so the first render of the page does
+ * not pay for a route nobody has opened.
+ *
+ * `transition={false}` per lane: a box easing to its own content's height inside a track that is
+ * measuring that box would be two animations chasing one number.
  */
 export function DocTabs({ tabs }: { tabs: DocTabItem[] }) {
 	const [value, setValue] = useState(tabs[0]?.value);
-	const active = tabs.find((tab) => tab.value === value) ?? tabs[0];
+	/** The routes that are mounted. Everything after the first gets there by being opened. */
+	const [opened, setOpened] = useState(() => new Set([tabs[0]?.value]));
+
+	const open = (next: string) => {
+		setValue(next);
+		setOpened((previous) => (previous.has(next) ? previous : new Set(previous).add(next)));
+	};
+
+	// Keyed by the routes and not the array: a page passing a fresh array each render would
+	// otherwise queue the rest again and again.
+	const routes = tabs.map((tab) => tab.value).join('\n');
+
+	useEffect(() => {
+		const rest = routes === '' ? [] : routes.split('\n').slice(1);
+		let pending: Idle | undefined;
+		let live = true;
+
+		const take = () => {
+			const next = rest.shift();
+			if (!live || next === undefined) return;
+			setOpened((previous) => (previous.has(next) ? previous : new Set(previous).add(next)));
+			pending = whenIdle(take);
+		};
+
+		pending = whenIdle(take);
+		return () => {
+			live = false;
+			pending?.cancel();
+		};
+	}, [routes]);
 
 	return (
 		<Tabs.Root
 			value={value}
-			onValueChange={(next) => setValue(next)}
+			onValueChange={(next) => open(next)}
 			variant="square"
 			className="gap-2"
 		>
@@ -356,9 +410,15 @@ export function DocTabs({ tabs }: { tabs: DocTabItem[] }) {
 				))}
 				<Tabs.Indicator />
 			</Tabs.List>
-			<Tabs.Panel value={value}>
-				<div className="space-y-3">{active?.content}</div>
-			</Tabs.Panel>
+			<Tabs.Panels>
+				{tabs.map((tab) => (
+					<Tabs.Panel key={tab.value} value={tab.value} transition={false}>
+						{opened.has(tab.value) ? (
+							<div className="space-y-3">{tab.content}</div>
+						) : null}
+					</Tabs.Panel>
+				))}
+			</Tabs.Panels>
 		</Tabs.Root>
 	);
 }
