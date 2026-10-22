@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Tabs } from '@/components/lumo/ui/Tabs';
-import { DocPage, DocSection, Mono } from '@/pages/DocPage';
+import { DocPage, DocPreview, DocSection, Mono } from '@/pages/DocPage';
+import Request from './demos/request';
+import requestSource from './demos/request.tsx?raw';
 
 const items = [
 	{ value: 'overview', label: 'overview', content: 'workspace stats and activity.' },
@@ -190,6 +192,24 @@ export function TabsPage() {
 				}
 			>
 				<SwappedPanel />
+			</DocSection>
+
+			<DocSection
+				title="a request behind every tab"
+				note={
+					<>
+						the usual body has to be asked for before it can say anything, and the
+						answer is what has a size: the panel opens at the placeholder's height, the
+						request lands, and the box eases from one to the other. the switch never
+						waits for it. <Mono>key={'{value}'}</Mono> on the body is what asks again on
+						every visit — drop it and the answer is reused, kept by the panel that
+						stayed.
+					</>
+				}
+			>
+				<DocPreview name="request.tsx" source={requestSource}>
+					<Request />
+				</DocPreview>
 			</DocSection>
 		</DocPage>
 	);
