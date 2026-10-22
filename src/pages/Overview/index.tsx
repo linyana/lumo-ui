@@ -1,49 +1,196 @@
-import { DocPage, DocSection } from '@/pages/DocPage';
+import { ArrowUpRight, Search } from 'lucide-react';
+import { useState, type ComponentType } from 'react';
+import { Link } from 'react-router';
+import { Toast } from '@/components/lumo/ui/Toast';
+import { cn } from '@/lib/cn';
+import { DocPage } from '@/pages/DocPage';
+import ButtonBasic from '@/pages/Button/demos/basic';
+import CardBasic from '@/pages/Card/demos/basic';
+import CodeBasic from '@/pages/Code/demos/basic';
+import CodeDiffBasic from '@/pages/CodeDiff/demos/basic';
+import CollapsibleBasic from '@/pages/Collapsible/demos/basic';
+import DialogBasic from '@/pages/Dialog/demos/basic';
+import DrawerBasic from '@/pages/Drawer/demos/basic';
+import DropdownBasic from '@/pages/Dropdown/demos/basic';
+import MenuBasic from '@/pages/Menu/demos/basic';
+import PopoverBasic from '@/pages/Popover/demos/basic';
+import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
+import SeparatorBasic from '@/pages/Separator/demos/basic';
+import SkeletonBasic from '@/pages/Skeleton/demos/basic';
+import SpinnerBasic from '@/pages/Spinner/demos/basic';
+import StepsVertical from '@/pages/Steps/demos/vertical';
+import TabsBasic from '@/pages/Tabs/demos/basic';
+import ToastKinds from '@/pages/Toast/demos/kinds';
+import TooltipBasic from '@/pages/Tooltip/demos/basic';
+import TransitionSize from '@/pages/Transition/demos/size';
+
+type ComponentPreview = {
+	/** The route, which the rail and the router already use. */
+	path: string;
+	label: string;
+	/** The demo that page opens with, rendered as the card's thumbnail. */
+	Demo: ComponentType;
+};
+
+type PreviewGroup = {
+	/** What these have in common — the kind of work they do, not where their name sorts. */
+	title: string;
+	previews: ComponentPreview[];
+};
+
+/** Every component page, grouped by the part of an interface it belongs to. */
+const groups: PreviewGroup[] = [
+	{
+		title: 'actions',
+		previews: [{ path: 'button', label: 'Button', Demo: ButtonBasic }],
+	},
+	{
+		title: 'surface',
+		previews: [
+			{ path: 'card', label: 'Card', Demo: CardBasic },
+			{ path: 'collapsible', label: 'Collapsible', Demo: CollapsibleBasic },
+			{ path: 'scroll-area', label: 'ScrollArea', Demo: ScrollAreaBasic },
+			{ path: 'separator', label: 'Separator', Demo: SeparatorBasic },
+			{ path: 'transition', label: 'Transition', Demo: TransitionSize },
+		],
+	},
+	{
+		title: 'overlays',
+		previews: [
+			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic },
+			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic },
+			{ path: 'dropdown', label: 'Dropdown', Demo: DropdownBasic },
+			{ path: 'popover', label: 'Popover', Demo: PopoverBasic },
+			{ path: 'toast', label: 'Toast', Demo: ToastKinds },
+			{ path: 'tooltip', label: 'Tooltip', Demo: TooltipBasic },
+		],
+	},
+	{
+		title: 'navigation',
+		previews: [
+			{ path: 'menu', label: 'Menu', Demo: MenuBasic },
+			// The horizontal opener needs half a page before its connectors read as lines; the
+			// vertical one is the demo a square can hold.
+			{ path: 'steps', label: 'Steps', Demo: StepsVertical },
+			{ path: 'tabs', label: 'Tabs', Demo: TabsBasic },
+		],
+	},
+	{
+		title: 'content & feedback',
+		previews: [
+			{ path: 'code', label: 'Code', Demo: CodeBasic },
+			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic },
+			{ path: 'skeleton', label: 'Skeleton', Demo: SkeletonBasic },
+			{ path: 'spinner', label: 'Spinner', Demo: SpinnerBasic },
+		],
+	},
+];
+
+/** The bar is the whole target of the route; the demo under it keeps its own interactions. */
+function Preview({ path, label, Demo }: ComponentPreview) {
+	return (
+		<div
+			data-slot="overview-card"
+			className={cn(
+				'flex aspect-square flex-col overflow-hidden rounded-xl border bg-card',
+				'text-card-foreground',
+			)}
+		>
+			<Link
+				to={`/${path}`}
+				data-slot="overview-card-bar"
+				className={cn(
+					'group/bar flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2',
+					'text-xs transition-colors hover:bg-muted/40',
+				)}
+			>
+				<span className="truncate font-medium">{label}</span>
+				<ArrowUpRight
+					className={cn(
+						'size-3.5 shrink-0 text-muted-foreground',
+						'transition-colors group-hover/bar:text-foreground',
+					)}
+				/>
+			</Link>
+			{/*
+				Nothing is scaled to fit: a transform here would hand `getBoundingClientRect` a size
+				the demo never had, which is exactly what Transition measures. A demo taller than the
+				square scrolls instead, so no part of it is out of reach.
+			*/}
+			<div
+				className={cn(
+					'min-h-0 flex-1 overflow-auto p-4',
+					'[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+				)}
+			>
+				<div className="flex min-h-full flex-wrap items-center justify-center gap-2">
+					<Demo />
+				</div>
+			</div>
+		</div>
+	);
+}
 
 export function OverviewPage() {
+	const [query, setQuery] = useState('');
+	const needle = query.trim().toLowerCase();
+	const shown = groups
+		.map((group) => ({
+			title: group.title,
+			previews: group.previews.filter(({ path, label }) =>
+				`${label} ${path}`.toLowerCase().includes(needle),
+			),
+		}))
+		.filter((group) => group.previews.length > 0);
+
 	return (
-		<DocPage title="overview" description="base ui behaviour + token-driven styling">
-			<DocSection title="lumo-ui">
-				<p className="text-sm text-muted-foreground">
-					one directory per component, Base UI for behaviour, tokens for appearance, and
-					nothing hardcoded in between. the rail on the left is a real{' '}
-					<code className="rounded bg-muted px-1 py-0.5">react-router</code> menu: every
-					row is a <code className="rounded bg-muted px-1 py-0.5">NavLink</code>, so the
-					url is what selects a page and reloading one lands you back on it.
-				</p>
-			</DocSection>
+		<DocPage wide title="overview" description="base ui behaviour + token-driven styling">
+			{/* The toast demo reads its queue from context, and shows it in the fixed strip. */}
+			<Toast.Provider>
+				<div className="space-y-8">
+					<div className="relative">
+						<Search
+							aria-hidden
+							className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+						/>
+						<input
+							type="text"
+							value={query}
+							onChange={(event) => setQuery(event.target.value)}
+							placeholder="filter components"
+							aria-label="filter components"
+							autoComplete="off"
+							spellCheck={false}
+							className={cn(
+								'h-9 w-full rounded-md border bg-background pr-3 pl-9 text-sm',
+								'placeholder:text-muted-foreground',
+							)}
+						/>
+					</div>
 
-			<DocSection title="what is here">
-				<ul className="space-y-2 text-sm text-muted-foreground">
-					<li>
-						<code className="rounded bg-muted px-1 py-0.5">src/components/lumo/ui</code>{' '}
-						— the primitives, each one copyable on its own.
-					</li>
-					<li>
-						<code className="rounded bg-muted px-1 py-0.5">
-							src/components/lumo/blocks
-						</code>{' '}
-						— the shell: a rail drawn from data, and the surface a page scrolls in.
-					</li>
-					<li>
-						<code className="rounded bg-muted px-1 py-0.5">src/pages</code> — these
-						docs, one page per component, each one its own file.
-					</li>
-				</ul>
-			</DocSection>
-
-			<DocSection title="the rules">
-				<ol className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
-					<li>No hardcoded visual values — tokens only.</li>
-					<li>Focus is defined once, in :focus-visible.</li>
-					<li>Base UI supplies behaviour; we supply appearance.</li>
-					<li>The consumer's className merges last, through cn().</li>
-				</ol>
-				<div className="flex items-center gap-2 pt-2 text-sm">
-					<img src="/logo.svg" alt="" className="size-4 shrink-0" />
-					<span className="text-muted-foreground">lumo-ui 0.1.0</span>
+					{shown.length === 0 ? (
+						<p className="py-12 text-center text-sm text-muted-foreground">
+							no component matches “{query.trim()}”.
+						</p>
+					) : (
+						shown.map((group) => (
+							<section key={group.title} className="space-y-3">
+								<h2 className="text-sm font-medium text-muted-foreground">
+									{group.title}
+								</h2>
+								{/* A floor on the width, so a demo keeps the room its layout asks for
+								    and the row drops a column instead of squeezing every card. */}
+								<div className="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4">
+									{group.previews.map((preview) => (
+										<Preview key={preview.path} {...preview} />
+									))}
+								</div>
+							</section>
+						))
+					)}
 				</div>
-			</DocSection>
+				<Toast.Toaster />
+			</Toast.Provider>
 		</DocPage>
 	);
 }

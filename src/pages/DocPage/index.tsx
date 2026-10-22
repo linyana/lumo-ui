@@ -128,6 +128,8 @@ function DocActions({ title, description }: { title: string; description?: strin
 export type DocPageProps = {
 	title: string;
 	description?: string;
+	/** The column is prose-wide by default; a page of cards takes the whole of the surface. */
+	wide?: boolean;
 	children: ReactNode;
 };
 
@@ -135,11 +137,14 @@ export type DocPageProps = {
  * The shell a doc page draws inside `Layout.Content`: the page's own title, the column, and the
  * section list beside it. It keeps no chrome of its own — the title scrolls with the page.
  */
-export function DocPage({ title, description, children }: DocPageProps) {
+export function DocPage({ title, description, wide = false, children }: DocPageProps) {
 	return (
 		<div
 			data-slot="doc-page"
-			className="mx-auto flex w-full max-w-3xl items-start gap-12 p-8 xl:max-w-5xl"
+			className={cn(
+				'mx-auto flex w-full items-start gap-12 p-8',
+				!wide && 'max-w-3xl xl:max-w-5xl',
+			)}
 		>
 			<div data-slot="doc-page-content" className="min-w-0 flex-1 space-y-12">
 				<div data-slot="doc-page-head" className="space-y-2">
