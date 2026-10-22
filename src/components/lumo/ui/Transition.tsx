@@ -29,6 +29,16 @@ function bezier(value: string, fallback: Bezier): Bezier {
 	return points?.length === 4 && points.every(Number.isFinite) ? (points as Bezier) : fallback;
 }
 
+/**
+ * A time token in seconds. The unit is read rather than assumed: a minifier turns `200ms` into
+ * `.2s`, and a duration that is off by that factor of a thousand is a duration of nothing.
+ */
+function seconds(value: string) {
+	const unit = /(-?[\d.]+)\s*(ms|s)/.exec(value);
+	if (unit === null) return 0;
+	return Number.parseFloat(unit[1] ?? '0') / (unit[2] === 's' ? 1 : 1000);
+}
+
 /** Border and padding: what the content does not cover, and the box still has to be big for. */
 function frame(box: HTMLElement) {
 	const style = getComputedStyle(box);
@@ -78,7 +88,7 @@ function readGlide(): Glide {
 	if (typeof document === 'undefined') return { duration: 0, ease: LINEAR };
 	const token = getComputedStyle(document.documentElement);
 	return {
-		duration: px(token.getPropertyValue('--duration-size')) / 1000,
+		duration: seconds(token.getPropertyValue('--duration-size')),
 		ease: bezier(token.getPropertyValue('--ease-overlay'), LINEAR),
 	};
 }
