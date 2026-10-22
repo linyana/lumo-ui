@@ -13,6 +13,7 @@ import { OverviewPage } from './Overview';
 import { PopoverPage } from './Popover';
 import { ScrollAreaPage } from './ScrollArea';
 import { SeparatorPage } from './Separator';
+import { SkeletonPage } from './Skeleton';
 import { SpinnerPage } from './Spinner';
 import { StepsPage } from './Steps';
 import { TabsPage } from './Tabs';
@@ -56,6 +57,7 @@ export const docRoutes: DocRoute[] = [
 		element: <ScrollAreaPage />,
 	},
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
+	{ path: 'skeleton', label: 'Skeleton', section: 'Components', element: <SkeletonPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'steps', label: 'Steps', section: 'Components', element: <StepsPage /> },
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
