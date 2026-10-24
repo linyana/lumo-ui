@@ -31,6 +31,12 @@ const panelProps: Record<string, PropNode> = {
 		description:
 			'Wraps the body in a Transition, so a body that changes size while the panel is open glides to the new one. false opts out of the wrapper altogether.',
 	},
+	peek: {
+		type: 'number',
+		default: '0',
+		description:
+			'The height kept while closed, in pixels, so a folded body can show a peek of itself instead of nothing. 0 takes the closed panel out of the layout.',
+	},
 	className: {
 		type: 'string',
 		description:
@@ -156,11 +162,12 @@ export function CollapsiblePage() {
 				title="why a spring"
 				note={
 					<>
-						<Mono>0</Mono> and <Mono>auto</Mono> are two ends of the same number to the
-						animation, so a panel turns around mid-flight from where it is, and a body
-						that changes while it is open is followed. the panel stays in the DOM while
-						closed — that is what there is to animate — so it is <Mono>inert</Mono>{' '}
-						until it opens, rather than <Mono>hidden</Mono>.
+						the closed height — <Mono>0</Mono>, or a <Mono>peek</Mono> — and{' '}
+						<Mono>auto</Mono> are two ends of the same number to the animation, so a
+						panel turns around mid-flight from where it is, and a body that changes
+						while it is open is followed. the panel stays in the DOM while closed — that
+						is what there is to animate — so it is <Mono>inert</Mono> until it opens,
+						rather than <Mono>hidden</Mono>.
 					</>
 				}
 			>
@@ -173,7 +180,7 @@ export function CollapsiblePage() {
 
 			<DocSection
 				title="api reference"
-				note="the root’s props are Base UI’s; the panel adds one of its own."
+				note="the root’s props are Base UI’s; the panel adds two of its own."
 			>
 				<div className="space-y-6">
 					<div className="space-y-2">

@@ -5,13 +5,16 @@ import {
 	isValidElement,
 	useContext,
 	useEffect,
+	useLayoutEffect,
 	useRef,
 	useState,
 	type ReactNode,
 } from 'react';
 import { Link } from 'react-router';
+import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
+import { Collapsible } from '@/components/lumo/ui/Collapsible';
 import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
@@ -472,15 +475,30 @@ export type DocPreviewProps = {
 const COLLAPSED = 160;
 
 /**
- * A demo with its own source folded underneath, short code left open: what you read is the file
- * that renders, not a retelling of it.
+ * The fold's control, as a `Button`: Base UI's own trigger rather than `Collapsible.Trigger`, which
+ * paints a collapsible header, and two looks on one element settle every shared property — padding,
+ * height, the state layer — by whichever rule lands later in the stylesheet.
+ */
+function Fold({ children }: { children: ReactNode }) {
+	return (
+		<BaseCollapsible.Trigger render={<Button size="sm" variant="outline" />}>
+			{children}
+		</BaseCollapsible.Trigger>
+	);
+}
+
+/**
+ * A demo with its own source folded underneath: what you read is the file that renders, not a
+ * retelling of it. The fold is a `Collapsible`, and a closed panel keeps a peek of the code rather
+ * than hiding it outright.
  */
 export function DocPreview({ name, source, children }: DocPreviewProps) {
 	const [expanded, setExpanded] = useState(false);
-	const [fits, setFits] = useState(true);
+	const [fits, setFits] = useState(false);
 	const body = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
+	// Before paint, so a preview too short to fold is whole on the first frame.
+	useLayoutEffect(() => {
 		const element = body.current;
 		if (element === null) return;
 		const measure = () => setFits(element.scrollHeight <= COLLAPSED + 24);
@@ -497,22 +515,27 @@ export function DocPreview({ name, source, children }: DocPreviewProps) {
 			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
 				{children}
 			</div>
-			<div className="relative border-t">
-				<div
-					ref={body}
-					className={open ? 'max-h-150 overflow-y-auto' : 'max-h-40 overflow-hidden'}
-				>
-					<Code code={source} language="tsx" header={false} variant="filled" />
+			<Collapsible.Root open={open} onOpenChange={setExpanded} className="border-t">
+				<div className="relative">
+					<Collapsible.Panel peek={COLLAPSED}>
+						<div ref={body} className={open ? 'max-h-150 overflow-auto' : undefined}>
+							<Code
+								code={source}
+								language="tsx"
+								header={false}
+								variant="filled"
+								className={open ? 'min-w-max' : undefined}
+							/>
+						</div>
+					</Collapsible.Panel>
+					{!open && (
+						<div className="absolute inset-0 flex items-center justify-center bg-linear-to-b from-transparent to-muted">
+							<Fold>view code</Fold>
+						</div>
+					)}
+					{open && <Copy value={source} className="absolute top-2 right-2" />}
 				</div>
-				<Copy value={source} className="absolute top-2 right-2" />
-				{!open && (
-					<div className="absolute inset-x-0 bottom-0 flex h-24 items-center justify-center bg-linear-to-b from-transparent to-muted">
-						<Button size="sm" variant="outline" onClick={() => setExpanded(true)}>
-							view code
-						</Button>
-					</div>
-				)}
-			</div>
+			</Collapsible.Root>
 		</div>
 	);
 }

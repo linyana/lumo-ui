@@ -31,12 +31,17 @@ export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'cla
 	 * eases to the new size instead of jumping. `false` opts out of the wrapper altogether.
 	 */
 	transition?: boolean;
+	/**
+	 * The height the closed panel keeps, in pixels, so a folded body can still show a peek of
+	 * itself. `0` means closed is out of the layout rather than short.
+	 */
+	peek?: number;
 	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
 	className?: string;
 };
 
 /**
- * The panel is opened and closed by a spring rather than by a transition: `height: 0` and
+ * The panel is opened and closed by a spring rather than by a transition: a closed height and
  * `height: auto` are two ends of the same number to the animation, so a body that is swapped while
  * the panel is open is followed too, and a reversal mid-flight turns around from where it is.
  *
@@ -44,7 +49,7 @@ export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'cla
  * attributes. Only `hidden` is taken off it, because a panel that is never in the layout cannot be
  * animated between two heights; `inert` keeps the closed one out of the way instead.
  */
-export function Panel({ className, transition = true, children, ...props }: PanelProps) {
+export function Panel({ className, transition = true, peek = 0, children, ...props }: PanelProps) {
 	const spring = useSpring(springSize);
 
 	return (
@@ -56,7 +61,7 @@ export function Panel({ className, transition = true, children, ...props }: Pane
 					// `onDrag` — mean something else to an animated one.
 					{...(panelProps as unknown as HTMLMotionProps<'div'>)}
 					initial={false}
-					animate={{ height: state.open ? 'auto' : 0 }}
+					animate={{ height: state.open ? 'auto' : peek }}
 					transition={spring}
 					inert={!state.open}
 					className={cn('overflow-clip', className)}
