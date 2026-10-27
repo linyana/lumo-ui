@@ -165,6 +165,27 @@
 		-webkit-font-smoothing: antialiased;
 	}
 
+	/* Focus is declared once, here, and never in a component: a control reached by keyboard says
+	   so the same way wherever it sits. An outline rather than a ring, because it is drawn
+	   outside the box — the control keeps its size and its border while it holds focus.
+
+	   It fades in as an animation and not as a transition, because a transition is a property the
+	   element has to opt into and every component replaces `transition` with its own list of
+	   properties — the ring would arrive at two speeds depending on what it was drawn around. An
+	   animation runs beside those lists instead, and only on the moment it is wanted: a control
+	   that takes focus and keeps it has nothing left to animate. */
+	:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: 2px;
+		animation: focus-ring var(--duration-state) var(--ease-spring);
+	}
+
+	@keyframes focus-ring {
+		from {
+			outline-color: transparent;
+		}
+	}
+
 	/* Scrollbars: a transparent track, so whatever a pane is filled with shows through, and a
 	   rounded thumb that only firms up on hover. Firefox has no webkit pseudo-elements, so it
 	   needs the standard pair — and Chromium ignores the pseudo-elements once that pair is set,
