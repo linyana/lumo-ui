@@ -7,6 +7,8 @@ import { CollapsiblePage } from './Collapsible';
 import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
 import { DropdownPage } from './Dropdown';
+import { FieldPage } from './Field';
+import { InputPage } from './Input';
 import { LayoutPage } from './Layout';
 import { MenuPage } from './Menu';
 import { OverviewPage } from './Overview';
@@ -48,6 +50,8 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'dialog', label: 'Dialog', section: 'Components', element: <DialogPage /> },
 	{ path: 'drawer', label: 'Drawer', section: 'Components', element: <DrawerPage /> },
 	{ path: 'dropdown', label: 'Dropdown', section: 'Components', element: <DropdownPage /> },
+	{ path: 'field', label: 'Field', section: 'Components', element: <FieldPage /> },
+	{ path: 'input', label: 'Input', section: 'Components', element: <InputPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'popover', label: 'Popover', section: 'Components', element: <PopoverPage /> },
 	{

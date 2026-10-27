@@ -2,6 +2,7 @@ import { ArrowUpRight, Search } from 'lucide-react';
 import { useState, type ComponentType } from 'react';
 import { Link } from 'react-router';
 import { Toast } from '@/components/lumo/ui/Toast';
+import { Input } from '@/components/lumo/ui/Input';
 import { cn } from '@/lib/cn';
 import { DocPage } from '@/pages/DocPage';
 import ButtonBasic from '@/pages/Button/demos/basic';
@@ -12,6 +13,8 @@ import CollapsibleBasic from '@/pages/Collapsible/demos/basic';
 import DialogBasic from '@/pages/Dialog/demos/basic';
 import DrawerBasic from '@/pages/Drawer/demos/basic';
 import DropdownBasic from '@/pages/Dropdown/demos/basic';
+import FieldBasic from '@/pages/Field/demos/basic';
+import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
 import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
@@ -43,6 +46,13 @@ const groups: PreviewGroup[] = [
 	{
 		title: 'actions',
 		previews: [{ path: 'button', label: 'Button', Demo: ButtonBasic }],
+	},
+	{
+		title: 'forms & input',
+		previews: [
+			{ path: 'field', label: 'Field', Demo: FieldBasic },
+			{ path: 'input', label: 'Input', Demo: InputBasic },
+		],
 	},
 	{
 		title: 'surface',
@@ -153,7 +163,7 @@ export function OverviewPage() {
 							aria-hidden
 							className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
 						/>
-						<input
+						<Input
 							type="text"
 							value={query}
 							onChange={(event) => setQuery(event.target.value)}
@@ -161,10 +171,7 @@ export function OverviewPage() {
 							aria-label="filter components"
 							autoComplete="off"
 							spellCheck={false}
-							className={cn(
-								'h-9 w-full rounded-md border bg-background pr-3 pl-9 text-sm',
-								'placeholder:text-muted-foreground',
-							)}
+							className="pl-9"
 						/>
 					</div>
 

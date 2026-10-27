@@ -398,6 +398,36 @@
 					"target": "~/src/components/lumo/ui/Transition.tsx"
 				}
 			]
+		},
+		{
+			"name": "field",
+			"type": "registry:ui",
+			"title": "Field",
+			"description": "One control, its name, and the line beneath it: label, description and error joined to whatever control is inside, by Base UI's own wiring. Pairs with Input, and every later control slots into it.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Field.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Field.tsx"
+				}
+			]
+		},
+		{
+			"name": "input",
+			"type": "registry:ui",
+			"title": "Input",
+			"description": "A single line of text in the same 32 / 36 / 40 tiers a Button takes, so the two line up. Registers itself with a surrounding Field and reads the invalid border off it.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Input.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Input.tsx"
+				}
+			]
 		}
 	]
 }
