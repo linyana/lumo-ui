@@ -1,10 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
-import motionSource from '@/lib/motion.ts?raw';
-import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -16,13 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Size from './demos/size';
-import sizeSource from './demos/size.tsx?raw';
 import Width from './demos/width';
-import widthSource from './demos/width.tsx?raw';
 
-const files: DocFile[] = [
-	{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
-];
+const files = ['src/components/lumo/ui/Transition.tsx'];
 
 const transitionProps: Record<string, PropNode> = {
 	children: {
@@ -79,7 +70,7 @@ export function TransitionPage() {
 			title="transition"
 			description="a box that holds one block of content and keeps its size to what is inside it"
 		>
-			<DocPreview name="size.tsx" source={sizeSource}>
+			<DocPreview path="src/pages/Transition/demos/size.tsx">
 				<Size />
 			</DocPreview>
 
@@ -98,11 +89,7 @@ export function TransitionPage() {
 					name="transition"
 					packages={['motion']}
 					files={files}
-					reaches={[
-						{ path: 'src/lib/motion.ts', code: motionSource },
-						{ path: 'src/lib/measure.ts', code: measureSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
-					]}
+					reaches={['src/lib/motion.ts', 'src/lib/measure.ts', 'src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -154,7 +141,7 @@ export function TransitionPage() {
 					</>
 				}
 			>
-				<DocPreview name="width.tsx" source={widthSource}>
+				<DocPreview path="src/pages/Transition/demos/width.tsx">
 					<Width />
 				</DocPreview>
 			</DocSection>

@@ -1,16 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import menuSource from '@/components/lumo/ui/Menu.tsx?raw';
-import collapsibleSource from '@/components/lumo/ui/Collapsible.tsx?raw';
-import popoverSource from '@/components/lumo/ui/Popover.tsx?raw';
-import separatorSource from '@/components/lumo/ui/Separator.tsx?raw';
-import skeletonSource from '@/components/lumo/ui/Skeleton.tsx?raw';
-import tooltipSource from '@/components/lumo/ui/Tooltip.tsx?raw';
-import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
-import motionSource from '@/lib/motion.ts?raw';
-import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -22,13 +11,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Compact from './demos/compact';
-import compactSource from './demos/compact.tsx?raw';
 import Loading from './demos/loading';
-import loadingSource from './demos/loading.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Menu.tsx', code: menuSource }];
+const files = ['src/components/lumo/ui/Menu.tsx'];
 
 const buttonProps: Record<string, PropNode> = {
 	icon: {
@@ -256,7 +242,7 @@ const usageExample = `<Menu.Root compact={folded}>
 export function MenuPage() {
 	return (
 		<DocPage title="menu" description="navigation rows: groups, icons, badges, submenus">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Menu/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -276,15 +262,15 @@ export function MenuPage() {
 					packages={['@base-ui/react', 'lucide-react', 'tailwind-variants']}
 					files={files}
 					reaches={[
-						{ path: 'src/components/lumo/ui/Collapsible.tsx', code: collapsibleSource },
-						{ path: 'src/components/lumo/ui/Popover.tsx', code: popoverSource },
-						{ path: 'src/components/lumo/ui/Tooltip.tsx', code: tooltipSource },
-						{ path: 'src/components/lumo/ui/Separator.tsx', code: separatorSource },
-						{ path: 'src/components/lumo/ui/Skeleton.tsx', code: skeletonSource },
-						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
-						{ path: 'src/lib/motion.ts', code: motionSource },
-						{ path: 'src/lib/measure.ts', code: measureSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
+						'src/components/lumo/ui/Collapsible.tsx',
+						'src/components/lumo/ui/Popover.tsx',
+						'src/components/lumo/ui/Tooltip.tsx',
+						'src/components/lumo/ui/Separator.tsx',
+						'src/components/lumo/ui/Skeleton.tsx',
+						'src/components/lumo/ui/Transition.tsx',
+						'src/lib/motion.ts',
+						'src/lib/measure.ts',
+						'src/lib/cn.ts',
 					]}
 				/>
 			</DocSection>
@@ -333,7 +319,7 @@ export function MenuPage() {
 					</>
 				}
 			>
-				<DocPreview name="compact.tsx" source={compactSource}>
+				<DocPreview path="src/pages/Menu/demos/compact.tsx">
 					<Compact />
 				</DocPreview>
 			</DocSection>
@@ -342,7 +328,7 @@ export function MenuPage() {
 				title="while it loads"
 				note="a skeleton row is the height and shape of a real one, so the menu does not move when the navigation lands."
 			>
-				<DocPreview name="loading.tsx" source={loadingSource}>
+				<DocPreview path="src/pages/Menu/demos/loading.tsx">
 					<Loading />
 				</DocPreview>
 			</DocSection>

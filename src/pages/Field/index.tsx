@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import fieldSource from '@/components/lumo/ui/Field.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,13 +11,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Native from './demos/native';
-import nativeSource from './demos/native.tsx?raw';
 import Validation from './demos/validation';
-import validationSource from './demos/validation.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Field.tsx', code: fieldSource }];
+const files = ['src/components/lumo/ui/Field.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	name: {
@@ -142,7 +136,7 @@ const constraintExample = `<Input type="email" defaultValue="you" required />
 export function FieldPage() {
 	return (
 		<DocPage title="field" description="one control, its name, and the line beneath it">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Field/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -160,7 +154,7 @@ export function FieldPage() {
 					name="field"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -192,7 +186,7 @@ export function FieldPage() {
 					</>
 				}
 			>
-				<DocPreview name="validation.tsx" source={validationSource}>
+				<DocPreview path="src/pages/Field/demos/validation.tsx">
 					<Validation />
 				</DocPreview>
 			</DocSection>
@@ -211,7 +205,7 @@ export function FieldPage() {
 					</>
 				}
 			>
-				<DocPreview name="native.tsx" source={nativeSource}>
+				<DocPreview path="src/pages/Field/demos/native.tsx">
 					<Native />
 				</DocPreview>
 			</DocSection>

@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import skeletonSource from '@/components/lumo/ui/Skeleton.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,13 +11,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import CardPlaceholder from './demos/card';
-import cardSource from './demos/card.tsx?raw';
 import Swap from './demos/swap';
-import swapSource from './demos/swap.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Skeleton.tsx', code: skeletonSource }];
+const files = ['src/components/lumo/ui/Skeleton.tsx'];
 
 const skeletonProps: Record<string, PropNode> = {
 	className: {
@@ -63,7 +57,7 @@ const usageExample = `<div className="flex flex-col gap-2">
 export function SkeletonPage() {
 	return (
 		<DocPage title="skeleton" description="a placeholder for content that has not arrived">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Skeleton/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -81,7 +75,7 @@ export function SkeletonPage() {
 					name="skeleton"
 					packages={[]}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -103,7 +97,7 @@ export function SkeletonPage() {
 					</>
 				}
 			>
-				<DocPreview name="card.tsx" source={cardSource}>
+				<DocPreview path="src/pages/Skeleton/demos/card.tsx">
 					<CardPlaceholder />
 				</DocPreview>
 			</DocSection>
@@ -119,7 +113,7 @@ export function SkeletonPage() {
 					</>
 				}
 			>
-				<DocPreview name="swap.tsx" source={swapSource}>
+				<DocPreview path="src/pages/Skeleton/demos/swap.tsx">
 					<Swap />
 				</DocPreview>
 			</DocSection>

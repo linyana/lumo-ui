@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import inputSource from '@/components/lumo/ui/Input.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,17 +11,12 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Field from './demos/field';
-import fieldSource from './demos/field.tsx?raw';
 import Icon from './demos/icon';
-import iconSource from './demos/icon.tsx?raw';
 import Sizes from './demos/sizes';
-import sizesSource from './demos/sizes.tsx?raw';
 import States from './demos/states';
-import statesSource from './demos/states.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Input.tsx', code: inputSource }];
+const files = ['src/components/lumo/ui/Input.tsx'];
 
 const inputProps: Record<string, PropNode> = {
 	size: {
@@ -94,7 +86,7 @@ const usageExample = `<Input
 export function InputPage() {
 	return (
 		<DocPage title="input" description="a single line of text, 32, 36 or 40 tall">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Input/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -111,7 +103,7 @@ export function InputPage() {
 					name="input"
 					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -135,7 +127,7 @@ export function InputPage() {
 				title="sizes"
 				note="the same 32 / 36 / 40 the buttons take, so an input and the button beside it meet on the same line."
 			>
-				<DocPreview name="sizes.tsx" source={sizesSource}>
+				<DocPreview path="src/pages/Input/demos/sizes.tsx">
 					<Sizes />
 				</DocPreview>
 			</DocSection>
@@ -151,7 +143,7 @@ export function InputPage() {
 					</>
 				}
 			>
-				<DocPreview name="icon.tsx" source={iconSource}>
+				<DocPreview path="src/pages/Input/demos/icon.tsx">
 					<Icon />
 				</DocPreview>
 			</DocSection>
@@ -167,7 +159,7 @@ export function InputPage() {
 					</>
 				}
 			>
-				<DocPreview name="states.tsx" source={statesSource}>
+				<DocPreview path="src/pages/Input/demos/states.tsx">
 					<States />
 				</DocPreview>
 			</DocSection>
@@ -182,7 +174,7 @@ export function InputPage() {
 					</>
 				}
 			>
-				<DocPreview name="field.tsx" source={fieldSource}>
+				<DocPreview path="src/pages/Input/demos/field.tsx">
 					<Field />
 				</DocPreview>
 			</DocSection>

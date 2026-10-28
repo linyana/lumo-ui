@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import radioSource from '@/components/lumo/ui/RadioGroup.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,13 +11,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Controlled from './demos/controlled';
-import controlledSource from './demos/controlled.tsx?raw';
 import States from './demos/states';
-import statesSource from './demos/states.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/RadioGroup.tsx', code: radioSource }];
+const files = ['src/components/lumo/ui/RadioGroup.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	value: {
@@ -148,7 +142,7 @@ const usageExample = `<Field.Root>
 export function RadioGroupPage() {
 	return (
 		<DocPage title="radio group" description="exactly one of these, and never none">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/RadioGroup/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -165,7 +159,7 @@ export function RadioGroupPage() {
 					name="radio-group"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -196,7 +190,7 @@ export function RadioGroupPage() {
 					</>
 				}
 			>
-				<DocPreview name="states.tsx" source={statesSource}>
+				<DocPreview path="src/pages/RadioGroup/demos/states.tsx">
 					<States />
 				</DocPreview>
 			</DocSection>
@@ -211,7 +205,7 @@ export function RadioGroupPage() {
 					</>
 				}
 			>
-				<DocPreview name="controlled.tsx" source={controlledSource}>
+				<DocPreview path="src/pages/RadioGroup/demos/controlled.tsx">
 					<Controlled />
 				</DocPreview>
 			</DocSection>

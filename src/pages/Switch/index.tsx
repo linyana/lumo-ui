@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import switchSource from '@/components/lumo/ui/Switch.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import States from './demos/states';
-import statesSource from './demos/states.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Switch.tsx', code: switchSource }];
+const files = ['src/components/lumo/ui/Switch.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	checked: {
@@ -107,7 +102,7 @@ const usageExample = `<Switch.Root name="preview" defaultChecked>
 export function SwitchPage() {
 	return (
 		<DocPage title="switch" description="on or off, and it stays where you put it">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Switch/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -125,7 +120,7 @@ export function SwitchPage() {
 					name="switch"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -156,7 +151,7 @@ export function SwitchPage() {
 					</>
 				}
 			>
-				<DocPreview name="states.tsx" source={statesSource}>
+				<DocPreview path="src/pages/Switch/demos/states.tsx">
 					<States />
 				</DocPreview>
 			</DocSection>

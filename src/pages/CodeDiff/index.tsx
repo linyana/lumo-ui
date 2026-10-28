@@ -1,12 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import codeDiffSource from '@/components/lumo/ui/CodeDiff.tsx?raw';
-import codeSource from '@/components/lumo/ui/Code.tsx?raw';
-import buttonSource from '@/components/lumo/ui/Button.tsx?raw';
-import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
-import shikiSource from '@/lib/shiki.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -18,15 +11,11 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Added from './demos/added';
-import addedSource from './demos/added.tsx?raw';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Surfaces from './demos/surfaces';
-import surfacesSource from './demos/surfaces.tsx?raw';
 import Unified from './demos/unified';
-import unifiedSource from './demos/unified.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/CodeDiff.tsx', code: codeDiffSource }];
+const files = ['src/components/lumo/ui/CodeDiff.tsx'];
 
 const diffProps: Record<string, PropNode> = {
 	oldContent: {
@@ -105,7 +94,7 @@ const usageExample = `<CodeDiff
 export function CodeDiffPage() {
 	return (
 		<DocPage title="code diff" description="two revisions of one file, and what changed">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/CodeDiff/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -123,11 +112,11 @@ export function CodeDiffPage() {
 					packages={['diff']}
 					files={files}
 					reaches={[
-						{ path: 'src/components/lumo/ui/Code.tsx', code: codeSource },
-						{ path: 'src/lib/shiki.ts', code: shikiSource },
-						{ path: 'src/components/lumo/ui/Button.tsx', code: buttonSource },
-						{ path: 'src/components/lumo/ui/Spinner.tsx', code: spinnerSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
+						'src/components/lumo/ui/Code.tsx',
+						'src/lib/shiki.ts',
+						'src/components/lumo/ui/Button.tsx',
+						'src/components/lumo/ui/Spinner.tsx',
+						'src/lib/cn.ts',
 					]}
 				/>
 			</DocSection>
@@ -151,7 +140,7 @@ export function CodeDiffPage() {
 					</>
 				}
 			>
-				<DocPreview name="unified.tsx" source={unifiedSource}>
+				<DocPreview path="src/pages/CodeDiff/demos/unified.tsx">
 					<Unified />
 				</DocPreview>
 			</DocSection>
@@ -166,7 +155,7 @@ export function CodeDiffPage() {
 					</>
 				}
 			>
-				<DocPreview name="added.tsx" source={addedSource}>
+				<DocPreview path="src/pages/CodeDiff/demos/added.tsx">
 					<Added />
 				</DocPreview>
 			</DocSection>
@@ -175,7 +164,7 @@ export function CodeDiffPage() {
 				title="surfaces"
 				note="the diff wears the same three backgrounds as a plain code block."
 			>
-				<DocPreview name="surfaces.tsx" source={surfacesSource}>
+				<DocPreview path="src/pages/CodeDiff/demos/surfaces.tsx">
 					<Surfaces />
 				</DocPreview>
 			</DocSection>

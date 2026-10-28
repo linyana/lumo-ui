@@ -1,14 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import layoutSource from '@/components/lumo/blocks/Layout/index.tsx?raw';
-import typesSource from '@/components/lumo/blocks/Layout/types.ts?raw';
-import headerSource from '@/components/lumo/blocks/Layout/Header/index.tsx?raw';
-import contentSource from '@/components/lumo/blocks/Layout/Content/index.tsx?raw';
-import sidebarSource from '@/components/lumo/blocks/Layout/Sidebar/index.tsx?raw';
-import menuSource from '@/components/lumo/ui/Menu.tsx?raw';
-import scrollAreaSource from '@/components/lumo/ui/ScrollArea.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -19,12 +10,12 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 
-const files: DocFile[] = [
-	{ path: 'src/components/lumo/blocks/Layout/index.tsx', code: layoutSource },
-	{ path: 'src/components/lumo/blocks/Layout/types.ts', code: typesSource },
-	{ path: 'src/components/lumo/blocks/Layout/Header/index.tsx', code: headerSource },
-	{ path: 'src/components/lumo/blocks/Layout/Content/index.tsx', code: contentSource },
-	{ path: 'src/components/lumo/blocks/Layout/Sidebar/index.tsx', code: sidebarSource },
+const files = [
+	'src/components/lumo/blocks/Layout/index.tsx',
+	'src/components/lumo/blocks/Layout/types.ts',
+	'src/components/lumo/blocks/Layout/Header/index.tsx',
+	'src/components/lumo/blocks/Layout/Content/index.tsx',
+	'src/components/lumo/blocks/Layout/Sidebar/index.tsx',
 ];
 
 const layoutProps: Record<string, PropNode> = {
@@ -168,9 +159,9 @@ export function LayoutPage() {
 						</>
 					}
 					reaches={[
-						{ path: 'src/components/lumo/ui/Menu.tsx', code: menuSource },
-						{ path: 'src/components/lumo/ui/ScrollArea.tsx', code: scrollAreaSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
+						'src/components/lumo/ui/Menu.tsx',
+						'src/components/lumo/ui/ScrollArea.tsx',
+						'src/lib/cn.ts',
 					]}
 				/>
 			</DocSection>

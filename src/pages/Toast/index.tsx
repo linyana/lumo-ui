@@ -1,10 +1,6 @@
 import { Code } from '@/components/lumo/ui/Code';
 import { Toast } from '@/components/lumo/ui/Toast';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import toastSource from '@/components/lumo/ui/Toast.tsx?raw';
-import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -16,13 +12,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Kinds from './demos/kinds';
-import kindsSource from './demos/kinds.tsx?raw';
 import Saving from './demos/promise';
-import promiseSource from './demos/promise.tsx?raw';
 import Stack from './demos/stack';
-import stackSource from './demos/stack.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Toast.tsx', code: toastSource }];
+const files = ['src/components/lumo/ui/Toast.tsx'];
 
 const toastProps: Record<string, PropNode> = {
 	title: {
@@ -146,7 +139,7 @@ export function ToastPage() {
 	return (
 		<Toast.Provider>
 			<DocPage title="toast" description="a message that says itself and gets out of the way">
-				<DocPreview name="kinds.tsx" source={kindsSource}>
+				<DocPreview path="src/pages/Toast/demos/kinds.tsx">
 					<Kinds />
 				</DocPreview>
 
@@ -164,10 +157,7 @@ export function ToastPage() {
 						name="toast"
 						packages={['@base-ui/react', 'lucide-react']}
 						files={files}
-						reaches={[
-							{ path: 'src/components/lumo/ui/Spinner.tsx', code: spinnerSource },
-							{ path: 'src/lib/cn.ts', code: cnSource },
-						]}
+						reaches={['src/components/lumo/ui/Spinner.tsx', 'src/lib/cn.ts']}
 					/>
 				</DocSection>
 
@@ -190,7 +180,7 @@ export function ToastPage() {
 					title="a promise reports itself"
 					note="one toast that is updated in place: loading, then whatever the promise settles as."
 				>
-					<DocPreview name="promise.tsx" source={promiseSource}>
+					<DocPreview path="src/pages/Toast/demos/promise.tsx">
 						<Saving />
 					</DocPreview>
 				</DocSection>
@@ -208,7 +198,7 @@ export function ToastPage() {
 						</>
 					}
 				>
-					<DocPreview name="stack.tsx" source={stackSource}>
+					<DocPreview path="src/pages/Toast/demos/stack.tsx">
 						<Stack />
 					</DocPreview>
 				</DocSection>

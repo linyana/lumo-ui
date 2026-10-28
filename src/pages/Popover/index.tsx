@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import popoverSource from '@/components/lumo/ui/Popover.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Detached from './demos/detached';
-import detachedSource from './demos/detached.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Popover.tsx', code: popoverSource }];
+const files = ['src/components/lumo/ui/Popover.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	open: {
@@ -122,7 +117,7 @@ const usageExample = `<Popover.Root>
 export function PopoverPage() {
 	return (
 		<DocPage title="popover" description="an anchored panel that holds rich content">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Popover/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -140,7 +135,7 @@ export function PopoverPage() {
 					name="popover"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -169,7 +164,7 @@ export function PopoverPage() {
 					</>
 				}
 			>
-				<DocPreview name="detached.tsx" source={detachedSource}>
+				<DocPreview path="src/pages/Popover/demos/detached.tsx">
 					<Detached />
 				</DocPreview>
 			</DocSection>

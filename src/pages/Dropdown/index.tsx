@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import dropdownSource from '@/components/lumo/ui/Dropdown.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Detached from './demos/detached';
-import detachedSource from './demos/detached.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Dropdown.tsx', code: dropdownSource }];
+const files = ['src/components/lumo/ui/Dropdown.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	open: {
@@ -129,7 +124,7 @@ export function DropdownPage() {
 			title="dropdown"
 			description="actions on a trigger, with groups, separators and one popup many triggers can share"
 		>
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Dropdown/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -146,7 +141,7 @@ export function DropdownPage() {
 					name="dropdown"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -171,7 +166,7 @@ export function DropdownPage() {
 					</>
 				}
 			>
-				<DocPreview name="detached.tsx" source={detachedSource}>
+				<DocPreview path="src/pages/Dropdown/demos/detached.tsx">
 					<Detached />
 				</DocPreview>
 			</DocSection>

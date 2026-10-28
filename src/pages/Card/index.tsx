@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import cardSource from '@/components/lumo/ui/Card.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,15 +11,11 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Flush from './demos/flush';
-import flushSource from './demos/flush.tsx?raw';
 import Sizes from './demos/sizes';
-import sizesSource from './demos/sizes.tsx?raw';
 import Stretch from './demos/stretch';
-import stretchSource from './demos/stretch.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Card.tsx', code: cardSource }];
+const files = ['src/components/lumo/ui/Card.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	size: {
@@ -106,7 +99,7 @@ export function CardPage() {
 			title="card"
 			description="one surface, one subject, with its own header and footer"
 		>
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Card/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -123,7 +116,7 @@ export function CardPage() {
 					name="card"
 					packages={['tailwind-variants']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -151,7 +144,7 @@ export function CardPage() {
 					</>
 				}
 			>
-				<DocPreview name="sizes.tsx" source={sizesSource}>
+				<DocPreview path="src/pages/Card/demos/sizes.tsx">
 					<Sizes />
 				</DocPreview>
 			</DocSection>
@@ -166,7 +159,7 @@ export function CardPage() {
 					</>
 				}
 			>
-				<DocPreview name="flush.tsx" source={flushSource}>
+				<DocPreview path="src/pages/Card/demos/flush.tsx">
 					<Flush />
 				</DocPreview>
 			</DocSection>
@@ -181,7 +174,7 @@ export function CardPage() {
 					</>
 				}
 			>
-				<DocPreview name="stretch.tsx" source={stretchSource}>
+				<DocPreview path="src/pages/Card/demos/stretch.tsx">
 					<Stretch />
 				</DocPreview>
 			</DocSection>

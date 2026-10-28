@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import drawerSource from '@/components/lumo/ui/Drawer.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Swipe from './demos/swipe';
-import swipeSource from './demos/swipe.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Drawer.tsx', code: drawerSource }];
+const files = ['src/components/lumo/ui/Drawer.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	swipeDirection: {
@@ -134,7 +129,7 @@ const usageExample = `<Drawer.Root swipeDirection="right">
 export function DrawerPage() {
 	return (
 		<DocPage title="drawer" description="a panel that slides in from an edge and swipes away">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Drawer/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -152,7 +147,7 @@ export function DrawerPage() {
 					name="drawer"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -182,7 +177,7 @@ export function DrawerPage() {
 					</>
 				}
 			>
-				<DocPreview name="swipe.tsx" source={swipeSource}>
+				<DocPreview path="src/pages/Drawer/demos/swipe.tsx">
 					<Swipe />
 				</DocPreview>
 			</DocSection>

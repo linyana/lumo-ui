@@ -1,25 +1,24 @@
-import { ArrowLeft, ArrowRight, Check, Copy as CopyIcon, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Braces, Check, Copy as CopyIcon, Info, X } from 'lucide-react';
 import {
 	Children,
 	createContext,
 	isValidElement,
 	useContext,
 	useEffect,
-	useLayoutEffect,
-	useRef,
 	useState,
+	type ReactElement,
 	type ReactNode,
 } from 'react';
 import { Link } from 'react-router';
-import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
-import { Collapsible } from '@/components/lumo/ui/Collapsible';
+import { Dialog } from '@/components/lumo/ui/Dialog';
+import { Skeleton } from '@/components/lumo/ui/Skeleton';
 import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { cn } from '@/lib/cn';
-import tokensSource from '@/styles/lumo-tokens.css?raw';
+import { languageOf, readSource, readTree, type SourceFile } from './sources';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
 export function sectionId(title: string) {
@@ -184,29 +183,8 @@ export function Command({ children }: { children: string }) {
 	);
 }
 
-export type DocFile = { path: string; code: string };
-
-/**
- * One file of the manual: the path it goes to in the header, its source below it, and a button
- * that takes the whole thing. A file taller than the cap scrolls inside its own box with the path
- * held at the top, so a 200-line token file does not push the next step off the page.
- */
-export function Source({ path, code }: DocFile) {
-	return (
-		<Code
-			code={code}
-			language={path.split('.').pop()}
-			fileName={path}
-			showLineNumbers
-			wrap
-			className={cn(
-				'max-h-100 overflow-y-auto',
-				'[&_[data-slot=code-header]]:sticky [&_[data-slot=code-header]]:top-0',
-				'[&_[data-slot=code-header]]:z-1 [&_[data-slot=code-header]]:bg-background',
-			)}
-		/>
-	);
-}
+/** One file of the manual, as a path: its text lives behind the dialog, never in the page. */
+export type DocSource = { path: string };
 
 /** The file's own name, which is what a reader recognises it by: `Button.tsx`, not its path. */
 function fileName(path: string) {
@@ -226,7 +204,26 @@ function reachName(path: string) {
 }
 
 /** A stable empty list, so the default prop does not make a new array on every render. */
-const NO_FILES: DocFile[] = [];
+const NO_PATHS: string[] = [];
+
+/**
+ * One file of the manual: its path, and the way to read it. The text is behind the same dialog an
+ * example's source opens in, so the installation section carries no source of its own either.
+ */
+function ManualFile({ path }: DocSource) {
+	return (
+		<SourceDialog path={path}>
+			<Button
+				size="sm"
+				variant="outline"
+				icon={<Braces />}
+				className="w-full justify-start font-mono text-xs"
+			>
+				<span className="truncate">{path}</span>
+			</Button>
+		</SourceDialog>
+	);
+}
 
 export type DocInstallProps = {
 	/** The registry item the CLI takes, as `linyana/lumo-ui/<name>`. */
@@ -234,9 +231,9 @@ export type DocInstallProps = {
 	/** npm packages the copied files import. */
 	packages: string[];
 	/** The component's own files, in the order the CLI copies them. */
-	files: DocFile[];
+	files: string[];
 	/** What those files reach for, when it is more than `cn()`. */
-	reaches?: DocFile[];
+	reaches?: string[];
 	/** The one sentence under the command. Written from the manifest unless given. */
 	note?: ReactNode;
 	/** The sentence above the reached files, for a chain longer than the list can say. */
@@ -254,13 +251,13 @@ export function DocInstall({
 	name,
 	packages,
 	files,
-	reaches = NO_FILES,
+	reaches = NO_PATHS,
 	note,
 	reachesNote,
 	tokens = true,
 }: DocInstallProps) {
-	const own = files.map((file) => fileName(file.path));
-	const reached = reaches.map((file) => reachName(file.path));
+	const own = files.map(fileName);
+	const reached = reaches.map(reachName);
 	const steps = [packages.length > 0, true, reaches.length > 0, tokens].filter(Boolean).length;
 	const counted = ['no', 'one', 'two', 'three', 'four'][steps] ?? 'a few';
 
@@ -321,9 +318,9 @@ export function DocInstall({
 								its imports already read <Mono>@/…</Mono>, so it goes where they
 								point.
 							</Steps.Description>
-							<div className="space-y-3">
-								{files.map((file) => (
-									<Source key={file.path} path={file.path} code={file.code} />
+							<div className="space-y-1.5">
+								{files.map((path) => (
+									<ManualFile key={path} path={path} />
 								))}
 							</div>
 						</Steps.Item>
@@ -338,9 +335,9 @@ export function DocInstall({
 										</>
 									)}
 								</Steps.Description>
-								<div className="space-y-3">
-									{reaches.map((file) => (
-										<Source key={file.path} path={file.path} code={file.code} />
+								<div className="space-y-1.5">
+									{reaches.map((path) => (
+										<ManualFile key={path} path={path} />
 									))}
 								</div>
 							</Steps.Item>
@@ -353,7 +350,7 @@ export function DocInstall({
 									<Mono>--primary</Mono>, <Mono>--radius</Mono> and the rest — the
 									component then wears its colours.
 								</Steps.Description>
-								<Source path="src/styles/lumo-tokens.css" code={tokensSource} />
+								<ManualFile path="src/styles/lumo-tokens.css" />
 							</Steps.Item>
 						)}
 					</Steps.Root>
@@ -465,77 +462,188 @@ export function DocSection({ title, note, children }: DocSectionProps) {
 }
 
 export type DocPreviewProps = {
-	/** The file name the source is shown under. */
-	name: string;
-	/** That file's own text, read with `?raw` — one copy, so the demo and its code cannot drift. */
-	source: string;
+	/** The module behind the demo, `src/pages/…/demos/…` — the dialog loads it; the page never does. */
+	path: string;
 	children: ReactNode;
 };
 
-const COLLAPSED = 160;
-
-/**
- * The fold's control, as a `Button`: Base UI's own trigger rather than `Collapsible.Trigger`, which
- * paints a collapsible header, and two looks on one element settle every shared property — padding,
- * height, the state layer — by whichever rule lands later in the stylesheet.
- */
-function Fold({ children }: { children: ReactNode }) {
+/** One row of the tree: a file, and underneath it whatever that file imports. */
+function SourceRow({
+	node,
+	selected,
+	onSelect,
+}: {
+	node: SourceFile;
+	selected: string;
+	onSelect: (path: string) => void;
+}) {
 	return (
-		<BaseCollapsible.Trigger render={<Button size="sm" variant="outline" />}>
-			{children}
-		</BaseCollapsible.Trigger>
+		<li>
+			<button
+				type="button"
+				title={node.path}
+				data-selected={node.path === selected ? '' : undefined}
+				onClick={() => onSelect(node.path)}
+				className={cn(
+					'flex h-7 w-full cursor-pointer items-center rounded-md px-2 text-left',
+					'font-mono text-xs text-muted-foreground',
+					'hover:bg-accent hover:text-accent-foreground',
+					'data-selected:bg-selected data-selected:text-foreground',
+				)}
+			>
+				<span className="truncate">{node.name}</span>
+			</button>
+			{node.children.length > 0 && (
+				<ul className="ms-2 space-y-0.5 border-s ps-1">
+					{node.children.map((child) => (
+						<SourceRow
+							key={child.path}
+							node={child}
+							selected={selected}
+							onSelect={onSelect}
+						/>
+					))}
+				</ul>
+			)}
+		</li>
 	);
 }
 
 /**
- * A demo with its own source folded underneath: what you read is the file that renders, not a
- * retelling of it. The fold is a `Collapsible`, and a closed panel keeps a peek of the code rather
- * than hiding it outright.
+ * The source of an example, and of the files it reaches for: the tree on the left is the demo's own
+ * imports, walked outward, and the pane on the right is whichever of them is selected.
+ *
+ * None of it is in the page until the dialog opens, and none of it outlives the open either — the
+ * popup is mounted by Base UI when it is asked for, so the reading starts from the demo each time.
+ * The modules are fetched by path, so a docs page carries no source at all.
  */
-export function DocPreview({ name, source, children }: DocPreviewProps) {
-	const [expanded, setExpanded] = useState(false);
-	const [fits, setFits] = useState(false);
-	const body = useRef<HTMLDivElement>(null);
+function SourceDialog({ path, children }: { path: string; children: ReactElement }) {
+	return (
+		<Dialog.Root>
+			<Dialog.Trigger render={children} />
+			<Dialog.Portal>
+				<Dialog.Backdrop />
+				<Dialog.Viewport>
+					<Dialog.Popup className="flex h-[80vh] max-h-[44rem] w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
+						<SourcePane path={path} />
+					</Dialog.Popup>
+				</Dialog.Viewport>
+			</Dialog.Portal>
+		</Dialog.Root>
+	);
+}
 
-	// Before paint, so a preview too short to fold is whole on the first frame.
-	useLayoutEffect(() => {
-		const element = body.current;
-		if (element === null) return;
-		const measure = () => setFits(element.scrollHeight <= COLLAPSED + 24);
-		measure();
-		const observer = new ResizeObserver(measure);
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, []);
+/** The contents of the dialog: mounted with the popup, so every open starts at the demo's own file. */
+function SourcePane({ path }: { path: string }) {
+	const [tree, setTree] = useState<SourceFile | null>(null);
+	const [selected, setSelected] = useState(path);
+	const [text, setText] = useState<string | null>(null);
 
-	const open = expanded || fits;
+	useEffect(() => {
+		let live = true;
+		readTree(path).then(
+			(next) => {
+				if (live) setTree(next);
+			},
+			() => {},
+		);
+		return () => {
+			live = false;
+		};
+	}, [path]);
+
+	useEffect(() => {
+		let live = true;
+		readSource(selected).then(
+			(source) => {
+				if (live) setText(source ?? '');
+			},
+			() => {},
+		);
+		return () => {
+			live = false;
+		};
+	}, [selected]);
+
+	const browse = (next: string) => {
+		setSelected(next);
+		setText(null);
+	};
+
+	return (
+		<>
+			<div className="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2">
+				<Dialog.Title className="flex min-w-0 items-baseline gap-2 text-sm font-medium">
+					source
+					<span className="truncate font-mono text-xs font-normal text-muted-foreground">
+						{selected}
+					</span>
+				</Dialog.Title>
+				<div className="flex shrink-0 items-center gap-1">
+					<Copy value={text ?? ''} />
+					<Dialog.Close
+						render={
+							<Button
+								size="icon"
+								variant="ghost"
+								className="size-7"
+								aria-label="close"
+							>
+								<X />
+							</Button>
+						}
+					/>
+				</div>
+			</div>
+			<div className="flex min-h-0 flex-1">
+				<div className="w-52 shrink-0 overflow-y-auto border-e p-2">
+					{tree === null ? (
+						<Skeleton className="h-7 w-full" />
+					) : (
+						<ul className="space-y-0.5">
+							<SourceRow node={tree} selected={selected} onSelect={browse} />
+						</ul>
+					)}
+				</div>
+				<div className="min-w-0 flex-1 overflow-auto p-3">
+					{text === null ? (
+						<Skeleton className="h-40 w-full" />
+					) : (
+						<Code
+							code={text}
+							language={languageOf(selected)}
+							header={false}
+							variant="ghost"
+							showLineNumbers
+							wrap
+						/>
+					)}
+				</div>
+			</div>
+		</>
+	);
+}
+
+/**
+ * A demo and the way to its source: the file that renders sits in the page, the text sits behind a
+ * dialog — nothing of the code is in the document until somebody asks to read it.
+ */
+export function DocPreview({ path, children }: DocPreviewProps) {
+	const name = path.slice(path.lastIndexOf('/') + 1);
 
 	return (
 		<div data-slot="doc-preview" data-file={name} className="overflow-hidden rounded-lg border">
 			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
 				{children}
 			</div>
-			<Collapsible.Root open={open} onOpenChange={setExpanded} className="border-t">
-				<div className="relative">
-					<Collapsible.Panel peek={COLLAPSED}>
-						<div ref={body} className={open ? 'max-h-150 overflow-auto' : undefined}>
-							<Code
-								code={source}
-								language="tsx"
-								header={false}
-								variant="filled"
-								className={open ? 'min-w-max' : undefined}
-							/>
-						</div>
-					</Collapsible.Panel>
-					{!open && (
-						<div className="absolute inset-0 flex items-center justify-center bg-linear-to-b from-transparent to-muted">
-							<Fold>view code</Fold>
-						</div>
-					)}
-					{open && <Copy value={source} className="absolute top-2 right-2" />}
-				</div>
-			</Collapsible.Root>
+			<div className="flex items-center justify-between gap-3 border-t px-3 py-1.5">
+				<span className="truncate font-mono text-xs text-muted-foreground">{name}</span>
+				<SourceDialog path={path}>
+					<Button size="sm" variant="ghost" icon={<Braces />}>
+						view code
+					</Button>
+				</SourceDialog>
+			</div>
 		</div>
 	);
 }

@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import scrollAreaSource from '@/components/lumo/ui/ScrollArea.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,13 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Both from './demos/both';
-import bothSource from './demos/both.tsx?raw';
 
-const files: DocFile[] = [
-	{ path: 'src/components/lumo/ui/ScrollArea.tsx', code: scrollAreaSource },
-];
+const files = ['src/components/lumo/ui/ScrollArea.tsx'];
 
 const scrollbarProps: Record<string, PropNode> = {
 	orientation: {
@@ -105,7 +98,7 @@ export function ScrollAreaPage() {
 			title="scroll area"
 			description="a pane that scrolls under a bar it keeps out of sight"
 		>
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/ScrollArea/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -123,7 +116,7 @@ export function ScrollAreaPage() {
 					name="scroll-area"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -152,7 +145,7 @@ export function ScrollAreaPage() {
 					</>
 				}
 			>
-				<DocPreview name="both.tsx" source={bothSource}>
+				<DocPreview path="src/pages/ScrollArea/demos/both.tsx">
 					<Both />
 				</DocPreview>
 			</DocSection>

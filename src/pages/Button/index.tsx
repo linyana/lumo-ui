@@ -1,9 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import buttonSource from '@/components/lumo/ui/Button.tsx?raw';
-import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -15,19 +11,13 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Composition from './demos/composition';
-import compositionSource from './demos/composition.tsx?raw';
 import Icon from './demos/icon';
-import iconSource from './demos/icon.tsx?raw';
 import Sizes from './demos/sizes';
-import sizesSource from './demos/sizes.tsx?raw';
 import States from './demos/states';
-import statesSource from './demos/states.tsx?raw';
 import Variants from './demos/variants';
-import variantsSource from './demos/variants.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Button.tsx', code: buttonSource }];
+const files = ['src/components/lumo/ui/Button.tsx'];
 
 const buttonProps: Record<string, PropNode> = {
 	variant: {
@@ -98,7 +88,7 @@ export function ButtonPage() {
 			title="button"
 			description="a control that starts an action: Base UI inside, tokens outside"
 		>
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Button/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -116,10 +106,7 @@ export function ButtonPage() {
 					name="button"
 					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
-					reaches={[
-						{ path: 'src/components/lumo/ui/Spinner.tsx', code: spinnerSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
-					]}
+					reaches={['src/components/lumo/ui/Spinner.tsx', 'src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -134,7 +121,7 @@ export function ButtonPage() {
 				title="variants"
 				note="one tier per intent, so the loudest thing on a page is the action it is about."
 			>
-				<DocPreview name="variants.tsx" source={variantsSource}>
+				<DocPreview path="src/pages/Button/demos/variants.tsx">
 					<Variants />
 				</DocPreview>
 			</DocSection>
@@ -143,7 +130,7 @@ export function ButtonPage() {
 				title="sizes"
 				note="32 / 36 / 40, the type growing with them. icons follow the type, so a size is never chosen twice."
 			>
-				<DocPreview name="sizes.tsx" source={sizesSource}>
+				<DocPreview path="src/pages/Button/demos/sizes.tsx">
 					<Sizes />
 				</DocPreview>
 			</DocSection>
@@ -158,7 +145,7 @@ export function ButtonPage() {
 					</>
 				}
 			>
-				<DocPreview name="icon.tsx" source={iconSource}>
+				<DocPreview path="src/pages/Button/demos/icon.tsx">
 					<Icon />
 				</DocPreview>
 			</DocSection>
@@ -173,7 +160,7 @@ export function ButtonPage() {
 					</>
 				}
 			>
-				<DocPreview name="states.tsx" source={statesSource}>
+				<DocPreview path="src/pages/Button/demos/states.tsx">
 					<States />
 				</DocPreview>
 			</DocSection>
@@ -187,7 +174,7 @@ export function ButtonPage() {
 					</>
 				}
 			>
-				<DocPreview name="composition.tsx" source={compositionSource}>
+				<DocPreview path="src/pages/Button/demos/composition.tsx">
 					<Composition />
 				</DocPreview>
 			</DocSection>

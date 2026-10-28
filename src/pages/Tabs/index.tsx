@@ -1,11 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import tabsSource from '@/components/lumo/ui/Tabs.tsx?raw';
-import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
-import motionSource from '@/lib/motion.ts?raw';
-import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -17,21 +11,14 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Request from './demos/request';
-import requestSource from './demos/request.tsx?raw';
 import Sizes from './demos/sizes';
-import sizesSource from './demos/sizes.tsx?raw';
 import Swapped from './demos/swapped';
-import swappedSource from './demos/swapped.tsx?raw';
 import Tracked from './demos/tracked';
-import trackedSource from './demos/tracked.tsx?raw';
 import Variants from './demos/variants';
-import variantsSource from './demos/variants.tsx?raw';
 import Vertical from './demos/vertical';
-import verticalSource from './demos/vertical.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Tabs.tsx', code: tabsSource }];
+const files = ['src/components/lumo/ui/Tabs.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	variant: {
@@ -155,7 +142,7 @@ const usageExample = `<Tabs.Root defaultValue="overview">
 export function TabsPage() {
 	return (
 		<DocPage title="tabs" description="one panel at a time, chosen from a row of tabs">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Tabs/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -175,10 +162,10 @@ export function TabsPage() {
 					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
 					reaches={[
-						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
-						{ path: 'src/lib/motion.ts', code: motionSource },
-						{ path: 'src/lib/measure.ts', code: measureSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
+						'src/components/lumo/ui/Transition.tsx',
+						'src/lib/motion.ts',
+						'src/lib/measure.ts',
+						'src/lib/cn.ts',
 					]}
 				/>
 			</DocSection>
@@ -203,13 +190,13 @@ export function TabsPage() {
 					</>
 				}
 			>
-				<DocPreview name="variants.tsx" source={variantsSource}>
+				<DocPreview path="src/pages/Tabs/demos/variants.tsx">
 					<Variants />
 				</DocPreview>
 			</DocSection>
 
 			<DocSection title="sizes" note="one size on the root reaches every part it wraps.">
-				<DocPreview name="sizes.tsx" source={sizesSource}>
+				<DocPreview path="src/pages/Tabs/demos/sizes.tsx">
 					<Sizes />
 				</DocPreview>
 			</DocSection>
@@ -218,7 +205,7 @@ export function TabsPage() {
 				title="vertical, with a disabled tab"
 				note="orientation moves the whole control, and the same indicator follows it."
 			>
-				<DocPreview name="vertical.tsx" source={verticalSource}>
+				<DocPreview path="src/pages/Tabs/demos/vertical.tsx">
 					<Vertical />
 				</DocPreview>
 			</DocSection>
@@ -238,7 +225,7 @@ export function TabsPage() {
 					</>
 				}
 			>
-				<DocPreview name="tracked.tsx" source={trackedSource}>
+				<DocPreview path="src/pages/Tabs/demos/tracked.tsx">
 					<Tracked />
 				</DocPreview>
 			</DocSection>
@@ -254,7 +241,7 @@ export function TabsPage() {
 					</>
 				}
 			>
-				<DocPreview name="swapped.tsx" source={swappedSource}>
+				<DocPreview path="src/pages/Tabs/demos/swapped.tsx">
 					<Swapped />
 				</DocPreview>
 			</DocSection>
@@ -272,7 +259,7 @@ export function TabsPage() {
 					</>
 				}
 			>
-				<DocPreview name="request.tsx" source={requestSource}>
+				<DocPreview path="src/pages/Tabs/demos/request.tsx">
 					<Request />
 				</DocPreview>
 			</DocSection>

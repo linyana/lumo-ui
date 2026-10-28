@@ -1,11 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import codeSource from '@/components/lumo/ui/Code.tsx?raw';
-import buttonSource from '@/components/lumo/ui/Button.tsx?raw';
-import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
-import shikiSource from '@/lib/shiki.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -17,17 +11,12 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import LineNumbers from './demos/line-numbers';
-import lineNumbersSource from './demos/line-numbers.tsx?raw';
 import Surfaces from './demos/surfaces';
-import surfacesSource from './demos/surfaces.tsx?raw';
 import Unknown from './demos/unknown';
-import unknownSource from './demos/unknown.tsx?raw';
 import Wrap from './demos/wrap';
-import wrapSource from './demos/wrap.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Code.tsx', code: codeSource }];
+const files = ['src/components/lumo/ui/Code.tsx'];
 
 const codeProps: Record<string, PropNode> = {
 	code: {
@@ -162,7 +151,7 @@ const usageExample = `<Code
 export function CodePage() {
 	return (
 		<DocPage title="code" description="source, coloured, with a way to take it">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Code/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -181,13 +170,10 @@ export function CodePage() {
 					packages={['shiki', 'lucide-react', 'tailwind-variants']}
 					files={files}
 					reaches={[
-						{ path: 'src/lib/shiki.ts', code: shikiSource },
-						{ path: 'src/components/lumo/ui/Button.tsx', code: buttonSource },
-						{
-							path: 'src/components/lumo/ui/Spinner.tsx',
-							code: spinnerSource,
-						},
-						{ path: 'src/lib/cn.ts', code: cnSource },
+						'src/lib/shiki.ts',
+						'src/components/lumo/ui/Button.tsx',
+						'src/components/lumo/ui/Spinner.tsx',
+						'src/lib/cn.ts',
 					]}
 				/>
 			</DocSection>
@@ -211,7 +197,7 @@ export function CodePage() {
 					</>
 				}
 			>
-				<DocPreview name="line-numbers.tsx" source={lineNumbersSource}>
+				<DocPreview path="src/pages/Code/demos/line-numbers.tsx">
 					<LineNumbers />
 				</DocPreview>
 			</DocSection>
@@ -220,7 +206,7 @@ export function CodePage() {
 				title="surfaces"
 				note="the same block on a filled, an outlined and a bare background."
 			>
-				<DocPreview name="surfaces.tsx" source={surfacesSource}>
+				<DocPreview path="src/pages/Code/demos/surfaces.tsx">
 					<Surfaces />
 				</DocPreview>
 			</DocSection>
@@ -234,7 +220,7 @@ export function CodePage() {
 					</>
 				}
 			>
-				<DocPreview name="wrap.tsx" source={wrapSource}>
+				<DocPreview path="src/pages/Code/demos/wrap.tsx">
 					<Wrap />
 				</DocPreview>
 			</DocSection>
@@ -248,7 +234,7 @@ export function CodePage() {
 					</>
 				}
 			>
-				<DocPreview name="unknown.tsx" source={unknownSource}>
+				<DocPreview path="src/pages/Code/demos/unknown.tsx">
 					<Unknown />
 				</DocPreview>
 			</DocSection>

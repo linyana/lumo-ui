@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import checkboxSource from '@/components/lumo/ui/Checkbox.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,13 +11,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import InField from './demos/field';
-import fieldSource from './demos/field.tsx?raw';
 import States from './demos/states';
-import statesSource from './demos/states.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Checkbox.tsx', code: checkboxSource }];
+const files = ['src/components/lumo/ui/Checkbox.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	checked: {
@@ -118,7 +112,7 @@ const usageExample = `<Checkbox.Root name="readme" defaultChecked>
 export function CheckboxPage() {
 	return (
 		<DocPage title="checkbox" description="one of several, any number of them">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Checkbox/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -135,7 +129,7 @@ export function CheckboxPage() {
 					name="checkbox"
 					packages={['@base-ui/react', 'lucide-react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -167,7 +161,7 @@ export function CheckboxPage() {
 					</>
 				}
 			>
-				<DocPreview name="states.tsx" source={statesSource}>
+				<DocPreview path="src/pages/Checkbox/demos/states.tsx">
 					<States />
 				</DocPreview>
 			</DocSection>
@@ -183,7 +177,7 @@ export function CheckboxPage() {
 					</>
 				}
 			>
-				<DocPreview name="field.tsx" source={fieldSource}>
+				<DocPreview path="src/pages/Checkbox/demos/field.tsx">
 					<InField />
 				</DocPreview>
 			</DocSection>

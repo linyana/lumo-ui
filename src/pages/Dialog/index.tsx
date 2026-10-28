@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import dialogSource from '@/components/lumo/ui/Dialog.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Confirm from './demos/confirm';
-import confirmSource from './demos/confirm.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Dialog.tsx', code: dialogSource }];
+const files = ['src/components/lumo/ui/Dialog.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	open: {
@@ -113,7 +108,7 @@ const usageExample = `<Dialog.Root>
 export function DialogPage() {
 	return (
 		<DocPage title="dialog" description="modal dialog, behaviour from Base UI">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Dialog/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -131,7 +126,7 @@ export function DialogPage() {
 					name="dialog"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -160,7 +155,7 @@ export function DialogPage() {
 					</>
 				}
 			>
-				<DocPreview name="confirm.tsx" source={confirmSource}>
+				<DocPreview path="src/pages/Dialog/demos/confirm.tsx">
 					<Confirm />
 				</DocPreview>
 			</DocSection>

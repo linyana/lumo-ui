@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import tooltipSource from '@/components/lumo/ui/Tooltip.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Detached from './demos/detached';
-import detachedSource from './demos/detached.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Tooltip.tsx', code: tooltipSource }];
+const files = ['src/components/lumo/ui/Tooltip.tsx'];
 
 const providerProps: Record<string, PropNode> = {
 	delay: {
@@ -114,7 +109,7 @@ const usageExample = `<Tooltip.Provider delay={300}>
 export function TooltipPage() {
 	return (
 		<DocPage title="tooltip" description="hover and focus hint anchored to its trigger">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Tooltip/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -132,7 +127,7 @@ export function TooltipPage() {
 					name="tooltip"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -156,7 +151,7 @@ export function TooltipPage() {
 					</>
 				}
 			>
-				<DocPreview name="detached.tsx" source={detachedSource}>
+				<DocPreview path="src/pages/Tooltip/demos/detached.tsx">
 					<Detached />
 				</DocPreview>
 			</DocSection>

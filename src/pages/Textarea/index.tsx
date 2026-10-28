@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import textareaSource from '@/components/lumo/ui/Textarea.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,13 +11,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import InField from './demos/field';
-import fieldSource from './demos/field.tsx?raw';
 import States from './demos/states';
-import statesSource from './demos/states.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Textarea.tsx', code: textareaSource }];
+const files = ['src/components/lumo/ui/Textarea.tsx'];
 
 const textareaProps: Record<string, PropNode> = {
 	size: {
@@ -88,7 +82,7 @@ const usageExample = `<Textarea
 export function TextareaPage() {
 	return (
 		<DocPage title="textarea" description="several lines of text, in the same box as an input">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Textarea/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -107,7 +101,7 @@ export function TextareaPage() {
 					name="textarea"
 					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -138,7 +132,7 @@ export function TextareaPage() {
 					</>
 				}
 			>
-				<DocPreview name="states.tsx" source={statesSource}>
+				<DocPreview path="src/pages/Textarea/demos/states.tsx">
 					<States />
 				</DocPreview>
 			</DocSection>
@@ -154,7 +148,7 @@ export function TextareaPage() {
 					</>
 				}
 			>
-				<DocPreview name="field.tsx" source={fieldSource}>
+				<DocPreview path="src/pages/Textarea/demos/field.tsx">
 					<InField />
 				</DocPreview>
 			</DocSection>

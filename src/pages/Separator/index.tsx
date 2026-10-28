@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import separatorSource from '@/components/lumo/ui/Separator.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,11 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import BetweenRows from './demos/between-rows';
-import betweenRowsSource from './demos/between-rows.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Separator.tsx', code: separatorSource }];
+const files = ['src/components/lumo/ui/Separator.tsx'];
 
 const separatorProps: Record<string, PropNode> = {
 	orientation: {
@@ -67,7 +62,7 @@ const usageExample = `<div>
 export function SeparatorPage() {
 	return (
 		<DocPage title="separator" description="a line between two regions, announced as one">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Separator/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -85,7 +80,7 @@ export function SeparatorPage() {
 					name="separator"
 					packages={['@base-ui/react']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -114,7 +109,7 @@ export function SeparatorPage() {
 					</>
 				}
 			>
-				<DocPreview name="between-rows.tsx" source={betweenRowsSource}>
+				<DocPreview path="src/pages/Separator/demos/between-rows.tsx">
 					<BetweenRows />
 				</DocPreview>
 			</DocSection>

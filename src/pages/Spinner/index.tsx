@@ -1,9 +1,6 @@
 import { Button } from '@/components/lumo/ui/Button';
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import spinnerSource from '@/components/lumo/ui/Spinner.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -15,13 +12,10 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Inline from './demos/inline';
-import inlineSource from './demos/inline.tsx?raw';
 import Sizes from './demos/sizes';
-import sizesSource from './demos/sizes.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Spinner.tsx', code: spinnerSource }];
+const files = ['src/components/lumo/ui/Spinner.tsx'];
 
 const spinnerProps: Record<string, PropNode> = {
 	dots: {
@@ -85,7 +79,7 @@ const usageExample = `<p className="flex items-center gap-2 text-sm">
 export function SpinnerPage() {
 	return (
 		<DocPage title="spinner" description="the one loading indicator, sized in em">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Spinner/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -102,7 +96,7 @@ export function SpinnerPage() {
 					name="spinner"
 					packages={[]}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -130,7 +124,7 @@ export function SpinnerPage() {
 					</>
 				}
 			>
-				<DocPreview name="sizes.tsx" source={sizesSource}>
+				<DocPreview path="src/pages/Spinner/demos/sizes.tsx">
 					<Sizes />
 				</DocPreview>
 			</DocSection>
@@ -139,7 +133,7 @@ export function SpinnerPage() {
 				title="in the text’s own size"
 				note="the point of sizing in em: a control loads at exactly the size of the icon it replaces."
 			>
-				<DocPreview name="inline.tsx" source={inlineSource}>
+				<DocPreview path="src/pages/Spinner/demos/inline.tsx">
 					<Inline />
 				</DocPreview>
 			</DocSection>

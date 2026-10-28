@@ -1,11 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import collapsibleSource from '@/components/lumo/ui/Collapsible.tsx?raw';
-import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
-import motionSource from '@/lib/motion.ts?raw';
-import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -17,13 +11,9 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Swapped from './demos/swapped';
-import swappedSource from './demos/swapped.tsx?raw';
 
-const files: DocFile[] = [
-	{ path: 'src/components/lumo/ui/Collapsible.tsx', code: collapsibleSource },
-];
+const files = ['src/components/lumo/ui/Collapsible.tsx'];
 
 const panelProps: Record<string, PropNode> = {
 	peek: {
@@ -100,7 +90,7 @@ const usageExample = `<Collapsible.Root>
 export function CollapsiblePage() {
 	return (
 		<DocPage title="collapsible" description="a disclosure region that expands one panel">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Collapsible/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -120,10 +110,10 @@ export function CollapsiblePage() {
 					packages={['@base-ui/react', 'lucide-react']}
 					files={files}
 					reaches={[
-						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
-						{ path: 'src/lib/motion.ts', code: motionSource },
-						{ path: 'src/lib/measure.ts', code: measureSource },
-						{ path: 'src/lib/cn.ts', code: cnSource },
+						'src/components/lumo/ui/Transition.tsx',
+						'src/lib/motion.ts',
+						'src/lib/measure.ts',
+						'src/lib/cn.ts',
 					]}
 				/>
 			</DocSection>
@@ -149,7 +139,7 @@ export function CollapsiblePage() {
 					</>
 				}
 			>
-				<DocPreview name="swapped.tsx" source={swappedSource}>
+				<DocPreview path="src/pages/Collapsible/demos/swapped.tsx">
 					<Swapped />
 				</DocPreview>
 			</DocSection>

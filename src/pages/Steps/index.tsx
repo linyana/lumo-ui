@@ -1,8 +1,5 @@
 import { Code } from '@/components/lumo/ui/Code';
-import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
-import stepsSource from '@/components/lumo/ui/Steps.tsx?raw';
-import cnSource from '@/lib/cn.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -14,15 +11,11 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import basicSource from './demos/basic.tsx?raw';
 import Dots from './demos/dots';
-import dotsSource from './demos/dots.tsx?raw';
 import Failed from './demos/failed';
-import failedSource from './demos/failed.tsx?raw';
 import Vertical from './demos/vertical';
-import verticalSource from './demos/vertical.tsx?raw';
 
-const files: DocFile[] = [{ path: 'src/components/lumo/ui/Steps.tsx', code: stepsSource }];
+const files = ['src/components/lumo/ui/Steps.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	current: {
@@ -106,7 +99,7 @@ const usageExample = `<Steps.Root current={1}>
 export function StepsPage() {
 	return (
 		<DocPage title="steps" description="a sequence of steps, with the one you are on marked">
-			<DocPreview name="basic.tsx" source={basicSource}>
+			<DocPreview path="src/pages/Steps/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
@@ -124,7 +117,7 @@ export function StepsPage() {
 					name="steps"
 					packages={['lucide-react', 'tailwind-variants']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -153,7 +146,7 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<DocPreview name="vertical.tsx" source={verticalSource}>
+				<DocPreview path="src/pages/Steps/demos/vertical.tsx">
 					<Vertical />
 				</DocPreview>
 			</DocSection>
@@ -169,7 +162,7 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<DocPreview name="failed.tsx" source={failedSource}>
+				<DocPreview path="src/pages/Steps/demos/failed.tsx">
 					<Failed />
 				</DocPreview>
 			</DocSection>
@@ -185,7 +178,7 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<DocPreview name="dots.tsx" source={dotsSource}>
+				<DocPreview path="src/pages/Steps/demos/dots.tsx">
 					<Dots />
 				</DocPreview>
 			</DocSection>
