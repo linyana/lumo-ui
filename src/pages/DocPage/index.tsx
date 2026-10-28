@@ -5,6 +5,8 @@ import {
 	isValidElement,
 	useContext,
 	useEffect,
+	useMemo,
+	useRef,
 	useState,
 	type ReactElement,
 	type ReactNode,
@@ -12,13 +14,15 @@ import {
 import { Link } from 'react-router';
 import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
+import { CodeTree } from '@/components/lumo/blocks/CodeTree';
 import { Dialog } from '@/components/lumo/ui/Dialog';
 import { Skeleton } from '@/components/lumo/ui/Skeleton';
 import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { cn } from '@/lib/cn';
-import { languageOf, readSource, readTree, type SourceFile } from './sources';
+import { highlight } from '@/lib/shiki';
+import { filesOf, itemOf, languageOf, readSource } from './sources';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
 export function sectionId(title: string) {
@@ -108,6 +112,9 @@ function NeighborButton({
 			variant="secondary"
 			className="size-8"
 			aria-label={`${direction}: ${neighbor.label}`}
+			// A link, not a button: the row navigates, and an anchor keeps the middle-click, the
+			// context menu and the status bar the browser gives every link.
+			nativeButton={false}
 			render={<Link to={`/${neighbor.path}`} />}
 		>
 			<Icon />
@@ -207,12 +214,13 @@ function reachName(path: string) {
 const NO_PATHS: string[] = [];
 
 /**
- * One file of the manual: its path, and the way to read it. The text is behind the same dialog an
- * example's source opens in, so the installation section carries no source of its own either.
+ * One file of the manual: its path, and the way to read it. It opens the dialog the component's
+ * examples open, on that file — so the tree around it says where the file sits, not just what it
+ * says.
  */
-function ManualFile({ path }: DocSource) {
+function ManualFile({ path, name }: DocSource & { name: string }) {
 	return (
-		<SourceDialog path={path}>
+		<SourceDialog path={path} name={name}>
 			<Button
 				size="sm"
 				variant="outline"
@@ -320,7 +328,7 @@ export function DocInstall({
 							</Steps.Description>
 							<div className="space-y-1.5">
 								{files.map((path) => (
-									<ManualFile key={path} path={path} />
+									<ManualFile key={path} path={path} name={name} />
 								))}
 							</div>
 						</Steps.Item>
@@ -337,7 +345,7 @@ export function DocInstall({
 								</Steps.Description>
 								<div className="space-y-1.5">
 									{reaches.map((path) => (
-										<ManualFile key={path} path={path} />
+										<ManualFile key={path} path={path} name={name} />
 									))}
 								</div>
 							</Steps.Item>
@@ -350,7 +358,7 @@ export function DocInstall({
 									<Mono>--primary</Mono>, <Mono>--radius</Mono> and the rest — the
 									component then wears its colours.
 								</Steps.Description>
-								<ManualFile path="src/styles/lumo-tokens.css" />
+								<ManualFile path="src/styles/lumo-tokens.css" name={name} />
 							</Steps.Item>
 						)}
 					</Steps.Root>
@@ -467,57 +475,25 @@ export type DocPreviewProps = {
 	children: ReactNode;
 };
 
-/** One row of the tree: a file, and underneath it whatever that file imports. */
-function SourceRow({
-	node,
-	selected,
-	onSelect,
-}: {
-	node: SourceFile;
-	selected: string;
-	onSelect: (path: string) => void;
-}) {
-	return (
-		<li>
-			<button
-				type="button"
-				title={node.path}
-				data-selected={node.path === selected ? '' : undefined}
-				onClick={() => onSelect(node.path)}
-				className={cn(
-					'flex h-7 w-full cursor-pointer items-center rounded-md px-2 text-left',
-					'font-mono text-xs text-muted-foreground',
-					'hover:bg-accent hover:text-accent-foreground',
-					'data-selected:bg-selected data-selected:text-foreground',
-				)}
-			>
-				<span className="truncate">{node.name}</span>
-			</button>
-			{node.children.length > 0 && (
-				<ul className="ms-2 space-y-0.5 border-s ps-1">
-					{node.children.map((child) => (
-						<SourceRow
-							key={child.path}
-							node={child}
-							selected={selected}
-							onSelect={onSelect}
-						/>
-					))}
-				</ul>
-			)}
-		</li>
-	);
-}
-
 /**
- * The source of an example, and of the files it reaches for: the tree on the left is the demo's own
- * imports, walked outward, and the pane on the right is whichever of them is selected.
+ * The source of an example, and of the files the component it demonstrates installs: the tree on the
+ * left is that registry item, drawn in the shape of the repository, and the pane on the right is
+ * whichever file is selected. The demo itself leads the tree, because that is what was clicked.
  *
- * None of it is in the page until the dialog opens, and none of it outlives the open either — the
- * popup is mounted by Base UI when it is asked for, so the reading starts from the demo each time.
- * The modules are fetched by path, so a docs page carries no source at all.
+ * The manifest is in the bundle, so the tree is there on the first frame; only the file's text is
+ * fetched, and only for the one file on screen. Nothing outlives the open — the popup is mounted by
+ * Base UI when it is asked for.
  */
-function SourceDialog({ path, children }: { path: string; children: ReactElement }) {
+function SourceDialog({
+	path,
+	name,
+	children,
+}: {
+	path: string;
+	/** The registry item the dialog draws around `path`; without one it draws `path` alone. */
+	name?: string;
+	children: ReactElement;
+}) {
 	return (
 		<Dialog.Root>
 			<Dialog.Trigger render={children} />
@@ -525,7 +501,7 @@ function SourceDialog({ path, children }: { path: string; children: ReactElement
 				<Dialog.Backdrop />
 				<Dialog.Viewport>
 					<Dialog.Popup className="flex h-[80vh] max-h-[44rem] w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
-						<SourcePane path={path} />
+						<SourcePane path={path} name={name} />
 					</Dialog.Popup>
 				</Dialog.Viewport>
 			</Dialog.Portal>
@@ -534,41 +510,40 @@ function SourceDialog({ path, children }: { path: string; children: ReactElement
 }
 
 /** The contents of the dialog: mounted with the popup, so every open starts at the demo's own file. */
-function SourcePane({ path }: { path: string }) {
-	const [tree, setTree] = useState<SourceFile | null>(null);
+function SourcePane({ path, name }: { path: string; name?: string }) {
+	// The clicked file leads, because a file outside the manifest — the tokens — is still a file.
+	const files = useMemo(() => [path, ...filesOf(name)], [path, name]);
 	const [selected, setSelected] = useState(path);
-	const [text, setText] = useState<string | null>(null);
+	// What the pane is SHOWING, which trails the selection by one read. Keeping the file that is
+	// already there until the next one is ready is what stops the pane blanking between two clicks.
+	const [shown, setShown] = useState<{ path: string; text: string } | null>(null);
+	// What has been read, by path: a file read before — and every file the reader has met — is on
+	// screen in the frame it is asked for.
+	const read = useRef(new Map<string, string>());
 
 	useEffect(() => {
 		let live = true;
-		readTree(path).then(
-			(next) => {
-				if (live) setTree(next);
-			},
-			() => {},
-		);
-		return () => {
-			live = false;
+
+		const show = async () => {
+			let text = read.current.get(selected);
+			if (text === undefined) {
+				text = (await readSource(selected)) ?? '';
+				read.current.set(selected, text);
+			}
+
+			// The colour is settled BEFORE the swap, not after it: `Code` reads its lines out of the
+			// same cache, so the file arrives painted instead of arriving plain and then colouring
+			// in — which is the second half of the flash this pane used to have.
+			await highlight(text, languageOf(selected)).catch(() => {});
+
+			if (live) setShown({ path: selected, text });
 		};
-	}, [path]);
 
-	useEffect(() => {
-		let live = true;
-		readSource(selected).then(
-			(source) => {
-				if (live) setText(source ?? '');
-			},
-			() => {},
-		);
+		show().catch(() => {});
 		return () => {
 			live = false;
 		};
 	}, [selected]);
-
-	const browse = (next: string) => {
-		setSelected(next);
-		setText(null);
-	};
 
 	return (
 		<>
@@ -576,11 +551,11 @@ function SourcePane({ path }: { path: string }) {
 				<Dialog.Title className="flex min-w-0 items-baseline gap-2 text-sm font-medium">
 					source
 					<span className="truncate font-mono text-xs font-normal text-muted-foreground">
-						{selected}
+						{shown?.path ?? selected}
 					</span>
 				</Dialog.Title>
 				<div className="flex shrink-0 items-center gap-1">
-					<Copy value={text ?? ''} />
+					<Copy value={shown?.text ?? ''} />
 					<Dialog.Close
 						render={
 							<Button
@@ -596,22 +571,21 @@ function SourcePane({ path }: { path: string }) {
 				</div>
 			</div>
 			<div className="flex min-h-0 flex-1">
-				<div className="w-52 shrink-0 overflow-y-auto border-e p-2">
-					{tree === null ? (
-						<Skeleton className="h-7 w-full" />
-					) : (
-						<ul className="space-y-0.5">
-							<SourceRow node={tree} selected={selected} onSelect={browse} />
-						</ul>
-					)}
+				<div className="w-60 shrink-0 overflow-y-auto border-e p-2">
+					<CodeTree paths={files} selected={selected} onSelect={setSelected} />
 				</div>
-				<div className="min-w-0 flex-1 overflow-auto p-3">
-					{text === null ? (
+				{/* Keyed by the file, so a new one starts at its own top rather than wherever the last
+				    one was scrolled to. */}
+				<div
+					key={shown?.path ?? selected}
+					className="min-w-0 flex-1 overflow-auto p-3 [scrollbar-gutter:stable]"
+				>
+					{shown === null ? (
 						<Skeleton className="h-40 w-full" />
 					) : (
 						<Code
-							code={text}
-							language={languageOf(selected)}
+							code={shown.text}
+							language={languageOf(shown.path)}
 							header={false}
 							variant="ghost"
 							showLineNumbers
@@ -638,7 +612,7 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 			</div>
 			<div className="flex items-center justify-between gap-3 border-t px-3 py-1.5">
 				<span className="truncate font-mono text-xs text-muted-foreground">{name}</span>
-				<SourceDialog path={path}>
+				<SourceDialog path={path} name={itemOf(path)}>
 					<Button size="sm" variant="ghost" icon={<Braces />}>
 						view code
 					</Button>
