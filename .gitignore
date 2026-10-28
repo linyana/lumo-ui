@@ -4,5 +4,6 @@ dist-ssr
 public/r
 *.local
 .vite
+.wrangler
 .DS_Store
 *.log
