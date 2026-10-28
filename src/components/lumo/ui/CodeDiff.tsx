@@ -1,7 +1,14 @@
 import { diffLines } from 'diff';
-import { Fragment, useMemo, type ComponentProps } from 'react';
+import { Fragment, useMemo, useRef, type ComponentProps } from 'react';
 import type { VariantProps } from 'tailwind-variants';
-import { Copy, Header, Tokens, codeVariants, useCodeLines } from '@/components/lumo/ui/Code';
+import {
+	Copy,
+	Header,
+	Tokens,
+	codeVariants,
+	useCodeLines,
+	useComeIntoView,
+} from '@/components/lumo/ui/Code';
 import type { CodeLine } from '@/lib/shiki';
 import { cn } from '@/lib/cn';
 
@@ -197,8 +204,10 @@ export function CodeDiff({
 		() => diffContent(oldContent, newContent),
 		[oldContent, newContent],
 	);
-	const oldTokens = useCodeLines(oldContent, language);
-	const newTokens = useCodeLines(newContent, language);
+	const block = useRef<HTMLDivElement>(null);
+	const near = useComeIntoView(block);
+	const oldTokens = useCodeLines(oldContent, language, near);
+	const newTokens = useCodeLines(newContent, language, near);
 
 	const tokensAt = (source: CodeLine[], index: number | undefined) =>
 		index === undefined ? [] : (source[index] ?? []);
@@ -208,6 +217,7 @@ export function CodeDiff({
 
 	return (
 		<div
+			ref={block}
 			data-slot="code-diff"
 			data-variant={variant}
 			data-view={view}

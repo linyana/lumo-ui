@@ -1,16 +1,18 @@
 import { Check, Copy as CopyIcon } from 'lucide-react';
 import {
 	useEffect,
-	useState,
-	type ReactNode,
-	type CSSProperties,
 	useMemo,
-	Fragment,
+	useRef,
+	useState,
 	type ComponentProps,
+	type CSSProperties,
+	type ReactNode,
+	type RefObject,
+	Fragment,
 } from 'react';
 import { Button } from '@/components/lumo/ui/Button';
 import { cn } from '@/lib/cn';
-import { type CodeLine, highlight, highlighted } from '@/lib/shiki';
+import { type CodeLine, highlight, highlighted, whenIdle } from '@/lib/shiki';
 import { tv, type VariantProps } from 'tailwind-variants';
 
 export type CopyProps = {
@@ -111,25 +113,60 @@ function plain(code: string): CodeLine[] {
 }
 
 /**
+ * Whether `element` has come close enough to the viewport to be worth painting. Once it has, it stays
+ * that way: a block a reader has scrolled past does not go back to plain text behind them.
+ */
+export function useComeIntoView(element: RefObject<HTMLElement | null>, margin = '300px') {
+	const [near, setNear] = useState(false);
+
+	useEffect(() => {
+		const node = element.current;
+		if (node === null || near) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((entry) => entry.isIntersecting)) setNear(true);
+			},
+			{ rootMargin: `${margin} 0px` },
+		);
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [element, margin, near]);
+
+	return near;
+}
+
+/**
  * Highlighted lines for `code`. The result is tagged with what produced it, so a change of `code`
  * shows plain text for a frame instead of the previous block's colours — unless that snippet has
  * been highlighted before, in which case its colours are already here and there is no frame to lose.
+ *
+ * Tokenising waits for an idle slice, one block at a time, and for the block to be close to the
+ * viewport: the plain text is the same shape and does not move when the colours arrive, so nothing
+ * is lost by letting the page paint first. A block that is off the page, behind another tab or left
+ * before its turn never tokenises at all — which on a page of source is most of them.
  */
-export function useCodeLines(code: string, language?: string): CodeLine[] {
+export function useCodeLines(code: string, language?: string, enabled = true): CodeLine[] {
 	const [result, setResult] = useState<Result | null>(null);
 
 	useEffect(() => {
+		if (!enabled) return;
+
 		let live = true;
-		highlight(code, language).then(
-			(lines) => {
-				if (live) setResult({ source: code, language, lines });
-			},
-			() => {},
-		);
+		const drop = whenIdle(() => {
+			highlight(code, language).then(
+				(lines) => {
+					if (live) setResult({ source: code, language, lines });
+				},
+				() => {},
+			);
+		});
+
 		return () => {
 			live = false;
+			drop();
 		};
-	}, [code, language]);
+	}, [code, language, enabled]);
 
 	return useMemo(() => {
 		if (result?.source === code && result.language === language) return result.lines;
@@ -184,7 +221,9 @@ export function Code({
 	className,
 	...props
 }: CodeProps) {
-	const lines = useCodeLines(code, language);
+	const block = useRef<HTMLDivElement>(null);
+	const near = useComeIntoView(block);
+	const lines = useCodeLines(code, language, near);
 	const title = fileName ?? language ?? 'code';
 	const showHeader = header && (copyable || fileName !== undefined || language !== undefined);
 	// Without line numbers the text is the only column. With them the number column is
@@ -198,6 +237,7 @@ export function Code({
 
 	return (
 		<div
+			ref={block}
 			data-slot="code"
 			data-variant={variant}
 			className={cn(codeVariants({ variant }), className)}

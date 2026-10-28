@@ -134,6 +134,42 @@ function remember(key: string, lines: CodeLine[]) {
 	if (oldest !== undefined) done.delete(oldest);
 }
 
+/**
+ * `task` runs when the browser is between paints, one task per idle slice. A page of source arriving
+ * at once — a route change mounts a dozen blocks — would otherwise block the paint the click asked
+ * for, and the block a reader is about to leave would get the same time as the one they came to.
+ * The returned function drops the task if it has not started: that is what makes a fast click cheap.
+ */
+export function whenIdle(task: () => void): () => void {
+	const entry = { task };
+	queued.push(entry);
+	plan();
+
+	return () => {
+		const index = queued.indexOf(entry);
+		if (index !== -1) queued.splice(index, 1);
+	};
+}
+
+const queued: Array<{ task: () => void }> = [];
+let planned = false;
+
+function plan() {
+	if (planned || queued.length === 0 || typeof window === 'undefined') return;
+	planned = true;
+
+	const run = () => {
+		planned = false;
+		queued.shift()?.task();
+		plan();
+	};
+
+	// The timeout is what guarantees progress: an idle callback is a promise, not a queue position.
+	if (typeof window.requestIdleCallback === 'function')
+		window.requestIdleCallback(run, { timeout: 300 });
+	else setTimeout(run, 16);
+}
+
 /** `code` split into styled lines. Never rejects on an unknown language — it falls back to text. */
 export async function highlight(code: string, language?: string): Promise<CodeLine[]> {
 	const key = keyOf(code, language);
