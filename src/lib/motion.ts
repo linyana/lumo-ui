@@ -37,7 +37,7 @@ export const springSlide: Transition = {
 };
 
 /**
- * A size with nowhere to go: a submenu's rows, a fold of two lines. A spring covers the same time
+ * A size with nowhere to go: a nav's sub rows, a fold of two lines. A spring covers the same time
  * whatever the distance — which is the point of it on a panel, and the reason a 64px reveal that
  * used one took four hundred milliseconds to say nothing. Below `SHORT_MOVE`, a box is a short
  * ease instead, and it arrives while the reader is still looking at the click.

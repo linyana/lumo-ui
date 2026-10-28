@@ -1,9 +1,9 @@
 import type { ReactElement, ReactNode } from 'react';
 
 /** A row's element, when the app wants to own it — a router's link, an `<a>`, a custom tag. */
-export type LayoutMenuLinkRender = ReactElement;
+export type LayoutNavLinkRender = ReactElement;
 
-export type LayoutMenuItem = {
+export type LayoutNavItem = {
 	type?: 'item';
 	key: string;
 	label: string;
@@ -18,34 +18,34 @@ export type LayoutMenuItem = {
 	 * shell supplies `href`, the active state and the click, so a router keeps its own navigation
 	 * and its own active logic; `onSelect` still fires.
 	 */
-	render?: LayoutMenuLinkRender;
+	render?: LayoutNavLinkRender;
 	/** Marks the row as current regardless of `selectedKey`. */
 	isActive?: boolean;
 	/** Runs before `onSelect`. A row that goes somewhere usually does not need it. */
 	onClick?: () => void;
 	/** Sub rows: the row expands in place instead of navigating. */
-	children?: LayoutMenuItem[];
+	children?: LayoutNavItem[];
 	defaultOpen?: boolean;
 };
 
-export type LayoutMenuGroup = {
+export type LayoutNavGroup = {
 	type: 'group';
 	label?: string;
 	/**
 	 * A control of the group's own, such as an add button. Rendered as given, so pass one that
-	 * positions itself — `Menu.GroupAction` already does.
+	 * positions itself — `Nav.GroupAction` already does.
 	 */
 	action?: ReactNode;
-	children: LayoutMenuEntry[];
+	children: LayoutNavEntry[];
 };
 
-export type LayoutMenuSeparator = { type: 'separator' };
+export type LayoutNavSeparator = { type: 'separator' };
 
-/** One placeholder row, for a menu that is still loading. */
-export type LayoutMenuSkeleton = { type: 'skeleton'; showIcon?: boolean; width?: string };
+/** One placeholder row, for a nav that is still loading. */
+export type LayoutNavSkeleton = { type: 'skeleton'; showIcon?: boolean; width?: string };
 
-export type LayoutMenuEntry =
-	| LayoutMenuItem
-	| LayoutMenuGroup
-	| LayoutMenuSeparator
-	| LayoutMenuSkeleton;
+export type LayoutNavEntry =
+	| LayoutNavItem
+	| LayoutNavGroup
+	| LayoutNavSeparator
+	| LayoutNavSkeleton;

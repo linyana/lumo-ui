@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Dropdown } from '@/components/lumo/ui/Dropdown';
+import { Menu } from '@/components/lumo/ui/Menu';
 
 const menus = {
 	library: {
@@ -19,50 +19,48 @@ const menus = {
 type Key = keyof typeof menus;
 
 const keys = Object.keys(menus) as Key[];
-const handle = Dropdown.createHandle<Key>();
+const handle = Menu.createHandle<Key>();
 
 export default function Detached() {
 	return (
 		<>
 			<div className="flex flex-wrap justify-center gap-2">
 				{keys.map((key) => (
-					<Dropdown.Trigger key={key} handle={handle} payload={key}>
+					<Menu.Trigger key={key} handle={handle} payload={key}>
 						{menus[key].heading}
-					</Dropdown.Trigger>
+					</Menu.Trigger>
 				))}
 			</div>
-			<Dropdown.Root handle={handle} modal={false}>
+			<Menu.Root handle={handle} modal={false}>
 				{({ payload }) => (
-					<Dropdown.Portal>
-						<Dropdown.Positioner sideOffset={8} align="start">
-							<Dropdown.Popup>
-								<Dropdown.Viewport>
+					<Menu.Portal>
+						<Menu.Positioner sideOffset={8} align="start">
+							<Menu.Popup>
+								<Menu.Viewport>
 									{payload &&
 										menus[payload].groups.map((group, index) => (
 											<Fragment key={group[0]}>
-												<Dropdown.Group>
+												<Menu.Group>
 													{index === 0 && (
-														<Dropdown.GroupLabel>
+														<Menu.GroupLabel>
 															{menus[payload].heading}
-														</Dropdown.GroupLabel>
+														</Menu.GroupLabel>
 													)}
 													{group.map((item) => (
-														<Dropdown.Item key={item}>
-															{item}
-														</Dropdown.Item>
+														<Menu.Item key={item}>{item}</Menu.Item>
 													))}
-												</Dropdown.Group>
+												</Menu.Group>
 												{index < menus[payload].groups.length - 1 && (
-													<Dropdown.Separator />
+													<Menu.Separator />
 												)}
 											</Fragment>
 										))}
-								</Dropdown.Viewport>
-							</Dropdown.Popup>
-						</Dropdown.Positioner>
-					</Dropdown.Portal>
+								</Menu.Viewport>
+							</Menu.Popup>
+						</Menu.Positioner>
+					</Menu.Portal>
 				)}
-			</Dropdown.Root>
+			</Menu.Root>
 		</>
 	);
 }

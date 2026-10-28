@@ -14,10 +14,10 @@ import CodeTreeBasic from '@/pages/CodeTree/demos/basic';
 import CollapsibleBasic from '@/pages/Collapsible/demos/basic';
 import DialogBasic from '@/pages/Dialog/demos/basic';
 import DrawerBasic from '@/pages/Drawer/demos/basic';
-import DropdownBasic from '@/pages/Dropdown/demos/basic';
 import FieldBasic from '@/pages/Field/demos/basic';
 import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
+import NavBasic from '@/pages/Nav/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
 import RadioGroupBasic from '@/pages/RadioGroup/demos/basic';
 import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
@@ -78,7 +78,7 @@ const groups: PreviewGroup[] = [
 		previews: [
 			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic },
 			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic },
-			{ path: 'dropdown', label: 'Dropdown', Demo: DropdownBasic },
+			{ path: 'menu', label: 'Menu', Demo: MenuBasic },
 			{ path: 'popover', label: 'Popover', Demo: PopoverBasic },
 			{ path: 'toast', label: 'Toast', Demo: ToastKinds },
 			{ path: 'tooltip', label: 'Tooltip', Demo: TooltipBasic },
@@ -87,7 +87,7 @@ const groups: PreviewGroup[] = [
 	{
 		title: 'navigation',
 		previews: [
-			{ path: 'menu', label: 'Menu', Demo: MenuBasic },
+			{ path: 'nav', label: 'Nav', Demo: NavBasic },
 			// The horizontal opener needs half a page before its connectors read as lines; the
 			// vertical one is the demo a square can hold.
 			{ path: 'steps', label: 'Steps', Demo: StepsVertical },

@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn';
 import { Content } from './Content';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import type { LayoutMenuEntry } from './types';
+import type { LayoutNavEntry } from './types';
 
 export const layoutVariants = tv({
 	slots: {
@@ -43,11 +43,11 @@ export const layoutVariants = tv({
 	},
 });
 
-// `onSelect` is a div's own event; here the name belongs to the menu, so the DOM handler goes.
+// `onSelect` is a div's own event; here the name belongs to the nav, so the DOM handler goes.
 export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 	variant?: VariantProps<typeof layoutVariants>['variant'];
 	/** Rows, groups and separators, in the order the rail draws them. */
-	menu?: LayoutMenuEntry[];
+	nav?: LayoutNavEntry[];
 	selectedKey?: string;
 	onSelect?: (key: string) => void;
 	/** The brand mark in the rail's top-left, sized to its text. */
@@ -71,7 +71,7 @@ export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 
 function LayoutRoot({
 	variant = 'default',
-	menu,
+	nav,
 	selectedKey,
 	onSelect,
 	logo,
@@ -131,7 +131,7 @@ function LayoutRoot({
 			{...props}
 		>
 			<Sidebar
-				menu={menu}
+				nav={nav}
 				selectedKey={selectedKey}
 				onSelect={onSelect}
 				logo={logo}
@@ -153,12 +153,12 @@ function LayoutRoot({
 /**
  * The app shell — the one component here that is not a Base UI primitive. It owns the rail, the
  * scroll container and the surface above it; the page owns everything inside, header included.
- * So it takes the data a shell has (a variant, a menu, a selection) and hangs the page's parts
+ * So it takes the data a shell has (a variant, a nav, a selection) and hangs the page's parts
  * off the same name, the way antd's Layout does.
  */
 export const Layout = Object.assign(LayoutRoot, { Header, Content });
 
-export type { LayoutMenuEntry, LayoutMenuItem } from './types';
+export type { LayoutNavEntry, LayoutNavItem } from './types';
 export type { HeaderProps } from './Header';
 export type { ContentProps } from './Content';
 export type { SidebarProps } from './Sidebar';

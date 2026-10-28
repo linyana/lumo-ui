@@ -26,7 +26,7 @@ import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
 import { CodeTree } from '@/components/lumo/blocks/CodeTree';
 import { Dialog } from '@/components/lumo/ui/Dialog';
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Nav } from '@/components/lumo/ui/Nav';
 import { Skeleton } from '@/components/lumo/ui/Skeleton';
 import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
@@ -241,14 +241,14 @@ function CopyFile({ path }: { path: string }) {
 	const { copied, copy } = useCopy();
 
 	return (
-		<Menu.Action
+		<Nav.Action
 			type="button"
 			showOnHover
 			aria-label={copied ? `copied ${path}` : `copy ${path}`}
 			onClick={() => void copy(async () => (await readSource(path)) ?? undefined)}
 		>
 			{copied ? <Check /> : <CopyIcon />}
-		</Menu.Action>
+		</Nav.Action>
 	);
 }
 

@@ -48,7 +48,7 @@
 			"name": "control",
 			"type": "registry:file",
 			"title": "control idioms",
-			"description": "The four things every control in the library looks the same way: the tint a hover or a press leaves, the size an icon slot takes from the text around it, the shell of a text field, and the box a tick or a dot is drawn in. Required by Button, Input, Textarea, Checkbox, RadioGroup, Collapsible, Menu, Dropdown and Steps; installed automatically as a dependency.",
+			"description": "The four things every control in the library looks the same way: the tint a hover or a press leaves, the size an icon slot takes from the text around it, the shell of a text field, and the box a tick or a dot is drawn in. Required by Button, Input, Textarea, Checkbox, RadioGroup, Collapsible, Menu, Nav and Steps; installed automatically as a dependency.",
 			"files": [
 				{
 					"path": "src/lib/control.ts",
@@ -62,7 +62,7 @@
 			"name": "surface",
 			"type": "registry:file",
 			"title": "overlay surfaces",
-			"description": "What every floating surface shares: the layer ladder (a backdrop, a popup, a tooltip, a toast), the scrim, the way a popup arrives, the box its positioner is measured in, the viewport that slides one panel to the next, and the arrow that points back at its trigger. Required by Dialog, Drawer, Popover, Tooltip and Dropdown; installed automatically as a dependency.",
+			"description": "What every floating surface shares: the layer ladder (a backdrop, a popup, a tooltip, a toast), the scrim, the way a popup arrives, the box its positioner is measured in, the viewport that slides one panel to the next, and the arrow that points back at its trigger. Required by Dialog, Drawer, Popover, Tooltip and Menu; installed automatically as a dependency.",
 			"files": [
 				{
 					"path": "src/lib/surface.ts",
@@ -225,11 +225,11 @@
 			]
 		},
 		{
-			"name": "dropdown",
+			"name": "menu",
 			"type": "registry:ui",
-			"title": "Dropdown",
-			"description": "A dropdown of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share. Behaviour from Base UI, appearance from tokens.",
-			"dependencies": ["@base-ui/react"],
+			"title": "Menu",
+			"description": "A menu of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/surface",
@@ -237,9 +237,9 @@
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Dropdown.tsx",
+					"path": "src/components/lumo/ui/Menu.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown.tsx"
+					"target": "~/src/components/lumo/ui/Menu.tsx"
 				}
 			]
 		},
@@ -323,10 +323,10 @@
 			]
 		},
 		{
-			"name": "menu",
+			"name": "nav",
 			"type": "registry:ui",
-			"title": "Menu",
-			"description": "A list of navigation rows: groups, icons, active state, badges, inline submenus, and a compact rail where a row with children opens them in a popover. The menu knows nothing about the shell it sits in.",
+			"title": "Nav",
+			"description": "A list of navigation rows: groups, icons, active state, badges, inline sub rows, and a compact rail where a row with children opens them in a popover. The nav knows nothing about the shell it sits in — width, position and scrolling are the caller’s.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
@@ -339,9 +339,9 @@
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Menu.tsx",
+					"path": "src/components/lumo/ui/Nav.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu.tsx"
+					"target": "~/src/components/lumo/ui/Nav.tsx"
 				}
 			]
 		},
@@ -364,12 +364,12 @@
 			"name": "layout",
 			"type": "registry:block",
 			"title": "Layout",
-			"description": "The app shell: a sidebar drawn from a menu array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
+			"description": "The app shell: a rail drawn from a nav array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
 			"dependencies": ["lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/button",
-				"linyana/lumo-ui/menu",
+				"linyana/lumo-ui/nav",
 				"linyana/lumo-ui/scroll-area"
 			],
 			"files": [
@@ -439,10 +439,10 @@
 			"name": "code-tree",
 			"type": "registry:block",
 			"title": "CodeTree",
-			"description": "A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active. The rows are Menu — hover, active fill, caret and focus come from there — so the tree only supplies the shape and the glyph each file is drawn with.",
+			"description": "A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active. The rows are Nav — hover, active fill, caret and focus come from there — so the tree only supplies the shape and the glyph each file is drawn with.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
 			"registryDependencies": [
-				"linyana/lumo-ui/menu",
+				"linyana/lumo-ui/nav",
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/collapsible"
 			],

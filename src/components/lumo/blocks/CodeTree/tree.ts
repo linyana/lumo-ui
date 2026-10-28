@@ -3,7 +3,7 @@
  *
  * Flat paths in, folders out: a folder exists here exactly when one of the paths lives in it, so
  * the tree can never claim a directory nobody handed over. Nothing here draws anything — the
- * component that does is `Menu`, and this is only what it is handed.
+ * component that does is `Nav`, and this is only what it is handed.
  */
 
 export type CodeTreeNode =

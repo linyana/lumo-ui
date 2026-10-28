@@ -19,8 +19,8 @@ const files = [
 ];
 
 const layoutProps: Record<string, PropNode> = {
-	menu: {
-		type: 'LayoutMenuEntry[]',
+	nav: {
+		type: 'LayoutNavEntry[]',
 		description:
 			'Rows, groups, separators and skeletons, in the order the rail draws them. Every row carries its own key, and its own href if it goes somewhere.',
 	},
@@ -108,7 +108,7 @@ const partRows = [
 	[
 		'Layout.Sidebar',
 		'the rail',
-		'assembled from menu, which is why a shell needs no markup for it.',
+		'assembled from nav, which is why a shell needs no markup for it.',
 	],
 ];
 
@@ -129,12 +129,12 @@ const hookRows = [
 		'a page bar',
 		'sticky top-0, bg-inherit, so it takes the surface’s colour rather than its own.',
 	],
-	['data-slot="layout-sidebar"', 'the rail', 'holds the brand row, the menu and the footer.'],
+	['data-slot="layout-sidebar"', 'the rail', 'holds the brand row, the nav and the footer.'],
 	['data-collapsed', 'present while narrow', 'on the shell, and read by the rail’s own parts.'],
 ];
 
 const usageImport = "import { Layout } from '@/components/lumo/blocks/Layout';";
-const usageExample = `<Layout menu={menu} selectedKey={key} onSelect={setKey} logo={<Logo />} title="lumo">
+const usageExample = `<Layout nav={nav} selectedKey={key} onSelect={setKey} logo={<Logo />} title="lumo">
 	<Layout.Header title="projects" description="4 of them" actions={<Button size="sm">new</Button>} />
 	<Layout.Content>{page}</Layout.Content>
 </Layout>`;
@@ -158,14 +158,14 @@ export function LayoutPage() {
 					files={files}
 					copyNote={
 						<>
-							the rail is drawn by <Mono>Menu</Mono>, scrolls inside{' '}
+							the rail is drawn by <Mono>Nav</Mono>, scrolls inside{' '}
 							<Mono>ScrollArea</Mono> and collapses from a <Mono>Button</Mono> — and
 							those reach for five more. the list below is the whole chain.
 						</>
 					}
 					reaches={[
 						'src/components/lumo/ui/Button.tsx',
-						'src/components/lumo/ui/Menu.tsx',
+						'src/components/lumo/ui/Nav.tsx',
 						'src/components/lumo/ui/ScrollArea.tsx',
 						'src/lib/cn.ts',
 					]}
@@ -198,7 +198,7 @@ export function LayoutPage() {
 				}
 			>
 				<p className="text-sm text-muted-foreground">
-					one <Mono>menu</Mono> array draws the rail. each row carries its own{' '}
+					one <Mono>nav</Mono> array draws the rail. each row carries its own{' '}
 					<Mono>href</Mono> and is handed to <Mono>react-router</Mono> through{' '}
 					<Mono>render</Mono>, so the shell never imports a router and still navigates
 					without a reload.
@@ -242,7 +242,7 @@ export function LayoutPage() {
 
 			<DocSection
 				title="api reference"
-				note="what a shell knows: a variant, a menu, a selection — and a page’s parts hanging off the same name."
+				note="what a shell knows: a variant, a nav, a selection — and a page’s parts hanging off the same name."
 			>
 				<div className="space-y-6">
 					<div className="space-y-2">
