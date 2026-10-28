@@ -24,6 +24,9 @@ registry. No npm package.
 - `bun run check` = oxfmt + oxlint + tsc + the registry sync check, and `bun run check:fix`
   repairs all of it. Never commit a failing check.
 - Style is enforced by `.oxfmtrc.jsonc`: tabs, single quotes, 100 columns, LF.
+- `bun run build` is only `vite build`, because Cloudflare deploy runs it as the build step
+  and a gate there fails a deploy over formatting. `bun run build:check` is the local build
+  and is the one that has to pass.
 
 ## Adding a component
 
