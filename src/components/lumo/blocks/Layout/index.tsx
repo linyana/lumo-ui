@@ -20,7 +20,10 @@ export const layoutVariants = tv({
 		// rises above the same colour, so one token covers both.
 		root: 'flex h-svh w-full overflow-hidden bg-muted',
 		main: 'flex min-w-0 flex-1 flex-col',
-		surface: 'flex h-full min-w-0 flex-col overflow-y-auto',
+		// `relative` makes the scroll box a containing block: an absolutely positioned descendant —
+		// Base UI's hidden checkbox input, most of the time — would otherwise sit against the initial
+		// containing block, escape this box's clipping and give the document a scrollbar of its own.
+		surface: 'relative flex h-full min-w-0 flex-col overflow-y-auto',
 	},
 	variants: {
 		variant: {
