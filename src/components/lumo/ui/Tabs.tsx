@@ -15,6 +15,7 @@ import {
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
+import { iconSlot } from '@/lib/control';
 import { frameOf, HAIRLINE, scaleOf } from '@/lib/measure';
 import {
 	interrupt,
@@ -452,7 +453,7 @@ export const tabVariants = tv({
 		'active:translate-y-(--press-offset)',
 		'hover:text-foreground data-active:text-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
-		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+		iconSlot,
 	],
 	variants: {
 		variant: {

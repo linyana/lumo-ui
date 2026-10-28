@@ -334,7 +334,7 @@ export function GroupLabel({ className, ...props }: GroupLabelProps) {
 				'truncate',
 				'transition-[margin,opacity] duration-(--duration-state) ease-linear',
 				'group-data-[compact]:-mt-8 group-data-[compact]:opacity-0',
-				'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+				iconSlot,
 				className,
 			)}
 			{...props}

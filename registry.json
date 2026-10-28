@@ -283,7 +283,8 @@
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/motion",
 				"linyana/lumo-ui/measure",
-				"linyana/lumo-ui/transition"
+				"linyana/lumo-ui/transition",
+				"linyana/lumo-ui/control"
 			],
 			"files": [
 				{
