@@ -105,8 +105,57 @@ function highlighter() {
 	return pending;
 }
 
+/** A snippet that has been highlighted, by language and source: the same source twice is one pass. */
+const done = new Map<string, CodeLine[]>();
+
+/** The same, still running — two blocks of one snippet wait on a single pass rather than two. */
+const flying = new Map<string, Promise<CodeLine[]>>();
+
+/** Enough for a page and the page after it; a snippet is small, a map of them is smaller than a grammar. */
+const KEEP = 200;
+
+function keyOf(code: string, language: string | undefined) {
+	return `${resolveLanguage(language)}\u0000${code}`;
+}
+
+/**
+ * The lines for this snippet if they are already known, without waiting. A component that remounts —
+ * a route that comes back, a fold that reopens — can paint colours on the first frame instead of a
+ * frame of plain text and then a jump.
+ */
+export function highlighted(code: string, language?: string): CodeLine[] | undefined {
+	return done.get(keyOf(code, language));
+}
+
+function remember(key: string, lines: CodeLine[]) {
+	done.set(key, lines);
+	if (done.size <= KEEP) return;
+	const oldest = done.keys().next().value;
+	if (oldest !== undefined) done.delete(oldest);
+}
+
 /** `code` split into styled lines. Never rejects on an unknown language — it falls back to text. */
 export async function highlight(code: string, language?: string): Promise<CodeLine[]> {
+	const key = keyOf(code, language);
+	const known = done.get(key);
+	if (known !== undefined) return known;
+
+	const running = flying.get(key);
+	if (running !== undefined) return running;
+
+	const pass = tokenise(code, language).then((lines) => {
+		remember(key, lines);
+		return lines;
+	});
+	flying.set(key, pass);
+	try {
+		return await pass;
+	} finally {
+		flying.delete(key);
+	}
+}
+
+async function tokenise(code: string, language?: string): Promise<CodeLine[]> {
 	const name = resolveLanguage(language);
 	const core = await highlighter();
 	const load = Object.hasOwn(languages, name) ? languages[name] : undefined;

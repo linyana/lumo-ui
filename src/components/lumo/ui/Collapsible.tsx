@@ -1,9 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
-import { motion, type HTMLMotionProps } from 'motion/react';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { cn } from '@/lib/cn';
-import { springSize, useSpring } from '@/lib/motion';
 import { Transition } from './Transition';
 
 export type IconProps = ComponentProps<typeof ChevronRight>;
@@ -27,11 +25,6 @@ export function Icon({ className, ...props }: IconProps) {
 
 export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'className'> & {
 	/**
-	 * Whether the body sits in a `Transition`, so a body that changes size once the panel is open
-	 * eases to the new size instead of jumping. `false` opts out of the wrapper altogether.
-	 */
-	transition?: boolean;
-	/**
 	 * The height the closed panel keeps, in pixels, so a folded body can still show a peek of
 	 * itself. `0` means closed is out of the layout rather than short.
 	 */
@@ -41,34 +34,28 @@ export type PanelProps = Omit<ComponentProps<typeof BaseCollapsible.Panel>, 'cla
 };
 
 /**
- * The panel is opened and closed by a spring rather than by a transition: a closed height and
- * `height: auto` are two ends of the same number to the animation, so a body that is swapped while
- * the panel is open is followed too, and a reversal mid-flight turns around from where it is.
+ * The height belongs to `Transition`: one box, gliding between the peek it is closed to and the
+ * size its body takes, on the library's one size spring. There is no second animation underneath it
+ * to disagree — a fold that eased to `auto` and also followed its content would be two measurements
+ * of the same box, and the content swapping while it opens would be followed twice.
  *
  * Base UI still measures and owns the panel — its id, the trigger's `aria-controls`, the state
  * attributes. Only `hidden` is taken off it, because a panel that is never in the layout cannot be
  * animated between two heights; `inert` keeps the closed one out of the way instead.
  */
-export function Panel({ className, transition = true, peek = 0, children, ...props }: PanelProps) {
-	const spring = useSpring(springSize);
-
+export function Panel({ className, peek = 0, children, ...props }: PanelProps) {
 	return (
 		<BaseCollapsible.Panel
 			keepMounted
 			render={({ hidden, ...panelProps }, state) => (
-				<motion.div
-					// Base UI types these as a plain element's, and two of them — `onAnimationStart`,
-					// `onDrag` — mean something else to an animated one.
-					{...(panelProps as unknown as HTMLMotionProps<'div'>)}
-					initial={false}
-					animate={{ height: state.open ? 'auto' : peek }}
-					transition={spring}
+				<div
+					{...panelProps}
+					data-slot="collapsible-panel"
 					inert={!state.open}
 					className={cn('overflow-clip', className)}
-					data-slot="collapsible-panel"
 				>
-					{transition === false ? children : <Transition>{children}</Transition>}
-				</motion.div>
+					<Transition height={state.open ? undefined : peek}>{children}</Transition>
+				</div>
 			)}
 			{...props}
 		/>

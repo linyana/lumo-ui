@@ -3,6 +3,8 @@ import type { DocFile } from '@/pages/DocPage';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
 import cnSource from '@/lib/cn.ts?raw';
+import motionSource from '@/lib/motion.ts?raw';
+import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -29,6 +31,11 @@ const transitionProps: Record<string, PropNode> = {
 		description:
 			'One block of content. Keep its root a block element — the box measures it, and the size it measured is what it becomes.',
 	},
+	height: {
+		type: 'number',
+		description:
+			'A height to hold instead of the content’s own, in pixels — the closed end of a fold, and the peek of one. The box clips while it holds a height, because its content is taller than it is. `undefined` follows the content.',
+	},
 	className: {
 		type: 'string',
 		description:
@@ -50,12 +57,12 @@ const hookRows = [
 	[
 		'data-swapping',
 		'the box, while it moves',
-		'present only while it glides, which is when it clips.',
+		'present only while a glide is running, which is the window a box is clipped in.',
 	],
 	[
-		'--duration-size · --ease-overlay',
-		'200ms, ease-out with a long tail',
-		'read when a glide starts rather than on mount, so the tokens file can zero them for reduced motion.',
+		'overflow: clip',
+		'while it glides, and while it holds a height',
+		'nothing hangs out of a box that is not yet the size of what is inside it. once it is, the clip goes, and an overlay hanging out is its own business.',
 	],
 ];
 
@@ -80,9 +87,10 @@ export function TransitionPage() {
 				title="installation"
 				note={
 					<>
-						one file and one dependency: <Mono>motion</Mono> runs the glide, but the
-						size it glides to is measured here rather than asked of it — a browser knows
-						how tall its own content is, and nothing else does.
+						one file and two helpers: the spring is sampled into a <Mono>linear()</Mono>{' '}
+						curve and handed to the browser, so the glide runs without a callback, and
+						the size it glides to is measured here rather than asked of the library — a
+						browser knows how tall its own content is, and nothing else does.
 					</>
 				}
 			>
@@ -90,7 +98,11 @@ export function TransitionPage() {
 					name="transition"
 					packages={['motion']}
 					files={files}
-					reaches={[{ path: 'src/lib/cn.ts', code: cnSource }]}
+					reaches={[
+						{ path: 'src/lib/motion.ts', code: motionSource },
+						{ path: 'src/lib/measure.ts', code: measureSource },
+						{ path: 'src/lib/cn.ts', code: cnSource },
+					]}
 				/>
 			</DocSection>
 
@@ -117,7 +129,9 @@ export function TransitionPage() {
 						the height is measured, not guessed, and a reflow inside the content
 						re-targets the glide instead of snapping. nothing fades, nothing travels,
 						nothing is drawn twice: the content is replaced in place and a clip holds it
-						while the box moves.
+						while the box moves. and because the curve is a spring and not a tween, a
+						box that is re-targeted mid-flight leaves at the speed it had — asking for a
+						third size in as many frames reads as one continuous move, not three.
 					</>
 				}
 			>
@@ -146,6 +160,25 @@ export function TransitionPage() {
 			</DocSection>
 
 			<DocSection
+				title="a height it was told"
+				note={
+					<>
+						give it a <Mono>height</Mono> and the box holds that instead of the
+						content’s own — which is what a fold needs: <Mono>0</Mono>, or a peek of the
+						folded body. it clips while it does, because the content is taller than the
+						box.
+						<Mono>Collapsible</Mono> is the component that uses it, and the reason the
+						two ends of a fold are the same number to the same spring.
+					</>
+				}
+			>
+				<p className="text-sm text-muted-foreground">
+					opening and closing interrupt each other rather than queueing, and a body that
+					changes size while the panel is open is followed — there is only ever one glide.
+				</p>
+			</DocSection>
+
+			<DocSection
 				title="api reference"
 				note="one block in, one size out. the content is measured, so it has to be a block."
 			>
@@ -154,7 +187,7 @@ export function TransitionPage() {
 
 			<DocSection
 				title="hooks"
-				note="its own state is one attribute long, and the tokens it reads are the theme’s."
+				note="one attribute while it moves, one clip while it is not the size of its content."
 			>
 				<DocTable head={['part', 'carries', 'notes']} mono={[0]} rows={hookRows} />
 			</DocSection>

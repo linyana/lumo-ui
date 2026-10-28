@@ -277,6 +277,24 @@ export function CodePage() {
 				</p>
 			</DocSection>
 
+			<DocSection
+				title="one pass per snippet"
+				note={
+					<>
+						the same source in two blocks is tokenised once, and the answer is kept: a
+						block that remounts — a route you come back to, a fold you reopen — paints
+						colour on its first frame. before anything is known the block shows the code
+						uncoloured, which is the same shape with the colour missing rather than a
+						placeholder that says so.
+					</>
+				}
+			>
+				<p className="text-sm text-muted-foreground">
+					the cache is keyed by grammar and source and keeps the last 200; a grammar still
+					arrives only when a block asks for one, so an unused language is never fetched.
+				</p>
+			</DocSection>
+
 			<DocSection title="api reference" note="the code is the only required prop.">
 				<PropTable props={codeProps} />
 			</DocSection>

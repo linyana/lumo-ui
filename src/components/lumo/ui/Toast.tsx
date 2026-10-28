@@ -203,7 +203,11 @@ export function Root({ className, toast, ...props }: RootProps) {
 					// Collapsed, every toast is clipped to the frontmost one's height; expanded, each
 					// takes its own — which is also the unfurl that plays when the pointer arrives.
 					'h-(--toast-frontmost-height)',
-					'transition-[transform,height,opacity] duration-(--duration-overlay) ease-(--ease-overlay)',
+					// Height is the one layout property in the stack, and the only one that has to be:
+					// it is what makes a folded card show exactly the frontmost one's worth of itself.
+					// It gets the state token rather than the overlay one, so the page is laid out
+					// again for a fraction of the time the composited properties are moving.
+					'[transition:transform_var(--duration-overlay)_var(--ease-overlay),opacity_var(--duration-overlay)_var(--ease-overlay),height_var(--duration-state)_var(--ease-overlay)]',
 					'data-expanded:[--stack-y:calc(var(--toast-offset-y,0px)_+_var(--toast-index,0)*var(--gap))]',
 					'data-expanded:[--stack-scale:1]',
 					'data-expanded:h-(--toast-height)',

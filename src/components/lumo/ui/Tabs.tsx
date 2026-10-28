@@ -12,10 +12,18 @@ import {
 	type ReactNode,
 } from 'react';
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
-import { motion, type HTMLMotionProps } from 'motion/react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
-import { springSize, springSlide, useSpring } from '@/lib/motion';
+import { frameOf, scaleOf } from '@/lib/measure';
+import {
+	glide,
+	speedOf,
+	springSize,
+	springSlide,
+	toTiming,
+	useSpring,
+	type Run,
+} from '@/lib/motion';
 import { Transition } from './Transition';
 
 export type TabsVariant = 'rounded' | 'square' | 'point';
@@ -27,15 +35,20 @@ export type TabsValue = ComponentProps<typeof BaseTabs.Tab>['value'];
 export type TabsContextValue = {
 	variant: TabsVariant;
 	size: TabsSize;
-	/** The tab that is selected, so a part can tell whether it is the one on screen. */
-	activeValue: TabsValue | undefined;
 };
 
+/** The look, which almost every part reads — and which no tab change can alter. */
 export const TabsContext = createContext<TabsContextValue>({
 	variant: 'rounded',
 	size: 'md',
-	activeValue: undefined,
 });
+
+/**
+ * The tab on screen. Its own context, and deliberately a small one: a change of tab re-renders
+ * whatever reads this and nothing else, so a panel's contents — which the DOM already says are the
+ * ones on screen — are not rebuilt every time somebody clicks a tab.
+ */
+const ActiveContext = createContext<TabsValue | undefined>(undefined);
 
 /** Whether a `Panel` is inside `Panels`, where it is one lane of a track rather than a stack. */
 const TrackContext = createContext(false);
@@ -222,19 +235,7 @@ export function Panel(props: PanelProps) {
 	return tracked ? <TrackPanel {...props} /> : <StackedPanel {...props} />;
 }
 
-/** Border and padding of the track: what the lanes do not cover, and the box is still big for. */
-function frame(box: HTMLElement) {
-	const style = getComputedStyle(box);
-	const px = (value: string) => Number.parseFloat(value) || 0;
-	return (
-		px(style.paddingTop) +
-		px(style.paddingBottom) +
-		px(style.borderTopWidth) +
-		px(style.borderBottomWidth)
-	);
-}
-
-export type PanelsProps = Omit<HTMLMotionProps<'div'>, 'children'> & {
+export type PanelsProps = Omit<ComponentProps<'div'>, 'children'> & {
 	/** One `Tabs.Panel` per tab, in the order the tabs are in. */
 	children: ReactNode;
 };
@@ -244,11 +245,17 @@ export type PanelsProps = Omit<HTMLMotionProps<'div'>, 'children'> & {
  * arriving and the panel leaving travel together, instead of one fading over the other. The box
  * holding the track is only as tall as the lane on screen, and follows it as the track moves.
  *
+ * Both movements are springs handed to the browser, and neither of them is React state: measuring a
+ * lane and storing its height would re-render every panel under the track on every frame that a
+ * font arrived. The track is one percentage translate plus a pixel correction — the correction is
+ * where the track already was, so a click made mid-flight takes over at that speed instead of
+ * jumping back to the lane it came from.
+ *
  * `overflow: clip` is what hides the lanes that are not the selected one; nothing inside a panel
  * can therefore hang out of it.
  */
 export function Panels({ className, children, ...props }: PanelsProps) {
-	const { activeValue } = useTabs();
+	const activeValue = useContext(ActiveContext);
 	const slide = useSpring(springSlide);
 	const size = useSpring(springSize);
 
@@ -257,52 +264,105 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 		(pane) => isValidElement<{ value?: TabsValue }>(pane) && pane.props.value === activeValue,
 	);
 	const index = Math.max(0, selected);
-	const boxRef = useRef<HTMLDivElement | null>(null);
-	const laneRefs = useRef<Array<HTMLDivElement | null>>([]);
-	const [height, setHeight] = useState<number>();
 
-	const measure = useCallback(() => {
+	const boxRef = useRef<HTMLDivElement | null>(null);
+	const trackRef = useRef<HTMLDivElement | null>(null);
+	const laneRefs = useRef<Array<HTMLDivElement | null>>([]);
+	/** The height the lanes have asked for, so a repeat measurement is not a re-target. */
+	const wanted = useRef<number | null>(null);
+	const growing = useRef<Run | null>(null);
+	const sliding = useRef<Run | null>(null);
+
+	// The box follows the lane on screen. Written to the element rather than to state: the height of
+	// a panel is not something any element under it needs to render again for.
+	const follow = useCallback(() => {
 		const box = boxRef.current;
 		const lane = laneRefs.current[index];
 		if (box === null || lane === null || lane === undefined) return;
 
-		// Rounded to a device pixel, so a fractional lane height does not keep re-triggering this.
-		const ratio = window.devicePixelRatio || 1;
-		const next = Math.ceil((lane.getBoundingClientRect().height + frame(box)) * ratio) / ratio;
+		const rect = box.getBoundingClientRect();
+		const style = getComputedStyle(box);
+		const scale = scaleOf(box, style, rect);
+		const edge = frameOf(style);
+		const borderBox = lane.getBoundingClientRect().height / scale.y + edge.y;
 
-		setHeight((previous) =>
-			previous !== undefined && Math.abs(previous - next) < 0.5 ? previous : next,
+		if (wanted.current !== null && Math.abs(wanted.current - borderBox) < 0.5) return;
+		wanted.current = borderBox;
+
+		const from = edge.fit(rect.height / scale.y, edge.y);
+		const to = edge.fit(borderBox, edge.y);
+		// Read before the animation is cancelled: after that there is no curve to ask.
+		const velocity = growing.current === null ? 0 : speedOf(growing.current);
+		growing.current?.animation.cancel();
+		growing.current = null;
+
+		box.style.height = `${to}px`;
+		if (Math.abs(from - to) < 0.5) return;
+
+		const timing = toTiming(size, { from, to, velocity });
+		const animation = glide(box, [{ height: `${from}px` }, { height: `${to}px` }], timing);
+		if (animation === undefined) return;
+
+		growing.current = { animation, timing, from, to };
+		const park = () => {
+			if (growing.current?.animation === animation) growing.current = null;
+		};
+		animation.finished.then(park, park);
+	}, [index, size]);
+
+	// The track, as one percentage translate with a pixel correction on top of it. The correction is
+	// measured, not tracked in a ref: where the track is on screen is the one thing an interruption
+	// has to know, and a cancelled animation has already put it back.
+	useLayoutEffect(() => {
+		const track = trackRef.current;
+		if (track === null) return;
+
+		const to = `${-index * 100}%`;
+		const before = track.getBoundingClientRect();
+		const scale = scaleOf(track, getComputedStyle(track), before);
+		// Read before the animation is cancelled: after that there is no curve to ask.
+		const velocity = sliding.current === null ? 0 : speedOf(sliding.current);
+		sliding.current?.animation.cancel();
+		sliding.current = null;
+
+		track.style.transform = `translateX(${to})`;
+		const jump = (before.left - track.getBoundingClientRect().left) / scale.x;
+		if (Math.abs(jump) < 0.5) return;
+
+		const timing = toTiming(slide, { from: jump, to: 0, velocity });
+		const animation = glide(
+			track,
+			[{ translate: `${jump}px 0px` }, { translate: '0px 0px' }],
+			timing,
 		);
-	}, [index]);
+		if (animation === undefined) return;
+
+		sliding.current = { animation, timing, from: jump, to: 0 };
+		const park = () => {
+			if (sliding.current?.animation === animation) sliding.current = null;
+		};
+		animation.finished.then(park, park);
+	}, [index, slide]);
 
 	useLayoutEffect(() => {
-		measure();
+		follow();
 		const lane = laneRefs.current[index];
 		if (lane === null || lane === undefined) return;
 
 		// Inside a frame, because this sets the height of the box the lane is measured against.
-		const observer = new ResizeObserver(() => requestAnimationFrame(measure));
+		const observer = new ResizeObserver(() => requestAnimationFrame(follow));
 		observer.observe(lane);
 		return () => observer.disconnect();
-	}, [index, measure]);
+	}, [index, follow]);
 
 	return (
-		<motion.div
+		<div
 			ref={boxRef}
 			data-slot="tabs-panels"
-			initial={false}
-			animate={height === undefined ? {} : { height }}
-			transition={size}
 			className={cn('overflow-clip', className)}
 			{...props}
 		>
-			<motion.div
-				data-slot="tabs-track"
-				initial={false}
-				animate={{ x: `${index * -100}%` }}
-				transition={slide}
-				className="flex items-start"
-			>
+			<div ref={trackRef} data-slot="tabs-track" className="flex items-start">
 				<TrackContext.Provider value>
 					{panes.map((pane, lane) => (
 						<div
@@ -317,8 +377,8 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 						</div>
 					))}
 				</TrackContext.Provider>
-			</motion.div>
-		</motion.div>
+			</div>
+		</div>
 	);
 }
 
@@ -329,7 +389,9 @@ export type RootProps = ComponentProps<typeof BaseTabs.Root> & {
 
 /**
  * Base UI owns the value. It is mirrored here because a part that is not a Base UI part — the
- * track that has to know how many lanes to the left the selected one is — has to read it too.
+ * track that has to know how many lanes to the left the selected one is — has to read it too, and
+ * it is handed out through a context of its own so that a click on a tab does not re-render the
+ * look every tab already agreed on.
  */
 export function Root({
 	className,
@@ -352,26 +414,28 @@ export function Root({
 	);
 
 	const activeValue = value !== undefined ? value : selected;
-	const context = useMemo(() => ({ variant, size, activeValue }), [variant, size, activeValue]);
+	const context = useMemo(() => ({ variant, size }), [variant, size]);
 
 	return (
 		<TabsContext.Provider value={context}>
-			<BaseTabs.Root
-				data-slot="tabs"
-				data-variant={variant}
-				data-size={size}
-				value={value}
-				defaultValue={defaultValue}
-				onValueChange={handleValueChange}
-				className={cn(
-					'grid grid-cols-1 gap-4',
-					'data-[orientation=vertical]:grid-cols-[auto_1fr] data-[orientation=vertical]:items-start',
-					className,
-				)}
-				{...props}
-			>
-				{children}
-			</BaseTabs.Root>
+			<ActiveContext.Provider value={activeValue}>
+				<BaseTabs.Root
+					data-slot="tabs"
+					data-variant={variant}
+					data-size={size}
+					value={value}
+					defaultValue={defaultValue}
+					onValueChange={handleValueChange}
+					className={cn(
+						'grid grid-cols-1 gap-4',
+						'data-[orientation=vertical]:grid-cols-[auto_1fr] data-[orientation=vertical]:items-start',
+						className,
+					)}
+					{...props}
+				>
+					{children}
+				</BaseTabs.Root>
+			</ActiveContext.Provider>
 		</TabsContext.Provider>
 	);
 }

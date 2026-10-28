@@ -5,6 +5,7 @@ import collapsibleSource from '@/components/lumo/ui/Collapsible.tsx?raw';
 import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
 import cnSource from '@/lib/cn.ts?raw';
 import motionSource from '@/lib/motion.ts?raw';
+import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -25,17 +26,11 @@ const files: DocFile[] = [
 ];
 
 const panelProps: Record<string, PropNode> = {
-	transition: {
-		type: 'boolean',
-		default: 'true',
-		description:
-			'Wraps the body in a Transition, so a body that changes size while the panel is open glides to the new one. false opts out of the wrapper altogether.',
-	},
 	peek: {
 		type: 'number',
 		default: '0',
 		description:
-			'The height kept while closed, in pixels, so a folded body can show a peek of itself instead of nothing. 0 takes the closed panel out of the layout.',
+			'The height kept while closed, in pixels, so a folded body can show a peek of itself instead of nothing. 0 takes the closed panel out of the layout. The box clips while it holds one.',
 	},
 	className: {
 		type: 'string',
@@ -115,18 +110,19 @@ export function CollapsiblePage() {
 					<>
 						Base UI owns the id, the trigger’s <Mono>aria-expanded</Mono> and the state
 						attributes; the panel takes <Mono>hidden</Mono> off so it has two heights to
-						animate between. the spring is the motion file’s, and the panel’s contents
-						sit in a <Mono>Transition</Mono>.
+						animate between. the height itself belongs to <Mono>Transition</Mono>, which
+						is the one box in the library that glides to a size.
 					</>
 				}
 			>
 				<DocInstall
 					name="collapsible"
-					packages={['@base-ui/react', 'lucide-react', 'motion']}
+					packages={['@base-ui/react', 'lucide-react']}
 					files={files}
 					reaches={[
 						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
 						{ path: 'src/lib/motion.ts', code: motionSource },
+						{ path: 'src/lib/measure.ts', code: measureSource },
 						{ path: 'src/lib/cn.ts', code: cnSource },
 					]}
 				/>
@@ -163,11 +159,13 @@ export function CollapsiblePage() {
 				note={
 					<>
 						the closed height — <Mono>0</Mono>, or a <Mono>peek</Mono> — and{' '}
-						<Mono>auto</Mono> are two ends of the same number to the animation, so a
-						panel turns around mid-flight from where it is, and a body that changes
-						while it is open is followed. the panel stays in the DOM while closed — that
-						is what there is to animate — so it is <Mono>inert</Mono> until it opens,
-						rather than <Mono>hidden</Mono>.
+						<Mono>auto</Mono> — or, now, the size the body takes — are two ends of the
+						same number to the animation, so a panel turns around mid-flight from where
+						it is, at the speed it already had. there is no second animation underneath
+						it: the height belongs to <Mono>Transition</Mono>, which measures the body
+						and glides between the peek and whatever the body needs. the panel stays in
+						the DOM while closed — that is what there is to animate — so it is{' '}
+						<Mono>inert</Mono> until it opens, rather than <Mono>hidden</Mono>.
 					</>
 				}
 			>

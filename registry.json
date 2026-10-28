@@ -21,13 +21,26 @@
 			"name": "motion",
 			"type": "registry:file",
 			"title": "motion presets",
-			"description": "The springs the library moves with, in one place, and a hook that drops them when the reader asked for less motion. Required by Tabs, Collapsible and Transition; installed automatically as a dependency.",
+			"description": "The springs the library moves with, in one place; a hook that drops them when the reader asked for less motion; and the timing helpers that sample a spring into a `linear()` curve, so a glide runs in the browser instead of in a callback. Required by Tabs, Collapsible and Transition; installed automatically as a dependency.",
 			"dependencies": ["motion"],
 			"files": [
 				{
 					"path": "src/lib/motion.ts",
 					"type": "registry:file",
 					"target": "~/src/lib/motion.ts"
+				}
+			]
+		},
+		{
+			"name": "measure",
+			"type": "registry:file",
+			"title": "measure helpers",
+			"description": "Two numbers a glide cannot be written without: the box's padding and borders, and the screen-per-CSS-pixel scale an ancestor transform or a CSS zoom puts on a measurement. Required by Transition and Tabs; installed automatically as a dependency.",
+			"files": [
+				{
+					"path": "src/lib/measure.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/measure.ts"
 				}
 			]
 		},
@@ -48,7 +61,7 @@
 			"name": "shiki",
 			"type": "registry:file",
 			"title": "shiki highlighter",
-			"description": "The highlighter behind Code and CodeDiff: one shared core, a grammar per file fetched on demand, and a light/dark colour pair per token so the theme can flip without re-tokenising.",
+			"description": "The highlighter behind Code and CodeDiff: one shared core, a grammar per file fetched on demand, a light/dark colour pair per token so the theme can flip without re-tokenising, and a cache so the same snippet is tokenised once however many blocks show it.",
 			"dependencies": ["shiki"],
 			"files": [
 				{
@@ -136,13 +149,9 @@
 			"name": "collapsible",
 			"type": "registry:ui",
 			"title": "Collapsible",
-			"description": "Disclosure region that expands and collapses one panel. Behaviour from Base UI, appearance from tokens.",
+			"description": "Disclosure region that expands and collapses one panel. Its height belongs to Transition, so a fold is one box on the one size spring rather than two animations of the same edge. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/motion",
-				"linyana/lumo-ui/transition"
-			],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/transition"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Collapsible.tsx",
@@ -215,11 +224,12 @@
 			"name": "tabs",
 			"type": "registry:ui",
 			"title": "Tabs",
-			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them — stacked and cross-fading, or all of them side by side on a track that is slid to the selected one. Behaviour from Base UI, appearance from tokens.",
-			"dependencies": ["@base-ui/react"],
+			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them — stacked and cross-fading, or all of them side by side on a track that is slid to the selected one. The track and the box under it move on springs, written to the DOM rather than to state, so a tab change does not re-render the panels it is switching between. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/motion",
+				"linyana/lumo-ui/measure",
 				"linyana/lumo-ui/transition"
 			],
 			"files": [
@@ -388,9 +398,13 @@
 			"name": "transition",
 			"type": "registry:ui",
 			"title": "Transition",
-			"description": "A box that keeps its size to what is inside it and eases to each new one — continuously, so a reflow, a late font or a swap does not move the page beneath it. Measured: no fade, no travel, no second copy of the text.",
+			"description": "A box that keeps its size to what is inside it and glides to each new one — continuously, so a reflow, a late font or a swap does not move the page beneath it. The glide is a spring handed to the browser, and an interruption carries the speed it already had. Give it a `height` and it holds that instead, which is how a fold stays closed. Measured: no fade, no travel, no second copy of the text.",
 			"dependencies": ["motion"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/motion",
+				"linyana/lumo-ui/measure"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Transition.tsx",

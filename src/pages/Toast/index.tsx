@@ -201,7 +201,10 @@ export function ToastPage() {
 						<>
 							three is the provider’s limit: the fourth stays mounted but drawn
 							nowhere. older toasts wait behind the newest and clip to its height;
-							point at the stack and they unfurl to their own.
+							point at the stack and they unfurl to their own. height is the one
+							property here that lays the page out again, so it is given the state
+							token while the rest use the overlay one — the cards travel for longer
+							than they grow.
 						</>
 					}
 				>

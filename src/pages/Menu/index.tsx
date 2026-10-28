@@ -10,6 +10,7 @@ import tooltipSource from '@/components/lumo/ui/Tooltip.tsx?raw';
 import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
 import cnSource from '@/lib/cn.ts?raw';
 import motionSource from '@/lib/motion.ts?raw';
+import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -282,6 +283,7 @@ export function MenuPage() {
 						{ path: 'src/components/lumo/ui/Skeleton.tsx', code: skeletonSource },
 						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
 						{ path: 'src/lib/motion.ts', code: motionSource },
+						{ path: 'src/lib/measure.ts', code: measureSource },
 						{ path: 'src/lib/cn.ts', code: cnSource },
 					]}
 				/>

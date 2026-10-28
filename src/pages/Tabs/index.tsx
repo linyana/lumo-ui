@@ -5,6 +5,7 @@ import tabsSource from '@/components/lumo/ui/Tabs.tsx?raw';
 import transitionSource from '@/components/lumo/ui/Transition.tsx?raw';
 import cnSource from '@/lib/cn.ts?raw';
 import motionSource from '@/lib/motion.ts?raw';
+import measureSource from '@/lib/measure.ts?raw';
 import {
 	DocInstall,
 	DocPage,
@@ -126,7 +127,12 @@ const hookRows = [
 	[
 		'data-slot="tabs-track" · lanes',
 		'the sliding track, and each lane',
-		'translate-x is the lane index; the box’s height follows the lane on screen.',
+		'the track is one percentage translate with a pixel correction on top; the box’s height follows the lane on screen.',
+	],
+	[
+		'data-slot="tabs-panels"',
+		'the box under the track',
+		'its height is written to the element, not to state — a measured lane does not re-render a panel.',
 	],
 	[
 		'inert',
@@ -157,20 +163,21 @@ export function TabsPage() {
 				title="installation"
 				note={
 					<>
-						Base UI owns the selection and measures the active tab; the two springs and
-						the measured box come from <Mono>motion</Mono> — the same ones{' '}
-						<Mono>Transition</Mono> uses, which is why a panel’s body eases to its own
-						size.
+						Base UI owns the selection and measures the active tab; the track and the
+						box under it move on the springs in <Mono>lib/motion.ts</Mono> — the same
+						ones <Mono>Transition</Mono> uses, written straight to the DOM rather than
+						kept in state.
 					</>
 				}
 			>
 				<DocInstall
 					name="tabs"
-					packages={['@base-ui/react', 'motion']}
+					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
 					reaches={[
 						{ path: 'src/components/lumo/ui/Transition.tsx', code: transitionSource },
 						{ path: 'src/lib/motion.ts', code: motionSource },
+						{ path: 'src/lib/measure.ts', code: measureSource },
 						{ path: 'src/lib/cn.ts', code: cnSource },
 					]}
 				/>
@@ -225,7 +232,9 @@ export function TabsPage() {
 						so the panel arriving and the panel leaving travel together. the box holding
 						the track is only as tall as the lane on screen and follows it as the track
 						moves; the lanes out of sight are blurred and <Mono>inert</Mono>. everything
-						inside a panel is clipped to it — nothing can hang out of the edge.
+						inside a panel is clipped to it — nothing can hang out of the edge. neither
+						movement is React state: both are springs written to the elements, so a
+						click made mid-flight takes over at the speed the track already had.
 					</>
 				}
 			>

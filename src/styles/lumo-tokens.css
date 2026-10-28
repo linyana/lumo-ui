@@ -74,9 +74,8 @@
 	--state-layer-fill-hover-opacity: 0.16;
 	--state-layer-fill-pressed-opacity: 0.26;
 	--press-offset: 1px;
-	/* A box easing to the size of the content inside it. Read in JS, at the moment a glide starts
-	   rather than once, so a theme reaches the next one. */
-	--duration-size: 200ms;
+	/* A box easing to the size of the content inside it is a spring, not a token: see springSize
+	   in lib/motion.ts. A theme still reaches it, because the file is source. */
 	/* How far a tab panel travels sideways as it takes over from the one before it. Kept in px
 	   because it is a distance, not a duration. */
 	--shift-content: 8px;
@@ -230,6 +229,5 @@
 		--duration-press: 1ms;
 		--ease-overlay: linear;
 		--duration-overlay: 1ms;
-		--duration-size: 1ms;
 	}
 }

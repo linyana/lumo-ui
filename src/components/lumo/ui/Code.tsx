@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { Button } from '@/components/lumo/ui/Button';
 import { cn } from '@/lib/cn';
-import { type CodeLine, highlight } from '@/lib/shiki';
+import { type CodeLine, highlight, highlighted } from '@/lib/shiki';
 import { tv, type VariantProps } from 'tailwind-variants';
 
 export type CopyProps = {
@@ -111,8 +111,9 @@ function plain(code: string): CodeLine[] {
 }
 
 /**
- * Highlighted lines for `code`. The result is tagged with what produced it, so a change of
- * `code` shows plain text for a frame instead of the previous block's colours.
+ * Highlighted lines for `code`. The result is tagged with what produced it, so a change of `code`
+ * shows plain text for a frame instead of the previous block's colours — unless that snippet has
+ * been highlighted before, in which case its colours are already here and there is no frame to lose.
  */
 export function useCodeLines(code: string, language?: string): CodeLine[] {
 	const [result, setResult] = useState<Result | null>(null);
@@ -130,11 +131,10 @@ export function useCodeLines(code: string, language?: string): CodeLine[] {
 		};
 	}, [code, language]);
 
-	return useMemo(
-		() =>
-			result?.source === code && result.language === language ? result.lines : plain(code),
-		[code, language, result],
-	);
+	return useMemo(() => {
+		if (result?.source === code && result.language === language) return result.lines;
+		return highlighted(code, language) ?? plain(code);
+	}, [code, language, result]);
 }
 
 /* oxlint-disable react/no-array-index-key -- a line of code is identified by its position, which is also its number */
