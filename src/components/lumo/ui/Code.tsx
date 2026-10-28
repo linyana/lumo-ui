@@ -176,8 +176,13 @@ export function useCodeLines(code: string, language?: string, enabled = true): C
 
 /* oxlint-disable react/no-array-index-key -- a line of code is identified by its position, which is also its number */
 
+/**
+ * A block of source and the measure a source is read at: one tab is two spaces, because the file is
+ * written in tabs and a browser's default of eight would open every level into a gulf. The property
+ * is inherited, so every `pre` and every diff line under the frame is drawn at it.
+ */
 export const codeVariants = tv({
-	base: ['w-full overflow-hidden rounded-lg font-mono text-sm leading-5'],
+	base: ['w-full overflow-hidden rounded-lg font-mono text-sm leading-5 [tab-size:2]'],
 	variants: {
 		variant: {
 			filled: 'bg-muted',
