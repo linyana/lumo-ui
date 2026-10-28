@@ -42,8 +42,16 @@ export function Action({ className, showOnHover = false, ...props }: ActionProps
 				'peer-data-[size=md]/menu-button:top-1.5',
 				'peer-data-[size=lg]/menu-button:top-2.5',
 				'group-data-[compact]:hidden',
-				showOnHover &&
-					'md:opacity-0 group-hover/menu-item:opacity-100 group-focus-within/menu-item:opacity-100',
+				showOnHover && [
+					// Out of the way until its own row is hovered or the action itself is reached. The
+					// row's button is the `peer`, so one hovered row cannot light up the actions of the
+					// rows inside it; the action's own hover then holds it open once it has taken the
+					// pointer over from that button.
+					'md:pointer-events-none md:opacity-0',
+					'peer-hover/menu-button:pointer-events-auto peer-hover/menu-button:opacity-100',
+					'hover:pointer-events-auto hover:opacity-100',
+					'focus-visible:pointer-events-auto focus-visible:opacity-100',
+				],
 				className,
 			)}
 			{...props}

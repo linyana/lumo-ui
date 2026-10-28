@@ -131,7 +131,7 @@ const actionProps: Record<string, PropNode> = {
 		type: 'boolean',
 		default: 'false',
 		description:
-			'Keeps the action quiet until the row is hovered or holds focus — the row’s own “more” rather than a permanent third column.',
+			'Keeps the action out of the way until its own row is hovered, or until it is reached by the keyboard. It is held back by pointer events as well as opacity, so the row underneath still takes the click — the action only takes the pointer once the row has handed it over.',
 	},
 };
 
