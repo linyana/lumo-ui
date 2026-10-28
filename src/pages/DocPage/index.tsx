@@ -1,4 +1,13 @@
-import { ArrowLeft, ArrowRight, Braces, Check, Copy as CopyIcon, Info, X } from 'lucide-react';
+import {
+	ArrowLeft,
+	ArrowRight,
+	Check,
+	CodeXml as CodeGlyph,
+	Copy as CopyIcon,
+	Download,
+	Info,
+	X,
+} from 'lucide-react';
 import {
 	Children,
 	createContext,
@@ -8,6 +17,7 @@ import {
 	useMemo,
 	useRef,
 	useState,
+	type ComponentProps,
 	type ReactElement,
 	type ReactNode,
 } from 'react';
@@ -16,13 +26,15 @@ import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
 import { CodeTree } from '@/components/lumo/blocks/CodeTree';
 import { Dialog } from '@/components/lumo/ui/Dialog';
+import { Menu } from '@/components/lumo/ui/Menu';
 import { Skeleton } from '@/components/lumo/ui/Skeleton';
 import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { cn } from '@/lib/cn';
 import { highlight } from '@/lib/shiki';
-import { filesOf, itemOf, languageOf, readSource } from './sources';
+import { filesOf, installFiles, itemOf, languageOf, readSource } from './sources';
+import { zipOf } from './zip';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
 export function sectionId(title: string) {
@@ -190,9 +202,6 @@ export function Command({ children }: { children: string }) {
 	);
 }
 
-/** One file of the manual, as a path: its text lives behind the dialog, never in the page. */
-export type DocSource = { path: string };
-
 /** The file's own name, which is what a reader recognises it by: `Button.tsx`, not its path. */
 function fileName(path: string) {
 	return path.split('/').pop() ?? path;
@@ -213,23 +222,103 @@ function reachName(path: string) {
 /** A stable empty list, so the default prop does not make a new array on every render. */
 const NO_PATHS: string[] = [];
 
+/** The theme, which no registry item carries: the manual names it the way it names a copied file. */
+const TOKENS = 'src/styles/lumo-tokens.css';
+
 /**
- * One file of the manual: its path, and the way to read it. It opens the dialog the component's
- * examples open, on that file — so the tree around it says where the file sits, not just what it
- * says.
+ * The files one step copies, named where they go. A step is a sentence and a list of destinations;
+ * the text of every one of them is behind the single dialog at the end of the manual, so the page
+ * carries no source and the reader has one place to read from.
  */
-function ManualFile({ path, name }: DocSource & { name: string }) {
+function ManualFiles({ paths }: { paths: string[] }) {
 	return (
-		<SourceDialog path={path} name={name}>
-			<Button
-				size="sm"
-				variant="outline"
-				icon={<Braces />}
-				className="w-full justify-start font-mono text-xs"
-			>
-				<span className="truncate">{path}</span>
-			</Button>
-		</SourceDialog>
+		<ul data-slot="doc-manual-files" className="font-mono text-xs text-muted-foreground">
+			{paths.map((path) => (
+				<li key={path}>{path}</li>
+			))}
+		</ul>
+	);
+}
+
+/**
+ * The copy riding on a file's row in the dialog: one click takes that file, without selecting it
+ * first — which is what makes reading the manual file by file a route of its own.
+ */
+function CopyFile({ path }: { path: string }) {
+	const [copied, setCopied] = useState(false);
+
+	useEffect(() => {
+		if (!copied) return;
+		const timer = setTimeout(() => setCopied(false), 1600);
+		return () => clearTimeout(timer);
+	}, [copied]);
+
+	return (
+		<Menu.Action
+			type="button"
+			showOnHover
+			aria-label={copied ? `copied ${path}` : `copy ${path}`}
+			onClick={() => {
+				readSource(path).then(
+					(text) =>
+						navigator.clipboard.writeText(text ?? '').then(
+							() => setCopied(true),
+							() => {},
+						),
+					() => {},
+				);
+			}}
+		>
+			{copied ? <Check /> : <CopyIcon />}
+		</Menu.Action>
+	);
+}
+
+/** The row copy as the tree's slot takes it: a function from the file's path to the action. */
+function rowCopy(path: string) {
+	return <CopyFile path={path} />;
+}
+
+/**
+ * The manual as one file: every path, with its text, stored rather than compressed — they are text
+ * and there are few. What the archive carries is where they live, so unzipping it at the project's
+ * root puts each one exactly where its imports expect it.
+ */
+function DownloadFiles({ name, paths }: { name: string; paths: string[] }) {
+	const [building, setBuilding] = useState(false);
+
+	const take = async () => {
+		setBuilding(true);
+		try {
+			const files = await Promise.all(
+				paths.map(async (path) => ({ path, text: (await readSource(path)) ?? '' })),
+			);
+			const url = URL.createObjectURL(zipOf(files));
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = name;
+			document.body.append(link);
+			link.click();
+			link.remove();
+			// Revoked well after the browser has taken the bytes: a blob released while the download
+			// is still reading it is a download that stops halfway.
+			setTimeout(() => URL.revokeObjectURL(url), 10_000);
+		} finally {
+			setBuilding(false);
+		}
+	};
+
+	return (
+		<Button
+			variant="secondary"
+			icon={<Download />}
+			loading={building}
+			onClick={() => {
+				take().catch(() => {});
+			}}
+		>
+			download all
+		</Button>
 	);
 }
 
@@ -244,8 +333,8 @@ export type DocInstallProps = {
 	reaches?: string[];
 	/** The one sentence under the command. Written from the manifest unless given. */
 	note?: ReactNode;
-	/** The sentence above the reached files, for a chain longer than the list can say. */
-	reachesNote?: ReactNode;
+	/** The sentence over the copy step, for a chain longer than the list can say. */
+	copyNote?: ReactNode;
 	/** Whether the manual ends on the tokens. A helper that only merges classes does not need them. */
 	tokens?: boolean;
 };
@@ -261,13 +350,21 @@ export function DocInstall({
 	files,
 	reaches = NO_PATHS,
 	note,
-	reachesNote,
+	copyNote,
 	tokens = true,
 }: DocInstallProps) {
 	const own = files.map(fileName);
 	const reached = reaches.map(reachName);
-	const steps = [packages.length > 0, true, reaches.length > 0, tokens].filter(Boolean).length;
-	const counted = ['no', 'one', 'two', 'three', 'four'][steps] ?? 'a few';
+	const steps = [packages.length > 0, true].filter(Boolean).length;
+	const counted = ['no', 'one', 'two'][steps] ?? 'a few';
+	// The dialog opens on the first file the command copies, and is about everything the reader
+	// would copy by hand: the reached files and the tokens are named by the manual, not by the
+	// manifest, so they are handed over rather than looked up.
+	const lead = files[0];
+	const about = tokens ? [...reaches, TOKENS] : reaches;
+	// What the step lists and the archive holds: the item, what it installs, and the tokens no
+	// manifest names — the tokens last, because they are the one file a project may already have.
+	const copy = [...installFiles(name, reaches), ...(tokens ? [TOKENS] : [])];
 
 	const tabs: DocTabItem[] = [
 		{
@@ -321,46 +418,45 @@ export function DocInstall({
 							</Steps.Item>
 						)}
 						<Steps.Item>
-							<Steps.Title>copy the component</Steps.Title>
+							<Steps.Title>copy the code</Steps.Title>
 							<Steps.Description>
-								its imports already read <Mono>@/…</Mono>, so it goes where they
-								point.
+								{copyNote ?? (
+									<>
+										the component
+										{reached.length > 0 && (
+											<>, plus the {list(reached)} it reaches for</>
+										)}
+										. its imports already read <Mono>@/…</Mono>, so each file
+										goes where they point.
+									</>
+								)}
+								{tokens && (
+									<>
+										{' '}
+										skip <Mono>lumo-tokens.css</Mono> if the project already
+										defines <Mono>--primary</Mono>, <Mono>--radius</Mono> and
+										the rest.
+									</>
+								)}
 							</Steps.Description>
-							<div className="space-y-1.5">
-								{files.map((path) => (
-									<ManualFile key={path} path={path} name={name} />
-								))}
+							<div className="space-y-2">
+								<ManualFiles paths={copy} />
+								<div className="flex items-center gap-2">
+									{lead !== undefined && (
+										<SourceDialog path={lead} name={name} about={about}>
+											<Button
+												variant="outline"
+												icon={<CodeGlyph />}
+												className="flex-1 justify-start"
+											>
+												browse the files
+											</Button>
+										</SourceDialog>
+									)}
+									<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
+								</div>
 							</div>
 						</Steps.Item>
-						{reaches.length > 0 && (
-							<Steps.Item>
-								<Steps.Title>copy what it reaches for</Steps.Title>
-								<Steps.Description>
-									{reachesNote ?? (
-										<>
-											the {list(reached)} it imports, without which it does
-											not compile.
-										</>
-									)}
-								</Steps.Description>
-								<div className="space-y-1.5">
-									{reaches.map((path) => (
-										<ManualFile key={path} path={path} name={name} />
-									))}
-								</div>
-							</Steps.Item>
-						)}
-						{tokens && (
-							<Steps.Item>
-								<Steps.Title>bring the tokens</Steps.Title>
-								<Steps.Description>
-									skip this one if the project already defines{' '}
-									<Mono>--primary</Mono>, <Mono>--radius</Mono> and the rest — the
-									component then wears its colours.
-								</Steps.Description>
-								<ManualFile path="src/styles/lumo-tokens.css" name={name} />
-							</Steps.Item>
-						)}
 					</Steps.Root>
 				</div>
 			),
@@ -478,7 +574,9 @@ export type DocPreviewProps = {
 /**
  * The source of an example, and of the files the component it demonstrates installs: the tree on the
  * left is that registry item, drawn in the shape of the repository, and the pane on the right is
- * whichever file is selected. The demo itself leads the tree, because that is what was clicked.
+ * whichever file is selected. The demo and the component itself lead the tree, because that is what
+ * was clicked, and so does anything the caller names beside them; the dependencies the registry
+ * installs around them start shut and quiet.
  *
  * The manifest is in the bundle, so the tree is there on the first frame; only the file's text is
  * fetched, and only for the one file on screen. Nothing outlives the open — the popup is mounted by
@@ -487,11 +585,14 @@ export type DocPreviewProps = {
 function SourceDialog({
 	path,
 	name,
+	about,
 	children,
 }: {
 	path: string;
 	/** The registry item the dialog draws around `path`; without one it draws `path` alone. */
 	name?: string;
+	/** Files the caller names beside the item's own — a manual's reached files, the tokens. */
+	about?: string[];
 	children: ReactElement;
 }) {
 	return (
@@ -501,7 +602,7 @@ function SourceDialog({
 				<Dialog.Backdrop />
 				<Dialog.Viewport>
 					<Dialog.Popup className="flex h-[80vh] max-h-[44rem] w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
-						<SourcePane path={path} name={name} />
+						<SourcePane path={path} name={name} about={about} />
 					</Dialog.Popup>
 				</Dialog.Viewport>
 			</Dialog.Portal>
@@ -509,10 +610,20 @@ function SourceDialog({
 	);
 }
 
-/** The contents of the dialog: mounted with the popup, so every open starts at the demo's own file. */
-function SourcePane({ path, name }: { path: string; name?: string }) {
-	// The clicked file leads, because a file outside the manifest — the tokens — is still a file.
-	const files = useMemo(() => [path, ...filesOf(name)], [path, name]);
+/** The contents of the dialog: mounted with the popup, so every open starts at the file that was clicked. */
+function SourcePane({ path, name, about }: { path: string; name?: string; about?: string[] }) {
+	// A caller's array is a new one on every render; the paths are what the tree is built from.
+	const aboutKey = about?.join('\n') ?? '';
+	const named = useMemo(() => (aboutKey === '' ? [] : aboutKey.split('\n')), [aboutKey]);
+	const { own } = useMemo(() => filesOf(name), [name]);
+	// What the tree is about: the clicked file, the component it belongs to, and whatever the caller
+	// named beside them. Everything the registry installs around that is the context, and the tree
+	// starts it shut and quiet.
+	const primary = useMemo(() => [path, ...own, ...named], [path, own, named]);
+	const files = useMemo(
+		() => [...new Set([path, ...installFiles(name, named)])],
+		[path, name, named],
+	);
 	const [selected, setSelected] = useState(path);
 	// What the pane is SHOWING, which trails the selection by one read. Keeping the file that is
 	// already there until the next one is ready is what stops the pane blanking between two clicks.
@@ -555,7 +666,6 @@ function SourcePane({ path, name }: { path: string; name?: string }) {
 					</span>
 				</Dialog.Title>
 				<div className="flex shrink-0 items-center gap-1">
-					<Copy value={shown?.text ?? ''} />
 					<Dialog.Close
 						render={
 							<Button
@@ -572,14 +682,29 @@ function SourcePane({ path, name }: { path: string; name?: string }) {
 			</div>
 			<div className="flex min-h-0 flex-1">
 				<div className="w-60 shrink-0 overflow-y-auto border-e p-2">
-					<CodeTree paths={files} selected={selected} onSelect={setSelected} />
+					<CodeTree
+						paths={files}
+						primary={primary}
+						selected={selected}
+						onSelect={setSelected}
+						action={rowCopy}
+					/>
 				</div>
 				{/* Keyed by the file, so a new one starts at its own top rather than wherever the last
 				    one was scrolled to. */}
 				<div
 					key={shown?.path ?? selected}
-					className="min-w-0 flex-1 overflow-auto p-3 [scrollbar-gutter:stable]"
+					className="min-w-0 flex-1 overflow-auto px-3 pb-3 [scrollbar-gutter:stable]"
 				>
+					{/* The way to take the file sits in the file's own corner, where the code starts, and
+					    stays there while it is scrolled — a copy of what is on screen, not of a header's
+					    idea of it. */}
+					<div
+						data-slot="source-copy"
+						className="sticky top-0 z-10 flex justify-end py-1"
+					>
+						<Copy value={shown?.text ?? ''} />
+					</div>
 					{shown === null ? (
 						<Skeleton className="h-40 w-full" />
 					) : (
@@ -610,15 +735,60 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
 				{children}
 			</div>
-			<div className="flex items-center justify-between gap-3 border-t px-3 py-1.5">
-				<span className="truncate font-mono text-xs text-muted-foreground">{name}</span>
+			{/* The way in is the whole row, not a word at one end of it: a file name beside it made the
+			    name look like the thing to click. */}
+			<div data-slot="doc-preview-footer" className="border-t p-1">
 				<SourceDialog path={path} name={itemOf(path)}>
-					<Button size="sm" variant="ghost" icon={<Braces />}>
-						view code
-					</Button>
+					<ViewCode />
 				</SourceDialog>
 			</div>
 		</div>
+	);
+}
+
+/**
+ * The label and the braces that open it: the glyph holds no room until the row is hovered or focused,
+ * then rises into it out of the line below, and the centred pair slides right to make space. The
+ * glyph goes through the `icon` slot rather than through `children`, because `children` is wrapped for
+ * the loading spinner and the two would end up on two lines. The width is what moves the label, so
+ * the icon and the word stay one block rather than two.
+ *
+ * It takes and forwards the button's props because `Dialog.Trigger` renders it: the click, the
+ * `aria-haspopup` and the ref that anchors the popup are handed to whatever `render` names, and a
+ * component that swallowed them would be a row that looks like a trigger and is not one.
+ */
+function ViewCode({ className, ...props }: ComponentProps<typeof Button>) {
+	return (
+		<Button
+			size="sm"
+			variant="ghost"
+			{...props}
+			className={cn(
+				'group/code w-full gap-0 text-muted-foreground hover:text-foreground',
+				className,
+			)}
+			icon={
+				<span
+					aria-hidden="true"
+					className={cn(
+						'flex h-[1em] w-0 shrink-0 items-center overflow-hidden',
+						'transition-[width] ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+						'group-hover/code:w-5 group-focus-visible/code:w-5',
+					)}
+				>
+					<CodeGlyph
+						className={cn(
+							'translate-y-full opacity-0',
+							'transition-[translate,opacity] ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+							'group-hover/code:translate-y-0 group-hover/code:opacity-100',
+							'group-focus-visible/code:translate-y-0 group-focus-visible/code:opacity-100',
+						)}
+					/>
+				</span>
+			}
+		>
+			view code
+		</Button>
 	);
 }
 

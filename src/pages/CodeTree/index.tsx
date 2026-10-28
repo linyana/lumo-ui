@@ -12,6 +12,7 @@ import {
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
 import Collapsed from './demos/collapsed';
+import Primary from './demos/primary';
 
 const files = [
 	'src/components/lumo/blocks/CodeTree/index.tsx',
@@ -41,11 +42,21 @@ const codeTreeProps: Record<string, PropNode> = {
 		description:
 			'Folders shut on the first frame, by path. Everything else opens; after that the open state belongs to Base UI, so a folder the reader opens stays open.',
 	},
+	primary: {
+		type: 'string[]',
+		description:
+			'The files the tree is about. The folders leading to them start open and every other folder starts shut, and a row outside the list is drawn in text-muted-foreground — the component first, its dependencies after. The selected file is never quiet, because it is the one being read.',
+	},
+	action: {
+		type: '(path: string) => ReactNode',
+		description:
+			"A secondary action riding on every file row, drawn from the file's path — the copy in a source dialog. It sits on the row's trailing edge and comes out on hover; a folder has none, because there is nothing on a folder to act on.",
+	},
 	size: {
 		type: '"sm" | "md"',
 		default: '"sm"',
 		description:
-			'The row height and the type — sm for a column beside a pane, md on a page. A row is a menu row, so this is the only measure the tree adds to it.',
+			"The row height — sm for a column beside a pane, md on a page. The type is the page's at both, because a path is text a reader reads rather than code they compare. A row is a menu row, so this is the only measure the tree adds to it.",
 	},
 	className: {
 		type: 'string',
@@ -86,6 +97,11 @@ const hookRows = [
 		'set by the row’s isActive and painted with bg-selected. Only the file carries it — a tree of filled ancestors says nothing.',
 	],
 	[
+		'data-quiet',
+		'not one of the primary files',
+		'a row outside primary: drawn in text-muted-foreground and, for a folder, shut on the first frame. Only the file on screen is exempt.',
+	],
+	[
 		'aria-current',
 		'true on the shown file',
 		'what a button row has instead of a link’s promise that it is the page.',
@@ -123,12 +139,12 @@ export function CodeTreePage() {
 					name="code-tree"
 					packages={['lucide-react']}
 					files={files}
-					reachesNote={
+					copyNote={
 						<>
 							the rows are <Mono>Menu</Mono>’s — a folder is its <Mono>Sub</Mono>, a
 							file its <Mono>SubButton</Mono> — and the menu reaches for the
 							collapsible, the tooltip, the popover and <Mono>cn()</Mono> in turn. the
-							command takes the whole chain.
+							list below is that whole chain, the component last to first.
 						</>
 					}
 					reaches={['src/components/lumo/ui/Menu.tsx', 'src/lib/cn.ts']}
@@ -180,23 +196,43 @@ export function CodeTreePage() {
 			</DocSection>
 
 			<DocSection
+				title="the component, then its dependencies"
+				note={
+					<>
+						<Mono>primary</Mono> names the files the tree is about — the component
+						itself. the folders on the way to them open and stay at full strength; every
+						other folder starts shut and every other row is drawn quiet, so a tree of a
+						component and everything it installs reads as one thing and its context.
+						opening a quiet folder keeps it quiet, and selecting one of its files brings
+						that row back to full strength, because the file being read is never
+						context.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/CodeTree/demos/primary.tsx">
+					<Primary />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
 				title="the rows are the menu"
 				note={
 					<>
 						the tree adds no second navigation vocabulary: a file is{' '}
 						<Mono>Menu.SubButton</Mono> and a folder is <Mono>Menu.Button</Mono> — the
 						same ingredients <Mono>Menu.Sub</Mono> is built from, a Base UI collapsible
-						around a menu row. the cursor, the hover layer, the active fill, the caret,
-						the focus ring and the type scale are therefore the ones a sidebar already
-						uses.
+						around a menu row. the cursor, the hover layer, the active fill, the caret
+						and the focus ring are therefore the ones a sidebar already uses.
 					</>
 				}
 			>
 				<p className="text-sm text-muted-foreground">
-					what the tree does decide is the layout, because a path is not a sidebar: the
-					caret leads its row rather than trailing it, and a folder indents its children
-					by 12px rather than <Mono>Menu.SubList</Mono>’s 28px — a sidebar has one level
-					of sub rows and a path five folders deep in a 240px column.
+					what the tree does decide is the layout and the type, because a path is not a
+					sidebar: the caret leads its row rather than trailing it, a folder indents its
+					children by 8px rather than <Mono>Menu.SubList</Mono>’s 28px — a sidebar has one
+					level of sub rows and a path five folders deep in a 240px column — and the rows
+					read in the page's own type rather than in a monospace, since a path is text a
+					reader reads, not code they compare.
 				</p>
 				<p className="text-sm text-muted-foreground">
 					what is left once <Mono>Menu</Mono> is taken away is two pure functions,{' '}
@@ -231,8 +267,9 @@ export function CodeTreePage() {
 						tree is read from <Mono>registry.json</Mono> — the item's own files, then
 						everything its <Mono>registryDependencies</Mono> install — so what a reader
 						sees is exactly what <Mono>shadcn add</Mono> would copy, in the folders it
-						would copy it into. the demo leads the tree, because that is the file that
-						was clicked.
+						would copy it into. the demo and the component lead the tree, because that
+						is what was clicked; the files the manifest installs around them start shut
+						and quiet.
 					</>
 				}
 			>

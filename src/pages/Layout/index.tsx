@@ -156,12 +156,11 @@ export function LayoutPage() {
 					name="layout"
 					packages={['tailwind-variants']}
 					files={files}
-					reachesNote={
+					copyNote={
 						<>
 							the rail is drawn by <Mono>Menu</Mono>, scrolls inside{' '}
 							<Mono>ScrollArea</Mono> and collapses from a <Mono>Button</Mono> — and
-							those reach for five more. the command takes the whole chain; by hand,
-							start with these three.
+							those reach for five more. the list below is the whole chain.
 						</>
 					}
 					reaches={[

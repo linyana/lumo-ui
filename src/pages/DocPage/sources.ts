@@ -35,14 +35,24 @@ function kebab(name: string) {
 
 /**
  * The files an item installs: its own, then everything its dependencies bring, breadth-first — the
- * order the CLI copies in. Nothing here needs a depth limit, because the manifest is the whole
- * graph; a dependency cycle would be a broken manifest and is reported by the check.
+ * order the CLI copies in. The two are kept apart because a dialog draws the item and then the
+ * context around it: the component the reader asked for, and what it needs. Nothing here needs a
+ * depth limit, because the manifest is the whole graph; a dependency cycle would be a broken
+ * manifest and is reported by the check.
  */
-export function filesOf(name: string | undefined): string[] {
-	if (name === undefined) return [];
+export type ItemFiles = {
+	/** The item's own files. */
+	own: string[];
+	/** The files its dependencies install around them. */
+	dependencies: string[];
+};
 
-	const files: string[] = [];
+export function filesOf(name: string | undefined): ItemFiles {
+	const files: ItemFiles = { own: [], dependencies: [] };
+	if (name === undefined) return files;
+
 	const seen = new Set<string>();
+	const copied = new Set<string>();
 	const queue = [name];
 
 	while (queue.length > 0) {
@@ -52,13 +62,29 @@ export function filesOf(name: string | undefined): string[] {
 
 		const item = items.get(current);
 		if (item === undefined) continue;
-		for (const file of item.files ?? []) files.push(file.path);
+		// A file two items share is copied once: it belongs to the item that names it first.
+		const into = current === name ? files.own : files.dependencies;
+		for (const file of item.files ?? []) {
+			if (copied.has(file.path)) continue;
+			copied.add(file.path);
+			into.push(file.path);
+		}
 		for (const dependency of item.registryDependencies ?? []) {
 			queue.push(dependency.slice(DEPENDENCY_PREFIX.length));
 		}
 	}
 
 	return files;
+}
+
+/**
+ * Everything an item installs, in the order the CLI copies it, plus any file named beside the
+ * manifest — the tokens, which no item carries. This is the list a manual works from, whether the
+ * reader takes it one file at a time or as one archive.
+ */
+export function installFiles(name: string | undefined, beside: string[] = []): string[] {
+	const { own, dependencies } = filesOf(name);
+	return [...new Set([...own, ...beside, ...dependencies])];
 }
 
 /**
