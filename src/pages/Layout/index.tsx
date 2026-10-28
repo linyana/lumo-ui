@@ -71,6 +71,11 @@ const layoutProps: Record<string, PropNode> = {
 		type: '(collapsed: boolean) => void',
 		description: 'Fires on the toggle and on the shortcut.',
 	},
+	resetScrollKey: {
+		type: 'string',
+		description:
+			'Scrolls the surface back to the top whenever this changes — a route’s path, most of the time. The shell owns the box that scrolls, so the shell is what puts it back; a page has no way to.',
+	},
 };
 
 const headerProps: Record<string, PropNode> = {

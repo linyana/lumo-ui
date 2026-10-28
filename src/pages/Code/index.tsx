@@ -279,6 +279,14 @@ export function CodePage() {
 					the cache is keyed by grammar and source and keeps the last 200; a grammar still
 					arrives only when a block asks for one, so an unused language is never fetched.
 				</p>
+				<p className="text-sm text-muted-foreground">
+					and the work waits for an idle slice, one block at a time, and for the block to
+					come close to the viewport — a page of source mounting at once would otherwise
+					hold up the paint the click asked for. a block that is off the page, behind
+					another tab or left before its turn never tokenises at all: the plain text is
+					the same shape, so the block is only missing its colour. on a page of examples
+					that is most of them.
+				</p>
 			</DocSection>
 
 			<DocSection title="api reference" note="the code is the only required prop.">

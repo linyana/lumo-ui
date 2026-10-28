@@ -18,6 +18,8 @@ import { cn } from '@/lib/cn';
 import { frameOf, scaleOf } from '@/lib/measure';
 import {
 	glide,
+	quickSize,
+	sizePreset,
 	speedOf,
 	springSize,
 	springSlide,
@@ -259,6 +261,7 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 	const activeValue = useContext(ActiveContext);
 	const slide = useSpring(springSlide);
 	const size = useSpring(springSize);
+	const quick = useSpring(quickSize);
 
 	const panes = Children.toArray(children);
 	const selected = panes.findIndex(
@@ -313,7 +316,7 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 		// A few pixels is a settle, not a move — see HAIRLINE in Transition.
 		if (Math.abs(from - to) < 4 || !painted.current) return;
 
-		const timing = toTiming(size, { from, to, velocity });
+		const timing = toTiming(sizePreset(to - from, size, quick), { from, to, velocity });
 		const animation = glide(box, [{ height: `${from}px` }, { height: `${to}px` }], timing);
 		if (animation === undefined) return;
 
@@ -322,7 +325,7 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 			if (growing.current?.animation === animation) growing.current = null;
 		};
 		animation.finished.then(park, park);
-	}, [index, size]);
+	}, [index, quick, size]);
 
 	// The track, as one percentage translate with a pixel correction on top of it. The correction is
 	// measured, not tracked in a ref: where the track is on screen is the one thing an interruption

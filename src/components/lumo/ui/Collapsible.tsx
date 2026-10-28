@@ -14,7 +14,7 @@ export function Icon({ className, ...props }: IconProps) {
 			aria-hidden="true"
 			className={cn(
 				'size-[1em] shrink-0',
-				'transition-transform duration-(--duration-state) ease-(--ease-overlay)',
+				'transition-transform duration-(--duration-turn) ease-(--ease-overlay)',
 				'group-data-panel-open:rotate-90',
 				className,
 			)}

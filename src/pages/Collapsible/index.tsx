@@ -155,14 +155,19 @@ export function CollapsiblePage() {
 						it: the height belongs to <Mono>Transition</Mono>, which measures the body
 						and glides between the peek and whatever the body needs. the panel stays in
 						the DOM while closed — that is what there is to animate — so it is{' '}
-						<Mono>inert</Mono> until it opens, rather than <Mono>hidden</Mono>.
+						<Mono>inert</Mono> until it opens, rather than <Mono>hidden</Mono>. a spring
+						is for a size that travels, so a fold of a couple of rows — a submenu — is a
+						short ease instead: it arrives while the reader is still looking at the
+						click, rather than four hundred milliseconds later.
 					</>
 				}
 			>
 				<p className="text-sm text-muted-foreground">
 					the caret reads <Mono>data-panel-open</Mono> off the trigger and turns with it,
 					which is why it is a part of the component rather than an icon a call site
-					passes: no generic glyph could know when to turn.
+					passes: no generic glyph could know when to turn. it turns on{' '}
+					<Mono>--duration-turn</Mono> rather than the state token — a glyph whose whole
+					meaning is what the panel is doing keeps time with the panel, not with a hover.
 				</p>
 			</DocSection>
 

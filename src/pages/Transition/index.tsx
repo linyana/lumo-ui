@@ -118,7 +118,13 @@ export function TransitionPage() {
 						nothing is drawn twice: the content is replaced in place and a clip holds it
 						while the box moves. and because the curve is a spring and not a tween, a
 						box that is re-targeted mid-flight leaves at the speed it had — asking for a
-						third size in as many frames reads as one continuous move, not three.
+						third size in as many frames reads as one continuous move, not three. three
+						things are left alone: a change of a few pixels snaps, because a spring
+						takes the same time whatever the distance and half a second for two pixels
+						reads as lag; below a hundred and twenty pixels a size is a short ease
+						rather than a spring, for the same reason; and the first size a box settles
+						on is a jump, because that is the size it is first seen at — there is
+						nothing to glide from.
 					</>
 				}
 			>

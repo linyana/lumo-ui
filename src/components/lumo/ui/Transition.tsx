@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 import { frameOf, scaleOf, type Frame, type Scale } from '@/lib/measure';
-import { glide, speedOf, springSize, toTiming, useSpring, type Timing } from '@/lib/motion';
+import {
+	glide,
+	speedOf,
+	springSize,
+	quickSize,
+	sizePreset,
+	toTiming,
+	useSpring,
+	type Timing,
+} from '@/lib/motion';
 
 export type TransitionProps = {
 	/** Merged last through `cn()`, onto the box whose size glides. */
@@ -106,6 +115,7 @@ function travels(live: Size, size: Size) {
  */
 export function Transition({ className, height, children }: TransitionProps) {
 	const spring = useSpring(springSize);
+	const quick = useSpring(quickSize);
 	const boxRef = useRef<HTMLDivElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 	/** The size the box is meant to be, so a measurement can tell a change from a repeat. */
@@ -249,7 +259,7 @@ export function Transition({ className, height, children }: TransitionProps) {
 		box.style.overflow = 'clip';
 		box.setAttribute('data-swapping', '');
 
-		const timing = toTiming(spring, { from, to, velocity });
+		const timing = toTiming(sizePreset(to - from, spring, quick), { from, to, velocity });
 		const frames: Keyframe[] = [{ height: `${from}px` }, { height: `${to}px` }];
 		if (toWidth !== undefined) {
 			frames[0]!.width = `${edge.fit(live.width ?? 0, edge.x)}px`;
@@ -271,7 +281,7 @@ export function Transition({ className, height, children }: TransitionProps) {
 			if (held.current === undefined) box.style.removeProperty('overflow');
 		};
 		animation.finished.then(park, park);
-	}, [spring]);
+	}, [quick, spring]);
 
 	useLayoutEffect(() => {
 		held.current = height;

@@ -83,6 +83,11 @@
 	--blur-inactive: 4px;
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 	--duration-state: 150ms;
+	/* A glyph whose whole meaning is what a panel is doing — a caret turning as the box opens —
+	   keeps time with the box rather than with a state change, so it turns over the longer stretch
+	   and lands with it. A spring is fast at first and settles late, which is the shape an
+	   ease-out already has. */
+	--duration-turn: 200ms;
 	--duration-press: 80ms;
 
 	/* Overlays travel further than a state change, so they ease out with no overshoot
@@ -226,6 +231,7 @@
 		--blur-inactive: 0px;
 		--ease-spring: linear;
 		--duration-state: 1ms;
+		--duration-turn: 1ms;
 		--duration-press: 1ms;
 		--ease-overlay: linear;
 		--duration-overlay: 1ms;

@@ -37,6 +37,22 @@ export const springSlide: Transition = {
 };
 
 /**
+ * A size with nowhere to go: a submenu's rows, a fold of two lines. A spring covers the same time
+ * whatever the distance — which is the point of it on a panel, and the reason a 64px reveal that
+ * used one took four hundred milliseconds to say nothing. Below `SHORT_MOVE`, a box is a short
+ * ease instead, and it arrives while the reader is still looking at the click.
+ */
+export const quickSize: Transition = { duration: 0.18, ease: [0.22, 1, 0.36, 1] };
+
+/** The distance, in pixels, under which a size is `quickSize` rather than a spring. */
+export const SHORT_MOVE = 120;
+
+/** The preset a size of `distance` should use — the caller's own units, which only it knows. */
+export function sizePreset(distance: number, long: Transition, short: Transition) {
+	return Math.abs(distance) < SHORT_MOVE ? short : long;
+}
+
+/**
  * The preset, or no journey at all when the reader asked for less motion. Tokens collapse CSS
  * durations on their own; a spring is a number in JS, so it has to be asked. The still one is a
  * constant rather than a fresh object, because a component hands it to a callback's dependencies.
@@ -81,6 +97,13 @@ function endsAt(ease: (progress: number) => number, seconds: number, distance: n
 	return total;
 }
 
+/** The four numbers of a `cubic-bezier`, or the axis-aligned curve they draw. */
+function bezier(ease: unknown): string {
+	if (typeof ease === 'string') return ease;
+	if (Array.isArray(ease) && ease.length === 4) return `cubic-bezier(${ease.join(', ')})`;
+	return 'linear';
+}
+
 /**
  * A spring, converted into the two things `Animation.animate()` understands. `from` and `to` are in
  * the property's own unit — pixels, or a percentage as a number — because a carried velocity is
@@ -93,11 +116,11 @@ export function toTiming(preset: Transition, { from, to, velocity = 0 }: Slide):
 	const type = (preset as { type?: string }).type;
 
 	if (type !== 'spring') {
-		const seconds = (preset as { duration?: number }).duration ?? 0;
-		const duration = Math.round(seconds * 1000);
+		const options = preset as { duration?: number; ease?: unknown };
+		const duration = Math.round((options.duration ?? 0) * 1000);
 		return {
 			duration,
-			easing: 'linear',
+			easing: bezier(options.ease),
 			at: (progress) => (duration === 0 ? 1 : Math.min(Math.max(progress, 0), 1)),
 		};
 	}
