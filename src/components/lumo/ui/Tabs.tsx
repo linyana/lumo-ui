@@ -4,6 +4,7 @@ import {
 	isValidElement,
 	useCallback,
 	useContext,
+	useEffect,
 	useLayoutEffect,
 	useMemo,
 	useRef,
@@ -272,6 +273,18 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 	const wanted = useRef<number | null>(null);
 	const growing = useRef<Run | null>(null);
 	const sliding = useRef<Run | null>(null);
+	/**
+	 * Whether the box has been painted yet. The first lane it measures is the first one anybody sees,
+	 * so the box takes that height rather than gliding into it from whatever the lanes added up to.
+	 */
+	const painted = useRef(false);
+
+	useEffect(() => {
+		const frame = requestAnimationFrame(() => {
+			painted.current = true;
+		});
+		return () => cancelAnimationFrame(frame);
+	}, []);
 
 	// The box follows the lane on screen. Written to the element rather than to state: the height of
 	// a panel is not something any element under it needs to render again for.
@@ -297,7 +310,8 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 		growing.current = null;
 
 		box.style.height = `${to}px`;
-		if (Math.abs(from - to) < 0.5) return;
+		// A few pixels is a settle, not a move — see HAIRLINE in Transition.
+		if (Math.abs(from - to) < 4 || !painted.current) return;
 
 		const timing = toTiming(size, { from, to, velocity });
 		const animation = glide(box, [{ height: `${from}px` }, { height: `${to}px` }], timing);

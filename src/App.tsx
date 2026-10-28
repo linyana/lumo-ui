@@ -59,6 +59,7 @@ export default function App() {
 					variant="default"
 					menu={menu}
 					selectedKey={selectedKey}
+					resetScrollKey={pathname}
 					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
 					title="lumo-ui"
 					collapsible

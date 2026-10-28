@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useState, type ComponentProps, type ReactNode } from 'react';
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+	type ComponentProps,
+	type ReactNode,
+} from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
 import { Content } from './Content';
@@ -51,6 +59,11 @@ export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 	/** Controlled; pass `onCollapsedChange` to keep it. */
 	collapsed?: boolean;
 	onCollapsedChange?: (collapsed: boolean) => void;
+	/**
+	 * Scroll the surface back to the top whenever this changes — a route's path, most of the time.
+	 * The shell owns the box that scrolls, so the shell is what puts it back; a page has no way to.
+	 */
+	resetScrollKey?: string;
 };
 
 function LayoutRoot({
@@ -65,6 +78,7 @@ function LayoutRoot({
 	defaultCollapsed = false,
 	collapsed,
 	onCollapsedChange,
+	resetScrollKey,
 	className,
 	children,
 	...props
@@ -72,6 +86,16 @@ function LayoutRoot({
 	const { root, main, surface } = layoutVariants({ variant });
 	const [uncontrolled, setUncontrolled] = useState(defaultCollapsed);
 	const isCollapsed = collapsed ?? uncontrolled;
+	const surfaceRef = useRef<HTMLElement>(null);
+	const shownKey = useRef(resetScrollKey);
+
+	// Before paint, so the page arriving is never seen at the height of the one leaving. Only a change
+	// scrolls: a shell that is mounted is already at the top of whatever it was opened on.
+	useLayoutEffect(() => {
+		if (shownKey.current === resetScrollKey) return;
+		shownKey.current = resetScrollKey;
+		surfaceRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+	}, [resetScrollKey]);
 
 	const toggle = useCallback(() => {
 		const next = !isCollapsed;
@@ -115,7 +139,7 @@ function LayoutRoot({
 				onToggle={toggle}
 			/>
 			<div data-slot="layout-main" className={main()}>
-				<main data-slot="layout-surface" className={surface()}>
+				<main ref={surfaceRef} data-slot="layout-surface" className={surface()}>
 					{children}
 				</main>
 			</div>

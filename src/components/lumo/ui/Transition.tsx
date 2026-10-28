@@ -51,6 +51,19 @@ function heightOf(content: HTMLElement, width: number | undefined, edge: Frame, 
 	return height;
 }
 
+/**
+ * Below this many pixels a change is not worth a glide. A spring covers the same time whatever the
+ * distance, so a 2px settle would take half a second to arrive and read as lag rather than motion.
+ */
+const HAIRLINE = 4;
+
+/**
+ * How long after its first frame a box is still being measured rather than being used. Content that
+ * arrives in that window — a fold that opens itself because its body turned out to be short, a
+ * grammar that lands — is the box's size being discovered, not a change a reader asked to see.
+ */
+const SETTLING = 120;
+
 /** Whether two targets ask for the same size — a repeat measurement rather than a change. */
 function same(a: Size, b: Size) {
 	if (Math.abs(a.height - b.height) >= 0.5) return false;
@@ -66,8 +79,8 @@ function at(live: Size, size: Size) {
 
 /** Whether the size measured is somewhere other than where the box is. */
 function travels(live: Size, size: Size) {
-	if (Math.abs(live.height - size.height) >= 0.5) return true;
-	return size.width !== undefined && Math.abs((live.width ?? 0) - size.width) >= 0.5;
+	if (Math.abs(live.height - size.height) >= HAIRLINE) return true;
+	return size.width !== undefined && Math.abs((live.width ?? 0) - size.width) >= HAIRLINE;
 }
 
 /**
@@ -101,6 +114,23 @@ export function Transition({ className, height, children }: TransitionProps) {
 	const running = useRef<Running | null>(null);
 	/** The height the box was told to hold, read where a measurement starts and not from a render. */
 	const held = useRef(height);
+	/**
+	 * Whether the box has been painted at all yet. The first size it settles on is the size it is seen
+	 * at for the first time, so there is nothing to glide from — a fold that opens itself before the
+	 * page has drawn (a preview too short to fold) would otherwise arrive with an entrance animation
+	 * nobody asked for.
+	 */
+	const painted = useRef(false);
+	/** When the box stops settling: until then a measurement is taken, not glided to. */
+	const settleBy = useRef(0);
+
+	useEffect(() => {
+		settleBy.current = performance.now() + SETTLING;
+		const frame = requestAnimationFrame(() => {
+			painted.current = true;
+		});
+		return () => cancelAnimationFrame(frame);
+	}, []);
 
 	const follow = useCallback(() => {
 		const box = boxRef.current;
@@ -115,6 +145,28 @@ export function Transition({ className, height, children }: TransitionProps) {
 		const edge = frameOf(style);
 		const live: Size = { width: rect.width / scale.x, height: rect.height / scale.y };
 		const hold = held.current;
+
+		// The first size is the first one anybody sees, so it is taken rather than glided to — and it is
+		// the size the browser has already given the box: nothing is measured, and nothing is written
+		// unless the box holds a height of its own. A page mounts a fold per example, and each write
+		// here would force the next box's read to lay the page out again.
+		if (!painted.current) {
+			if (hold === undefined) {
+				// Opened before the first paint — a preview too short to fold — so the box has no size of
+				// its own yet. Give the height back to the browser and let its first measurement be the
+				// size the box is first seen at.
+				box.style.removeProperty('height');
+				box.style.removeProperty('width');
+				box.style.removeProperty('overflow');
+				target.current = undefined;
+				return;
+			}
+
+			target.current = { width: undefined, height: hold };
+			box.style.height = `${edge.fit(hold, edge.y)}px`;
+			box.style.overflow = 'clip';
+			return;
+		}
 
 		// Not laid out yet — inside a closed dialog or a hidden tab — so not a size to decide on. A box
 		// holding a height is a decided size already, whatever its content is doing.
@@ -183,7 +235,12 @@ export function Transition({ className, height, children }: TransitionProps) {
 		// its own business.
 		if (hold !== undefined) box.style.overflow = 'clip';
 
-		if (previous === undefined || !travels(live, next)) {
+		if (
+			previous === undefined ||
+			!travels(live, next) ||
+			!painted.current ||
+			performance.now() < settleBy.current
+		) {
 			if (hold === undefined) box.style.removeProperty('overflow');
 			box.removeAttribute('data-swapping');
 			return;
