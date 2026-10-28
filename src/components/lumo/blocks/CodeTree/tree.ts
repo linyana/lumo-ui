@@ -18,6 +18,20 @@ export function normalPath(path: string) {
 
 type Branch = { name: string; path: string; folders: Map<string, Branch>; files: CodeTreeNode[] };
 
+/** Every folder a set of files lives in, each one named by the path `treeOf` gives the same folder. */
+export function foldersOf(paths: Iterable<string>): Set<string> {
+	const folders = new Set<string>();
+
+	for (const path of paths) {
+		const segments = normalPath(path).split('/').slice(0, -1);
+		for (let depth = 1; depth <= segments.length; depth += 1) {
+			folders.add(segments.slice(0, depth).join('/'));
+		}
+	}
+
+	return folders;
+}
+
 /** Folders before files, each by name, with numbers read as numbers rather than as digits. */
 function order(nodes: CodeTreeNode[]): CodeTreeNode[] {
 	return nodes.sort((a, b) =>
