@@ -10,6 +10,7 @@ import CardBasic from '@/pages/Card/demos/basic';
 import CheckboxBasic from '@/pages/Checkbox/demos/basic';
 import CodeBasic from '@/pages/Code/demos/basic';
 import CodeDiffBasic from '@/pages/CodeDiff/demos/basic';
+import CodeTreeBasic from '@/pages/CodeTree/demos/basic';
 import CollapsibleBasic from '@/pages/Collapsible/demos/basic';
 import DialogBasic from '@/pages/Dialog/demos/basic';
 import DrawerBasic from '@/pages/Drawer/demos/basic';
@@ -98,6 +99,7 @@ const groups: PreviewGroup[] = [
 		previews: [
 			{ path: 'code', label: 'Code', Demo: CodeBasic },
 			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic },
+			{ path: 'code-tree', label: 'CodeTree', Demo: CodeTreeBasic },
 			{ path: 'skeleton', label: 'Skeleton', Demo: SkeletonBasic },
 			{ path: 'spinner', label: 'Spinner', Demo: SpinnerBasic },
 		],

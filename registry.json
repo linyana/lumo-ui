@@ -314,6 +314,7 @@
 			"dependencies": ["tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/button",
 				"linyana/lumo-ui/menu",
 				"linyana/lumo-ui/scroll-area"
 			],
@@ -376,6 +377,31 @@
 					"path": "src/components/lumo/ui/CodeDiff.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/ui/CodeDiff.tsx"
+				}
+			]
+		},
+		{
+			"name": "code-tree",
+			"type": "registry:block",
+			"title": "CodeTree",
+			"description": "A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active. The rows are Menu — hover, active fill, caret and focus come from there — so the tree only supplies the shape and the glyph each file is drawn with.",
+			"dependencies": ["@base-ui/react", "lucide-react"],
+			"registryDependencies": ["linyana/lumo-ui/menu", "linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/blocks/CodeTree/index.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/blocks/CodeTree/index.tsx"
+				},
+				{
+					"path": "src/components/lumo/blocks/CodeTree/tree.ts",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/blocks/CodeTree/tree.ts"
+				},
+				{
+					"path": "src/components/lumo/blocks/CodeTree/glyph.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/blocks/CodeTree/glyph.tsx"
 				}
 			]
 		},

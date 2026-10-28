@@ -23,7 +23,12 @@
 import { join } from 'node:path';
 
 type RegistryFile = { path: string; type?: string; target?: string };
-type RegistryItem = { name: string; type?: string; files?: RegistryFile[] };
+type RegistryItem = {
+	name: string;
+	type?: string;
+	files?: RegistryFile[];
+	registryDependencies?: string[];
+};
 type Registry = { items: RegistryItem[] };
 
 const fix = process.argv.includes('--fix');
@@ -138,6 +143,81 @@ for (const key of onDisk.keys()) {
 		problems.push(
 			`${componentPrefix}${key}: no item anchors this component — add one named "${name}"`,
 		);
+	}
+}
+
+/** Every declared file, and the item that installs it — the manifest read as a map. */
+const fileOwner = new Map<string, string>();
+for (const item of registry.items) {
+	for (const file of item.files ?? []) fileOwner.set(file.path, item.name);
+}
+
+/** An item's dependencies by item name, where the manifest spells them `linyana/lumo-ui/<name>`. */
+const declaredDeps = new Map(
+	registry.items.map((item) => [
+		item.name,
+		(item.registryDependencies ?? []).map((dep) => dep.slice(dep.lastIndexOf('/') + 1)),
+	]),
+);
+
+/** Everything an item installs: itself, and whatever the dependencies it declares bring. */
+function installs(name: string): Set<string> {
+	const seen = new Set<string>();
+	const queue = [name];
+	while (queue.length > 0) {
+		const current = queue.pop()!;
+		if (seen.has(current)) continue;
+		seen.add(current);
+		queue.push(...(declaredDeps.get(current) ?? []));
+	}
+	return seen;
+}
+
+/** `@/lib/cn` → the file the app resolves it to, spelled the way registry.json spells paths. */
+async function resolveImport(specifier: string) {
+	for (const suffix of ['.tsx', '.ts', '.css', '/index.tsx', '/index.ts']) {
+		const path = `src/${specifier.slice(2)}${suffix}`;
+		if (await Bun.file(join(root, path)).exists()) return path;
+	}
+	return undefined;
+}
+
+/** The app's own imports — the edges that make one item depend on another. */
+function localImports(source: string): string[] {
+	return [...source.matchAll(/(?:from|import)\s+['"](@\/[^'"]+)['"]/g)].flatMap((match) =>
+		match[1] === undefined ? [] : [match[1]],
+	);
+}
+
+// A component's imports ARE the manifest's dependencies, and the docs draw their tree from the
+// manifest: an import nobody declared is a file the CLI never copies, and it would be found in a
+// consuming project at build time instead of here. So the declaration has to cover the code.
+for (const item of registry.items) {
+	const installed = installs(item.name);
+
+	for (const file of item.files ?? []) {
+		const handle = Bun.file(join(root, file.path));
+		if (!(await handle.exists())) continue;
+
+		for (const specifier of localImports(await handle.text())) {
+			const path = await resolveImport(specifier);
+			if (path === undefined) {
+				problems.push(`${file.path}: imports "${specifier}", which resolves to no file`);
+				continue;
+			}
+
+			const owner = fileOwner.get(path);
+			if (owner === undefined) {
+				problems.push(`${file.path}: imports ${path}, which no registry item declares`);
+				continue;
+			}
+
+			if (owner === item.name || installed.has(owner)) continue;
+			problems.push(
+				`"${item.name}": ${file.path} imports "${owner}" but does not declare it — ` +
+					`add "linyana/lumo-ui/${owner}" to its registryDependencies`,
+			);
+		}
 	}
 }
 

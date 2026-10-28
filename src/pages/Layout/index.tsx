@@ -158,12 +158,14 @@ export function LayoutPage() {
 					files={files}
 					reachesNote={
 						<>
-							the rail is drawn by <Mono>Menu</Mono> and scrolls inside{' '}
-							<Mono>ScrollArea</Mono> — and those reach for five more. the command
-							takes the whole chain; by hand, start with these two.
+							the rail is drawn by <Mono>Menu</Mono>, scrolls inside{' '}
+							<Mono>ScrollArea</Mono> and collapses from a <Mono>Button</Mono> — and
+							those reach for five more. the command takes the whole chain; by hand,
+							start with these three.
 						</>
 					}
 					reaches={[
+						'src/components/lumo/ui/Button.tsx',
 						'src/components/lumo/ui/Menu.tsx',
 						'src/components/lumo/ui/ScrollArea.tsx',
 						'src/lib/cn.ts',

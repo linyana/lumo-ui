@@ -4,6 +4,7 @@ import { CardPage } from './Card';
 import { CheckboxPage } from './Checkbox';
 import { CodePage } from './Code';
 import { CodeDiffPage } from './CodeDiff';
+import { CodeTreePage } from './CodeTree';
 import { CollapsiblePage } from './Collapsible';
 import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
@@ -46,6 +47,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'checkbox', label: 'Checkbox', section: 'Components', element: <CheckboxPage /> },
 	{ path: 'code', label: 'Code', section: 'Components', element: <CodePage /> },
 	{ path: 'code-diff', label: 'CodeDiff', section: 'Components', element: <CodeDiffPage /> },
+	{ path: 'code-tree', label: 'CodeTree', section: 'Components', element: <CodeTreePage /> },
 	{
 		path: 'collapsible',
 		label: 'Collapsible',
