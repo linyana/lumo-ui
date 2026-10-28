@@ -152,6 +152,9 @@ export type Run = {
 	to: number;
 };
 
+/** The glide a component is in the middle of, held in a ref because it is never rendered. */
+export type Running = { current: Run | null };
+
 const FRAME = 16;
 
 /**
@@ -171,6 +174,56 @@ export function speedOf(run: Run): number {
 
 	const moved = timing.at(now / timing.duration) - timing.at(before / timing.duration);
 	return ((to - from) * moved * 1000) / (now - before);
+}
+
+/**
+ * Takes the glide in `run` out of the way and reports the speed it had reached, in its property's own
+ * unit per second. Read before the cancel: an interrupted glide is the number the next one has to
+ * start at, or the box would stop dead and set off again from a standstill.
+ *
+ * The caller writes the end state between this and `startGlide`, so the element is never seen at a
+ * size nobody asked for.
+ */
+export function interrupt(run: Running) {
+	const current = run.current;
+	run.current = null;
+	if (current === null) return 0;
+
+	const velocity = speedOf(current);
+	current.animation.cancel();
+	return velocity;
+}
+
+/**
+ * The next glide, booked where the one before it was so a third can interrupt it in turn. `settle`
+ * runs when it lands, and only if nothing has taken its place in the meantime.
+ *
+ * `undefined` when the reader asked for no motion: there is no frame to land on, so the caller
+ * arrives by writing the end state, which it has already done.
+ */
+export function startGlide(
+	run: Running,
+	element: Element,
+	frames: Keyframe[],
+	preset: Transition,
+	slide: Slide,
+	settle?: () => void,
+) {
+	const timing = toTiming(preset, slide);
+	const animation = glide(element, frames, timing);
+	if (animation === undefined) return undefined;
+
+	const started: Run = { animation, timing, from: slide.from, to: slide.to };
+	run.current = started;
+
+	const park = () => {
+		if (run.current !== started) return;
+		run.current = null;
+		settle?.();
+	};
+	animation.finished.then(park, park);
+
+	return started;
 }
 
 /**

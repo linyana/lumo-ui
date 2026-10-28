@@ -2,6 +2,7 @@ import { Radio, type RadioRootProps } from '@base-ui/react/radio';
 import { RadioGroup as BaseRadioGroup, type RadioGroupProps } from '@base-ui/react/radio-group';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/cn';
+import { toggleBox, toggleMark } from '@/lib/control';
 
 export type RootProps<Value = unknown> = Omit<RadioGroupProps<Value>, 'className'> & {
 	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
@@ -29,15 +30,8 @@ export function Item<Value>({ className, ...props }: ItemProps<Value>) {
 	return (
 		<Radio.Root
 			data-slot="radio"
-			className={cn(
-				'inline-flex size-4 shrink-0 cursor-pointer items-center justify-center',
-				'rounded-full border border-input bg-background',
-				'transition-[color,background-color,border-color] duration-(--duration-state)',
-				'data-checked:border-primary',
-				'data-invalid:border-destructive',
-				'data-disabled:cursor-not-allowed data-disabled:opacity-50',
-				className,
-			)}
+			// A radio keeps its ring and puts a dot in it, so only the box is the checkbox's.
+			className={cn(toggleBox, 'rounded-full', className)}
 			{...props}
 		/>
 	);
@@ -55,9 +49,8 @@ export function Indicator({ className, ...props }: IndicatorProps) {
 			data-slot="radio-indicator"
 			className={cn(
 				'size-2 rounded-full bg-primary',
-				'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-spring)',
-				'data-starting-style:scale-50 data-starting-style:opacity-0',
-				'data-ending-style:scale-50 data-ending-style:opacity-0',
+				toggleMark,
+				'data-starting-style:scale-50 data-ending-style:scale-50',
 				className,
 			)}
 			{...props}

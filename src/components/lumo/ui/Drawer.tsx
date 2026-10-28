@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Drawer as BaseDrawer } from '@base-ui/react/drawer';
 import { cn } from '@/lib/cn';
+import { backdrop, description, title } from '@/lib/surface';
 
 export type BackdropProps = ComponentProps<typeof BaseDrawer.Backdrop>;
 
@@ -8,12 +9,7 @@ export function Backdrop({ className, ...props }: BackdropProps) {
 	return (
 		<BaseDrawer.Backdrop
 			data-slot="drawer-backdrop"
-			className={cn(
-				'fixed inset-0 z-40 min-h-dvh bg-black/50 transition-opacity duration-(--duration-state) ease-(--ease-overlay)',
-				'supports-[-webkit-touch-callout:none]:absolute',
-				'data-starting-style:opacity-0 data-ending-style:opacity-0',
-				className,
-			)}
+			className={cn(backdrop, className)}
 			{...props}
 		/>
 	);
@@ -39,7 +35,7 @@ export function Description({ className, ...props }: DescriptionProps) {
 	return (
 		<BaseDrawer.Description
 			data-slot="drawer-description"
-			className={cn('mt-1.5 text-sm text-muted-foreground', className)}
+			className={cn(description, className)}
 			{...props}
 		/>
 	);
@@ -154,11 +150,7 @@ export type TitleProps = ComponentProps<typeof BaseDrawer.Title>;
 
 export function Title({ className, ...props }: TitleProps) {
 	return (
-		<BaseDrawer.Title
-			data-slot="drawer-title"
-			className={cn('text-base font-semibold', className)}
-			{...props}
-		/>
+		<BaseDrawer.Title data-slot="drawer-title" className={cn(title, className)} {...props} />
 	);
 }
 

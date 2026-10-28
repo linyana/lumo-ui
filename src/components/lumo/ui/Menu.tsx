@@ -18,30 +18,46 @@ import { Skeleton as BaseSkeleton } from '@/components/lumo/ui/Skeleton';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { Collapsible } from '@/components/lumo/ui/Collapsible';
 import { Popover } from '@/components/lumo/ui/Popover';
+import { iconSlot, stateLayer } from '@/lib/control';
 
 export type ActionProps = ComponentProps<'button'> & {
 	/** Keeps the row quiet until it is hovered or focused. */
 	showOnHover?: boolean;
 };
 
+/**
+ * The square every secondary action is drawn in: one glyph, no fill of its own, and a hit area
+ * widened on touch where the glyph is too small to aim at. Where it sits is the row's business, or
+ * the group's, so only that is left to the two components below.
+ */
+const actionShell = cn(
+	'absolute flex aspect-square w-5 cursor-pointer items-center justify-center',
+	'rounded-md p-0 text-muted-foreground select-none',
+	'transition-[color,background-color,opacity] duration-(--duration-state)',
+	'hover:bg-accent hover:text-accent-foreground',
+	// Widens the hit area on touch, where the glyph itself is too small.
+	'after:absolute after:-inset-2 md:after:hidden',
+	iconSlot,
+	'group-data-[compact]:hidden',
+);
+
+type ActionGlyphProps = ComponentProps<'button'> & { slot: string };
+
+function ActionGlyph({ slot, className, ...props }: ActionGlyphProps) {
+	return <button data-slot={slot} className={cn(actionShell, className)} {...props} />;
+}
+
 /** A secondary action that rides on a row, such as "more" or a delete. */
 export function Action({ className, showOnHover = false, ...props }: ActionProps) {
 	return (
-		<button
-			data-slot="menu-action"
+		<ActionGlyph
+			slot="menu-action"
 			className={cn(
-				'absolute end-1 flex aspect-square w-5 cursor-pointer items-center justify-center',
-				'rounded-md p-0 text-muted-foreground select-none',
-				'transition-[color,background-color,opacity] duration-(--duration-state)',
-				'hover:bg-accent hover:text-accent-foreground',
+				'end-1',
 				'peer-hover/menu-button:text-accent-foreground',
-				// Widens the hit area on touch, where the glyph itself is too small.
-				'after:absolute after:-inset-2 md:after:hidden',
-				'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
 				'peer-data-[size=sm]/menu-button:top-1',
 				'peer-data-[size=md]/menu-button:top-1.5',
 				'peer-data-[size=lg]/menu-button:top-2.5',
-				'group-data-[compact]:hidden',
 				showOnHover && [
 					// Out of the way until its own row is hovered or the action itself is reached. The
 					// row's button is the `peer`, so one hovered row cannot light up the actions of the
@@ -97,15 +113,10 @@ export const menuButtonVariants = tv({
 	base: [
 		'peer/menu-button relative flex w-full cursor-pointer items-center gap-2 overflow-hidden',
 		'rounded-md p-2 text-left text-sm select-none',
-		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
-		'after:bg-current after:opacity-0 after:transition-opacity',
-		'after:duration-(--duration-state)',
-		'hover:after:opacity-(--state-layer-hover-opacity)',
-		'active:after:opacity-(--state-layer-pressed-opacity)',
+		stateLayer,
 		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
-		'[&>span:last-child]:truncate',
-		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+		iconSlot,
 		// The rail: one square holding a single glyph, so the gap goes and the content centres.
 		'group-data-[compact]:size-8! group-data-[compact]:justify-center',
 		'group-data-[compact]:gap-0 group-data-[compact]:p-0!',
@@ -301,19 +312,9 @@ export type GroupActionProps = ComponentProps<'button'>;
 /** The "+" that belongs to a group rather than to one of its rows. */
 export function GroupAction({ className, ...props }: GroupActionProps) {
 	return (
-		<button
-			data-slot="menu-group-action"
-			className={cn(
-				'absolute end-3 top-3.5 flex aspect-square w-5 cursor-pointer items-center justify-center',
-				'rounded-md p-0 text-muted-foreground select-none',
-				'transition-colors duration-(--duration-state)',
-				'hover:bg-accent hover:text-accent-foreground',
-				// Widens the hit area on touch, where the glyph itself is too small.
-				'after:absolute after:-inset-2 md:after:hidden',
-				'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
-				'group-data-[compact]:hidden',
-				className,
-			)}
+		<ActionGlyph
+			slot="menu-group-action"
+			className={cn('end-3 top-3.5', className)}
 			{...props}
 		/>
 	);
@@ -549,15 +550,10 @@ export const menuSubButtonVariants = tv({
 	base: [
 		'relative flex h-7 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden',
 		'rounded-md px-2 select-none',
-		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
-		'after:bg-current after:opacity-0 after:transition-opacity',
-		'after:duration-(--duration-state)',
-		'hover:after:opacity-(--state-layer-hover-opacity)',
-		'active:after:opacity-(--state-layer-pressed-opacity)',
+		stateLayer,
 		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
-		'[&>span:last-child]:truncate',
-		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+		iconSlot,
 		'group-data-[compact]:hidden',
 	],
 	variants: {

@@ -26,7 +26,7 @@ export function Content({ className, ...props }: ContentProps) {
 			data-slot="card-content"
 			// Grows into the slack of a stretched card, which keeps a footer on the bottom edge
 			// when cards of different heights share a row.
-			className={cn('flex-1 px-6 group-data-[size=sm]/card:px-4', className)}
+			className={cn('flex-1 px-(--card-pad)', className)}
 			{...props}
 		/>
 	);
@@ -50,7 +50,7 @@ export function Footer({ className, ...props }: FooterProps) {
 	return (
 		<div
 			data-slot="card-footer"
-			className={cn('flex items-center gap-2 px-6 group-data-[size=sm]/card:px-4', className)}
+			className={cn('flex items-center gap-2 px-(--card-pad)', className)}
 			{...props}
 		/>
 	);
@@ -65,7 +65,7 @@ export function Header({ className, ...props }: HeaderProps) {
 			// Two columns only when an action is present, so a title and its description stay in
 			// one column and the action sits opposite both of them.
 			className={cn(
-				'grid auto-rows-min items-start gap-1.5 px-6 group-data-[size=sm]/card:px-4',
+				'grid auto-rows-min items-start gap-1.5 px-(--card-pad)',
 				'has-data-[slot=card-action]:grid-cols-[1fr_auto]',
 				'has-data-[slot=card-description]:grid-rows-[auto_auto]',
 				className,
@@ -76,10 +76,17 @@ export function Header({ className, ...props }: HeaderProps) {
 }
 
 export const cardVariants = tv({
-	base: ['group/card flex flex-col', 'rounded-xl border bg-card text-card-foreground shadow-sm'],
+	base: [
+		'group/card flex flex-col',
+		'rounded-xl border bg-card text-card-foreground shadow-sm',
+		// The inline inset every part is drawn at. A variable rather than a class per part, so a
+		// header, a body and a footer cannot drift apart, and a part added later is inset too
+		// without being told to be.
+		'[--card-pad:--spacing(6)]',
+	],
 	variants: {
 		size: {
-			sm: 'gap-4 py-4',
+			sm: 'gap-4 py-4 [--card-pad:--spacing(4)]',
 			md: 'gap-6 py-6',
 		},
 	},
@@ -92,7 +99,10 @@ export type CardSize = NonNullable<VariantProps<typeof cardVariants>['size']>;
 
 export type RootProps = ComponentProps<'div'> & VariantProps<typeof cardVariants>;
 
-/** The surface itself. Its size cascades to the parts, which read it off `data-size`. */
+/**
+ * The surface itself. Its size cascades to the parts: the inset travels as `--card-pad`, and
+ * `data-size` is on the DOM for whatever wants to target it from CSS.
+ */
 export function Root({ className, size = 'md', ...props }: RootProps) {
 	return (
 		<div

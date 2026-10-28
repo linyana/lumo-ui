@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
-import { frameOf, scaleOf, type Frame, type Scale } from '@/lib/measure';
+import { frameOf, HAIRLINE, scaleOf, type Frame, type Scale } from '@/lib/measure';
 import {
-	glide,
-	speedOf,
-	springSize,
+	interrupt,
 	quickSize,
 	sizePreset,
-	toTiming,
+	springSize,
+	startGlide,
 	useSpring,
-	type Timing,
+	type Run,
 } from '@/lib/motion';
 
 export type TransitionProps = {
@@ -29,9 +28,6 @@ type Size = { width?: number; height: number };
 
 /** What sizes the box: the content, or the page. Decided once, when content has a size. */
 type Mode = 'page' | 'content';
-
-/** A glide in flight, kept so an interruption can read the speed it is already moving at. */
-type Running = { animation: Animation; timing: Timing; from: number; to: number };
 
 const px = (value: string) => Number.parseFloat(value) || 0;
 
@@ -59,12 +55,6 @@ function heightOf(content: HTMLElement, width: number | undefined, edge: Frame, 
 	if (width !== undefined) content.style.removeProperty('width');
 	return height;
 }
-
-/**
- * Below this many pixels a change is not worth a glide. A spring covers the same time whatever the
- * distance, so a 2px settle would take half a second to arrive and read as lag rather than motion.
- */
-const HAIRLINE = 4;
 
 /**
  * How long after its first frame a box is still being measured rather than being used. Content that
@@ -121,7 +111,7 @@ export function Transition({ className, height, children }: TransitionProps) {
 	/** The size the box is meant to be, so a measurement can tell a change from a repeat. */
 	const target = useRef<Size | undefined>(undefined);
 	const mode = useRef<Mode | undefined>(undefined);
-	const running = useRef<Running | null>(null);
+	const running = useRef<Run | null>(null);
 	/** The height the box was told to hold, read where a measurement starts and not from a render. */
 	const held = useRef(height);
 	/**
@@ -228,11 +218,8 @@ export function Transition({ className, height, children }: TransitionProps) {
 		const from = edge.fit(live.height, edge.y);
 		const to = edge.fit(next.height, edge.y);
 		const toWidth = next.width === undefined ? undefined : edge.fit(next.width, edge.x);
-		// Read before the animation is cancelled: after that there is no curve to ask.
-		const velocity = running.current === null ? 0 : speedOf(running.current);
-
-		running.current?.animation.cancel();
-		running.current = null;
+		// Read before the glide is interrupted: after that there is no curve to ask.
+		const velocity = interrupt(running);
 
 		// The box's own style is written to the end state before the glide starts, so a landing has
 		// nothing to hand back, and an interruption lands where a reader would expect.
@@ -259,28 +246,30 @@ export function Transition({ className, height, children }: TransitionProps) {
 		box.style.overflow = 'clip';
 		box.setAttribute('data-swapping', '');
 
-		const timing = toTiming(sizePreset(to - from, spring, quick), { from, to, velocity });
 		const frames: Keyframe[] = [{ height: `${from}px` }, { height: `${to}px` }];
 		if (toWidth !== undefined) {
 			frames[0]!.width = `${edge.fit(live.width ?? 0, edge.x)}px`;
 			frames[1]!.width = `${toWidth}px`;
 		}
 
-		const animation = glide(box, frames, timing);
-		if (animation === undefined) {
-			box.removeAttribute('data-swapping');
-			if (held.current === undefined) box.style.removeProperty('overflow');
-			return;
-		}
+		const landed = startGlide(
+			running,
+			box,
+			frames,
+			sizePreset(to - from, spring, quick),
+			{ from, to, velocity },
+			() => {
+				box.removeAttribute('data-swapping');
+				if (held.current === undefined) box.style.removeProperty('overflow');
+			},
+		);
 
-		running.current = { animation, timing, from, to };
-		const park = () => {
-			if (running.current?.animation !== animation) return;
-			running.current = null;
+		// No motion: the box has already been written at its end size, so there is only the clip to
+		// hand back.
+		if (landed === undefined) {
 			box.removeAttribute('data-swapping');
 			if (held.current === undefined) box.style.removeProperty('overflow');
-		};
-		animation.finished.then(park, park);
+		}
 	}, [quick, spring]);
 
 	useLayoutEffect(() => {

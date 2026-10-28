@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { cn } from '@/lib/cn';
+import { iconSlot, stateLayer } from '@/lib/control';
 import { Transition } from './Transition';
 
 export type IconProps = ComponentProps<typeof ChevronRight>;
@@ -73,13 +74,9 @@ export function Trigger({ className, ...props }: TriggerProps) {
 			className={cn(
 				'group relative flex w-full cursor-pointer items-center justify-between gap-2',
 				'rounded-md px-3 py-2 text-left text-sm font-medium select-none',
-				'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
-				'after:bg-current after:opacity-0 after:transition-opacity',
-				'after:duration-(--duration-state)',
-				'hover:after:opacity-(--state-layer-hover-opacity)',
-				'active:after:opacity-(--state-layer-pressed-opacity)',
+				stateLayer,
 				'data-disabled:pointer-events-none data-disabled:opacity-50',
-				'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+				iconSlot,
 				className,
 			)}
 			{...props}

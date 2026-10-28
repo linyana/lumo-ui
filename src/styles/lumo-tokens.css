@@ -130,6 +130,11 @@
 	--border: oklch(0.922 0 0);
 	--input: oklch(0.922 0 0);
 	--ring: oklch(0.708 0 0);
+	/* The scrim behind a modal surface. A colour of its own rather than `foreground` at an opacity:
+	   a scrim is dark in both themes — it is the page being pushed back, not the text on it — and
+	   in the dark one it has to be deeper still, because the popup above it is only a little
+	   lighter than the page it covers. */
+	--overlay: oklch(0 0 0 / 50%);
 }
 
 .dark {
@@ -156,6 +161,7 @@
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
 	--ring: oklch(0.556 0 0);
+	--overlay: oklch(0 0 0 / 65%);
 }
 
 @layer base {
@@ -167,6 +173,13 @@
 		background-color: var(--background);
 		color: var(--foreground);
 		-webkit-font-smoothing: antialiased;
+	}
+
+	/* Selection belongs to the page, not to each control: a reader expects the same colour wherever
+	   they drag across text — a field, a code block, a paragraph. */
+	::selection {
+		background-color: var(--primary);
+		color: var(--primary-foreground);
 	}
 
 	/* Focus is declared once, here, and never in a component: a control reached by keyboard says

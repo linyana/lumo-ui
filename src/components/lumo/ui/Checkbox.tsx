@@ -2,6 +2,7 @@ import { Checkbox as BaseCheckbox } from '@base-ui/react/checkbox';
 import { Check, Minus } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/cn';
+import { toggleBox, toggleMark } from '@/lib/control';
 
 export type RootProps = Omit<ComponentProps<typeof BaseCheckbox.Root>, 'className'> & {
 	/** Merged with `cn()`, so a Base UI state callback is not accepted here. */
@@ -14,13 +15,11 @@ export function Root({ className, ...props }: RootProps) {
 		<BaseCheckbox.Root
 			data-slot="checkbox"
 			className={cn(
-				'inline-flex size-4 shrink-0 cursor-pointer items-center justify-center',
-				'rounded-sm border border-input bg-background text-primary-foreground',
-				'transition-[color,background-color,border-color] duration-(--duration-state)',
-				'data-checked:border-primary data-checked:bg-primary',
+				toggleBox,
+				// A checkbox fills when it is checked, and the tick is the surface's own colour.
+				'rounded-sm text-primary-foreground',
+				'data-checked:bg-primary',
 				'data-indeterminate:border-primary data-indeterminate:bg-primary',
-				'data-invalid:border-destructive',
-				'data-disabled:cursor-not-allowed data-disabled:opacity-50',
 				className,
 			)}
 			{...props}
@@ -48,9 +47,8 @@ export function Indicator({ className, children, ...props }: IndicatorProps) {
 			data-slot="checkbox-indicator"
 			className={cn(
 				'group/indicator flex items-center justify-center',
-				'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-spring)',
-				'data-starting-style:scale-75 data-starting-style:opacity-0',
-				'data-ending-style:scale-75 data-ending-style:opacity-0',
+				toggleMark,
+				'data-starting-style:scale-75 data-ending-style:scale-75',
 				'[&_svg]:size-3',
 				className,
 			)}
