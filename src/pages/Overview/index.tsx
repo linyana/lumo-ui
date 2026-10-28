@@ -7,6 +7,7 @@ import { cn } from '@/lib/cn';
 import { DocPage } from '@/pages/DocPage';
 import ButtonBasic from '@/pages/Button/demos/basic';
 import CardBasic from '@/pages/Card/demos/basic';
+import CheckboxBasic from '@/pages/Checkbox/demos/basic';
 import CodeBasic from '@/pages/Code/demos/basic';
 import CodeDiffBasic from '@/pages/CodeDiff/demos/basic';
 import CollapsibleBasic from '@/pages/Collapsible/demos/basic';
@@ -17,12 +18,15 @@ import FieldBasic from '@/pages/Field/demos/basic';
 import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
+import RadioGroupBasic from '@/pages/RadioGroup/demos/basic';
 import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
 import SeparatorBasic from '@/pages/Separator/demos/basic';
 import SkeletonBasic from '@/pages/Skeleton/demos/basic';
 import SpinnerBasic from '@/pages/Spinner/demos/basic';
 import StepsVertical from '@/pages/Steps/demos/vertical';
+import SwitchBasic from '@/pages/Switch/demos/basic';
 import TabsBasic from '@/pages/Tabs/demos/basic';
+import TextareaBasic from '@/pages/Textarea/demos/basic';
 import ToastKinds from '@/pages/Toast/demos/kinds';
 import TooltipBasic from '@/pages/Tooltip/demos/basic';
 import TransitionSize from '@/pages/Transition/demos/size';
@@ -50,8 +54,12 @@ const groups: PreviewGroup[] = [
 	{
 		title: 'forms & input',
 		previews: [
+			{ path: 'checkbox', label: 'Checkbox', Demo: CheckboxBasic },
 			{ path: 'field', label: 'Field', Demo: FieldBasic },
 			{ path: 'input', label: 'Input', Demo: InputBasic },
+			{ path: 'radio-group', label: 'RadioGroup', Demo: RadioGroupBasic },
+			{ path: 'switch', label: 'Switch', Demo: SwitchBasic },
+			{ path: 'textarea', label: 'Textarea', Demo: TextareaBasic },
 		],
 	},
 	{

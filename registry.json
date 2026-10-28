@@ -428,6 +428,66 @@
 					"target": "~/src/components/lumo/ui/Input.tsx"
 				}
 			]
+		},
+		{
+			"name": "checkbox",
+			"type": "registry:ui",
+			"title": "Checkbox",
+			"description": "One of several, any number of them: a 16px box, the tick inside it, and a real hidden input so a form and a label both see a checkbox. Indeterminate draws a dash in place of the tick.",
+			"dependencies": ["@base-ui/react", "lucide-react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Checkbox.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Checkbox.tsx"
+				}
+			]
+		},
+		{
+			"name": "radio-group",
+			"type": "registry:ui",
+			"title": "RadioGroup",
+			"description": "Exactly one of these, and never none: Base UI's group and its radio as one namespace, so the value, the arrow keys and the dot between them arrive together.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/RadioGroup.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/RadioGroup.tsx"
+				}
+			]
+		},
+		{
+			"name": "switch",
+			"type": "registry:ui",
+			"title": "Switch",
+			"description": "A track and a knob, on or off, in the space of one line of text. Two spans, no glyph, and a flag Base UI writes on both of them.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Switch.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Switch.tsx"
+				}
+			]
+		},
+		{
+			"name": "textarea",
+			"type": "registry:ui",
+			"title": "Textarea",
+			"description": "Several lines of text in the same box as an Input. The element is the browser's, mounted through Field.Control, which is what gives it a name, a describedby and the invalid border inside a field.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Textarea.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Textarea.tsx"
+				}
+			]
 		}
 	]
 }

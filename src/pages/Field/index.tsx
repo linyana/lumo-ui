@@ -84,7 +84,7 @@ const partRows = [
 	[
 		'Field.Item',
 		'one of several',
-		'a label and a description for one item in a group sharing a field.',
+		'a row of `flex items-start gap-2`: the control, and the label and description that belong to it.',
 	],
 	[
 		'Field.Validity',
@@ -96,8 +96,8 @@ const partRows = [
 const hookRows = [
 	[
 		'data-slot',
-		'field · field-label · field-description · field-error',
-		'the four styled parts.',
+		'field · field-label · field-description · field-error · field-item',
+		'the four styled parts, and the row that holds one of several.',
 	],
 	[
 		'data-invalid',
