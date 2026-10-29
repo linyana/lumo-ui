@@ -2,19 +2,18 @@ import { Menu as BaseMenu } from '@base-ui/react/menu';
 import type { ComponentProps } from 'react';
 import { buttonVariants } from '@/components/lumo/ui/Button';
 import { cn } from '@/lib/cn';
+import { row, rowGroupLabel, rowSeparator } from '@/lib/control';
 import { popup, positioner, viewport } from '@/lib/surface';
 
 export const Group = BaseMenu.Group;
 
 export type GroupLabelProps = ComponentProps<typeof BaseMenu.GroupLabel>;
 
-const groupLabelClass = cn('px-4 py-2 text-sm leading-4 text-muted-foreground select-none');
-
 export function GroupLabel({ className, ...props }: GroupLabelProps) {
 	return (
 		<BaseMenu.GroupLabel
 			data-slot="menu-group-label"
-			className={cn(groupLabelClass, className)}
+			className={cn(rowGroupLabel, className)}
 			{...props}
 		/>
 	);
@@ -22,17 +21,11 @@ export function GroupLabel({ className, ...props }: GroupLabelProps) {
 
 export type ItemProps = ComponentProps<typeof BaseMenu.Item>;
 
-const itemClass = cn(
-	'flex cursor-default py-2 pr-8 pl-4',
-	'text-sm leading-4 outline-none select-none',
-	'data-highlighted:relative data-highlighted:z-0 data-highlighted:text-accent-foreground',
-	'data-highlighted:before:absolute data-highlighted:before:inset-x-1',
-	'data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1]',
-	"data-highlighted:before:bg-accent data-highlighted:before:content-['']",
-);
-
+/** A row, with the extra room on the right that a row's own action takes. */
 export function Item({ className, ...props }: ItemProps) {
-	return <BaseMenu.Item data-slot="menu-item" className={cn(itemClass, className)} {...props} />;
+	return (
+		<BaseMenu.Item data-slot="menu-item" className={cn(row, 'pr-8', className)} {...props} />
+	);
 }
 
 export type PopupProps = ComponentProps<typeof BaseMenu.Popup>;
@@ -74,7 +67,7 @@ export function Separator({ className, ...props }: SeparatorProps) {
 	return (
 		<BaseMenu.Separator
 			data-slot="menu-separator"
-			className={cn('mx-1 my-1 h-px bg-border', className)}
+			className={cn(rowSeparator, className)}
 			{...props}
 		/>
 	);

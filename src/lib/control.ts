@@ -1,10 +1,11 @@
 /**
  * The appearance every control shares.
  *
- * Four idioms repeat across the library — the tint a control shows while it is hovered or pressed,
- * the way an icon is sized from the text around it, the shell of a text field, and the box a tick or
- * a dot is drawn in. Each is written once here, so a checkbox and a radio look like one family, and
- * a press feels the same wherever it happens.
+ * Five idioms repeat across the library — the tint a control shows while it is hovered or pressed,
+ * the way an icon is sized from the text around it, the shell of a text field, the box a tick or a
+ * dot is drawn in, and the row a list of choices is made of. Each is written once here, so a
+ * checkbox and a radio look like one family, a press feels the same wherever it happens, and a
+ * menu's action and a select's option are the same line.
  */
 import { cn } from '@/lib/cn';
 
@@ -72,3 +73,23 @@ export const toggleMark = cn(
 	'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-spring)',
 	'data-starting-style:opacity-0 data-ending-style:opacity-0',
 );
+
+/**
+ * One row in a list of choices — a menu's action, a select's option. The fill arrives as a `before`
+ * layer inset by the popup's own corner rather than as a background, so a highlighted row is the
+ * same shape in both, and the padding on the right is the caller's: a row that carries an action of
+ * its own needs more room than one that only carries a label.
+ */
+export const row = cn(
+	'flex cursor-default py-2 pl-4 text-sm leading-4 outline-none select-none',
+	'data-highlighted:relative data-highlighted:z-0 data-highlighted:text-accent-foreground',
+	'data-highlighted:before:absolute data-highlighted:before:inset-x-1',
+	'data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1]',
+	"data-highlighted:before:bg-accent data-highlighted:before:content-['']",
+);
+
+/** The name over a group of rows: quieter than the rows, and never one of them. */
+export const rowGroupLabel = 'px-4 py-2 text-sm leading-4 text-muted-foreground select-none';
+
+/** The line between two groups of rows. */
+export const rowSeparator = 'mx-1 my-1 h-px bg-border';
