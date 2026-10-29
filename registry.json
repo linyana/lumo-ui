@@ -630,6 +630,51 @@
 					"target": "~/src/components/lumo/ui/Textarea.tsx"
 				}
 			]
+		},
+		{
+			"name": "avatar",
+			"type": "registry:ui",
+			"title": "Avatar",
+			"description": "A face, or the initials standing in for one, and the row a set of them is stacked in. Base UI waits for the picture to decode and swaps it for the fallback, so neither child is conditional at the call site.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Avatar.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Avatar.tsx"
+				}
+			]
+		},
+		{
+			"name": "badge",
+			"type": "registry:ui",
+			"title": "Badge",
+			"description": "A word that labels the thing beside it. Three surface fills taken from Button, and four outcomes drawn as a tint of their own colour rather than as a solid block, because an outcome is a fact to be read.",
+			"dependencies": ["tailwind-variants"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Badge.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Badge.tsx"
+				}
+			]
+		},
+		{
+			"name": "progress",
+			"type": "registry:ui",
+			"title": "Progress",
+			"description": "How far a task has come: a groove, the fill inside it, and the number that names it, all read from one value. A null value is a third state — the fill sweeps instead of filling, because a bar that sat at zero while it worked would be lying.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Progress.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Progress.tsx"
+				}
+			]
 		}
 	]
 }

@@ -64,6 +64,22 @@
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) * 1.4);
 	--radius-2xl: calc(var(--radius) * 1.8);
+
+	/* The one keyframe the theme owns: a bar whose end is unknown sweeps a segment of itself from
+	   one end of its groove to the other. It lives here rather than in Progress because the
+	   distances are what makes it work — the segment is 40% of the groove, so travelling from
+	   -100% of itself to 250% of itself is exactly one groove, edge to edge. */
+	--animate-progress-sweep: lumo-progress-sweep 1.2s ease-in-out infinite;
+
+	@keyframes lumo-progress-sweep {
+		from {
+			translate: -100% 0;
+		}
+
+		to {
+			translate: 250% 0;
+		}
+	}
 }
 
 :root {

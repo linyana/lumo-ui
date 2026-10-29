@@ -8,6 +8,8 @@ import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Toast } from '@/components/lumo/ui/Toast';
 import { cn } from '@/lib/cn';
 import { DocPage } from '@/pages/DocPage';
+import AvatarBasic from '@/pages/Avatar/demos/basic';
+import BadgeBasic from '@/pages/Badge/demos/basic';
 import ButtonBasic from '@/pages/Button/demos/basic';
 import CardBasic from '@/pages/Card/demos/basic';
 import CheckboxBasic from '@/pages/Checkbox/demos/basic';
@@ -23,6 +25,7 @@ import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
 import NavBasic from '@/pages/Nav/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
+import ProgressBasic from '@/pages/Progress/demos/basic';
 import RadioGroupBasic from '@/pages/RadioGroup/demos/basic';
 import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
 import SelectBasic from '@/pages/Select/demos/basic';
@@ -94,6 +97,16 @@ const groups: PreviewGroup[] = [
 	{
 		title: 'Data Display',
 		previews: [
+			{
+				path: 'avatar',
+				label: 'Avatar',
+				Demo: AvatarBasic,
+				room: 'compact',
+				// The initials sit in `bg-muted`, the same fill the tile is drawn in: without a page of
+				// its own under them, the two empty surfaces would be one.
+				canvas: 'page',
+			},
+			{ path: 'badge', label: 'Badge', Demo: BadgeBasic, room: 'compact' },
 			{ path: 'card', label: 'Card', Demo: CardBasic, room: 'tall' },
 			{ path: 'code', label: 'Code', Demo: CodeBasic, room: 'tall' },
 			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic, room: 'tall' },
@@ -108,6 +121,7 @@ const groups: PreviewGroup[] = [
 		previews: [
 			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic, room: 'compact' },
 			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic, room: 'compact' },
+			{ path: 'progress', label: 'Progress', Demo: ProgressBasic, room: 'compact' },
 			{
 				path: 'skeleton',
 				label: 'Skeleton',
@@ -200,15 +214,16 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 					// Hidden until the tile is pointed at, but reachable before it is: a link that
 					// could not be seen while it held focus would be a target with no target.
 					className={cn(
-						'rounded-full bg-background px-3 text-muted-foreground',
+						'rounded-full border bg-background px-3 text-muted-foreground',
 						// The pill drops into its corner out of the edge it belongs to, so the tile answers
 						// the pointer with motion rather than with a change in its own fill.
 						'-translate-y-1 scale-95 opacity-0',
 						'transition-[color,opacity,translate,scale] ease-(--ease-spring) duration-(--duration-turn)',
 						'group-hover/tile:translate-y-0 group-hover/tile:scale-100 group-hover/tile:opacity-100',
 						'focus-visible:translate-y-0 focus-visible:scale-100 focus-visible:opacity-100',
-						// The fill is the tile's opposite and stays that way under the pointer. What moves
-						// is the ink: the name and the arrow deepen to the foreground.
+						// The pill is white, and the demo under it may be drawn on a white page of its own, so
+						// the edge is what keeps it a pill there. What moves under the pointer is the ink: the
+						// name and the arrow deepen to the foreground.
 						'hover:text-foreground after:hidden',
 					)}
 				>
