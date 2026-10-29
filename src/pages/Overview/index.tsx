@@ -51,11 +51,22 @@ type PreviewGroup = {
 /** Every component page, grouped by the part of an interface it belongs to. */
 const groups: PreviewGroup[] = [
 	{
-		title: 'actions',
+		title: 'General',
 		previews: [{ path: 'button', label: 'Button', Demo: ButtonBasic }],
 	},
 	{
-		title: 'forms & input',
+		title: 'Navigation',
+		previews: [
+			{ path: 'menu', label: 'Menu', Demo: MenuBasic },
+			{ path: 'nav', label: 'Nav', Demo: NavBasic },
+			// The horizontal opener needs half a page before its connectors read as lines; the
+			// vertical one is the demo a square can hold.
+			{ path: 'steps', label: 'Steps', Demo: StepsVertical },
+			{ path: 'tabs', label: 'Tabs', Demo: TabsBasic },
+		],
+	},
+	{
+		title: 'Data Entry',
 		previews: [
 			{ path: 'checkbox', label: 'Checkbox', Demo: CheckboxBasic },
 			{ path: 'combobox', label: 'Combobox', Demo: ComboboxBasic },
@@ -68,44 +79,33 @@ const groups: PreviewGroup[] = [
 		],
 	},
 	{
-		title: 'surface',
+		title: 'Data Display',
 		previews: [
 			{ path: 'card', label: 'Card', Demo: CardBasic },
+			{ path: 'code', label: 'Code', Demo: CodeBasic },
+			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic },
+			{ path: 'code-tree', label: 'CodeTree', Demo: CodeTreeBasic },
 			{ path: 'collapsible', label: 'Collapsible', Demo: CollapsibleBasic },
-			{ path: 'scroll-area', label: 'ScrollArea', Demo: ScrollAreaBasic },
-			{ path: 'separator', label: 'Separator', Demo: SeparatorBasic },
-			{ path: 'transition', label: 'Transition', Demo: TransitionSize },
-		],
-	},
-	{
-		title: 'overlays',
-		previews: [
-			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic },
-			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic },
-			{ path: 'menu', label: 'Menu', Demo: MenuBasic },
 			{ path: 'popover', label: 'Popover', Demo: PopoverBasic },
-			{ path: 'toast', label: 'Toast', Demo: ToastKinds },
 			{ path: 'tooltip', label: 'Tooltip', Demo: TooltipBasic },
 		],
 	},
 	{
-		title: 'navigation',
+		title: 'Feedback',
 		previews: [
-			{ path: 'nav', label: 'Nav', Demo: NavBasic },
-			// The horizontal opener needs half a page before its connectors read as lines; the
-			// vertical one is the demo a square can hold.
-			{ path: 'steps', label: 'Steps', Demo: StepsVertical },
-			{ path: 'tabs', label: 'Tabs', Demo: TabsBasic },
+			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic },
+			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic },
+			{ path: 'skeleton', label: 'Skeleton', Demo: SkeletonBasic },
+			{ path: 'spinner', label: 'Spinner', Demo: SpinnerBasic },
+			{ path: 'toast', label: 'Toast', Demo: ToastKinds },
 		],
 	},
 	{
-		title: 'content & feedback',
+		title: 'Other',
 		previews: [
-			{ path: 'code', label: 'Code', Demo: CodeBasic },
-			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic },
-			{ path: 'code-tree', label: 'CodeTree', Demo: CodeTreeBasic },
-			{ path: 'skeleton', label: 'Skeleton', Demo: SkeletonBasic },
-			{ path: 'spinner', label: 'Spinner', Demo: SpinnerBasic },
+			{ path: 'scroll-area', label: 'ScrollArea', Demo: ScrollAreaBasic },
+			{ path: 'separator', label: 'Separator', Demo: SeparatorBasic },
+			{ path: 'transition', label: 'Transition', Demo: TransitionSize },
 		],
 	},
 ];
