@@ -147,11 +147,10 @@ const partRows = [
 		'one group’s rows',
 		'renders the group’s `items` through the function it is given.',
 	],
-	['Combobox.Item', 'one option', 'a Menu row: the same padding and the same fill when chosen.'],
 	[
-		'Combobox.ItemIndicator',
-		'the mark',
-		'a check, in the primary colour, on the chosen row only.',
+		'Combobox.Item',
+		'one option',
+		'a Menu row: the same tint while the pointer or the arrows are on it — and the chosen one filled with `selected`.',
 	],
 	['Combobox.Separator', 'a line between groups', 'mx-1, h-px.'],
 ];
@@ -167,7 +166,7 @@ const hookRows = [
 	[
 		'data-selected',
 		'on the chosen row',
-		'Base UI’s hook for the current value; the check is what it is drawn for.',
+		'filled with `selected`, a notch above the hover tint — so chosen and hovered never read as one.',
 	],
 	[
 		'data-list-empty',
@@ -202,7 +201,6 @@ const usageExample = `<Combobox.Root items={languages}>
 					{(language: string) => (
 						<Combobox.Item key={language} value={language}>
 							{language}
-							<Combobox.ItemIndicator />
 						</Combobox.Item>
 					)}
 				</Combobox.List>
@@ -247,7 +245,8 @@ export function ComboboxPage() {
 						children are a function called once per item, so what is shown and what is
 						filtered are the same array. <Mono>Field</Mono> recognises the input without
 						being told, so a label, a description and an error come from the field above
-						it.
+						it. The row the reader lands on is tinted, and the one they have chosen is
+						filled a notch darker, so neither needs a glyph.
 					</>
 				}
 			>

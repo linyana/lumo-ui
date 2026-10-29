@@ -1,5 +1,5 @@
 import { Combobox as BaseCombobox } from '@base-ui/react/combobox';
-import { Check, ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
@@ -275,37 +275,18 @@ export type ItemProps = Omit<ComponentProps<typeof BaseCombobox.Item>, 'classNam
 	className?: string;
 };
 
-/** One option: the library's row, so it fills and highlights exactly as a menu's action does. */
+/**
+ * One option: the library's row, so it highlights exactly as a menu's action does — and the chosen
+ * one is filled, not marked, so the label never shifts between the two states. The cursor is a
+ * pointer, unlike a menu row's: this is a thing to pick out of a list.
+ */
 export function Item({ className, ...props }: ItemProps) {
 	return (
 		<BaseCombobox.Item
 			data-slot="combobox-item"
-			className={cn(row, 'gap-2 pr-3 data-disabled:opacity-50', className)}
+			className={cn(row, 'cursor-pointer pr-3 data-disabled:opacity-50', className)}
 			{...props}
 		/>
-	);
-}
-
-export type ItemIndicatorProps = Omit<
-	ComponentProps<typeof BaseCombobox.ItemIndicator>,
-	'children'
-> & {
-	/** Replaces the check. */
-	children?: ReactNode;
-	/** Merged with `cn()`. */
-	className?: string;
-};
-
-/** The mark on the chosen row. Mounted by Base UI for that row only, and never for the others. */
-export function ItemIndicator({ className, children, ...props }: ItemIndicatorProps) {
-	return (
-		<BaseCombobox.ItemIndicator
-			data-slot="combobox-item-indicator"
-			className={cn('ml-auto flex shrink-0 items-center text-primary', iconSlot, className)}
-			{...props}
-		>
-			{children ?? <Check />}
-		</BaseCombobox.ItemIndicator>
 	);
 }
 
@@ -348,6 +329,5 @@ export const Combobox = {
 	GroupLabel,
 	Collection,
 	Item,
-	ItemIndicator,
 	Separator,
 };

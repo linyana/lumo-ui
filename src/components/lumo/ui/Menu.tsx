@@ -21,10 +21,17 @@ export function GroupLabel({ className, ...props }: GroupLabelProps) {
 
 export type ItemProps = ComponentProps<typeof BaseMenu.Item>;
 
-/** A row, with the extra room on the right that a row's own action takes. */
+/**
+ * A row, with the extra room on the right that a row's own action takes. The cursor stays the
+ * platform's: a menu row is an action to run where it is, not a place to go.
+ */
 export function Item({ className, ...props }: ItemProps) {
 	return (
-		<BaseMenu.Item data-slot="menu-item" className={cn(row, 'pr-8', className)} {...props} />
+		<BaseMenu.Item
+			data-slot="menu-item"
+			className={cn(row, 'cursor-default pr-8', className)}
+			{...props}
+		/>
 	);
 }
 

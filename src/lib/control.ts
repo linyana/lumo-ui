@@ -75,17 +75,19 @@ export const toggleMark = cn(
 );
 
 /**
- * One row in a list of choices — a menu's action, a select's option. The fill arrives as a `before`
- * layer inset by the popup's own corner rather than as a background, so a highlighted row is the
- * same shape in both, and the padding on the right is the caller's: a row that carries an action of
- * its own needs more room than one that only carries a label.
+ * One row in a list of choices — a menu's action, a select's option. The fill is one `before` layer,
+ * drawn by every row and coloured by two of them: inset by the popup's own corner and rounded to
+ * match it, so a row changes colour rather than gaining a box. The tint is what the pointer or the
+ * arrows leave; the row that is chosen is a notch darker, because chosen and hovered must not read
+ * as the same thing, and it keeps its own fill while the pointer is over it. The padding on the
+ * right is the caller's: a row that carries an action of its own needs more room.
  */
 export const row = cn(
-	'flex cursor-default py-2 pl-4 text-sm leading-4 outline-none select-none',
-	'data-highlighted:relative data-highlighted:z-0 data-highlighted:text-accent-foreground',
-	'data-highlighted:before:absolute data-highlighted:before:inset-x-1',
-	'data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1]',
-	"data-highlighted:before:bg-accent data-highlighted:before:content-['']",
+	'flex py-2 pl-4 text-sm leading-4 outline-none select-none',
+	'relative z-0',
+	"before:absolute before:inset-x-1 before:inset-y-0 before:z-[-1] before:rounded-sm before:content-['']",
+	'data-highlighted:text-accent-foreground data-highlighted:not-data-selected:before:bg-accent',
+	'data-selected:before:bg-selected',
 );
 
 /** The name over a group of rows: quieter than the rows, and never one of them. */

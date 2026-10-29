@@ -33,7 +33,6 @@ export default function Groups() {
 												disabled={disabled}
 											>
 												<Select.ItemText>{value}</Select.ItemText>
-												<Select.ItemIndicator />
 											</Select.Item>
 										))}
 									</Select.Group>

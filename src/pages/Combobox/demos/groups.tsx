@@ -25,7 +25,6 @@ export default function Groups() {
 										{(language: string) => (
 											<Combobox.Item key={language} value={language}>
 												{language}
-												<Combobox.ItemIndicator />
 											</Combobox.Item>
 										)}
 									</Combobox.Collection>

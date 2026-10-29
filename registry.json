@@ -384,7 +384,7 @@
 			"name": "select",
 			"type": "registry:ui",
 			"title": "Select",
-			"description": "One value out of many, in a list laid under the control that opened it: an Input's shell as a trigger with a caret that turns itself, a row shared with Menu, a check on the chosen row only, and scroll arrows at the ends of a long list. The popup opens under the trigger rather than over it. Behaviour from Base UI, appearance from tokens.",
+			"description": "One value out of many, in a list laid under the control that opened it: an Input's shell as a trigger with a caret that turns itself, a row shared with Menu whose chosen line is filled rather than checked, and scroll arrows at the ends of a long list. The popup opens under the trigger rather than over it. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",

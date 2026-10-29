@@ -152,10 +152,9 @@ const partRows = [
 	[
 		'Select.Item',
 		'one option',
-		'a Menu row: the same padding and the same `data-highlighted` fill.',
+		'a Menu row: the same padding, the same `data-highlighted` tint — and the chosen one filled with `selected`.',
 	],
 	['Select.ItemText', 'the option’s label', 'what the trigger shows once it is chosen.'],
-	['Select.ItemIndicator', 'the mark', 'a check, in the primary colour, on the chosen row only.'],
 	['Select.Separator', 'a line between groups', 'mx-1, h-px.'],
 ];
 
@@ -180,7 +179,11 @@ const hookRows = [
 		'on one row',
 		'the row the pointer or the arrow keys are on, filled with `accent`.',
 	],
-	['data-selected', 'on the chosen row', 'what the indicator is mounted for.'],
+	[
+		'data-selected',
+		'on the chosen row',
+		'filled with `selected`, a notch above the hover tint — so chosen and hovered never read as one.',
+	],
 	['data-disabled', 'on the root, the trigger, a row', 'no pointer, half opacity.'],
 	[
 		'data-readonly',
@@ -216,7 +219,6 @@ const usageExample = `<Select.Root defaultValue="rust">
 				<Select.List>
 					<Select.Item value="rust">
 						<Select.ItemText>rust</Select.ItemText>
-						<Select.ItemIndicator />
 					</Select.Item>
 				</Select.List>
 			</Select.Popup>
@@ -256,9 +258,9 @@ export function SelectPage() {
 				note={
 					<>
 						the trigger holds the value and the caret; everything else is the popup. the
-						row is <Mono>Item</Mono>, and the check inside it is{' '}
-						<Mono>ItemIndicator</Mono> — Base UI mounts that for the chosen row only, so
-						the others carry no hidden child.
+						chosen row is shown by its fill rather than by a mark, so the label never
+						shifts between the two states — Base UI’s <Mono>ItemIndicator</Mono> is a
+						one-line export and a check away if a project wants one anyway.
 					</>
 				}
 			>

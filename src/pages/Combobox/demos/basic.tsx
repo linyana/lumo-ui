@@ -34,7 +34,6 @@ export default function Basic() {
 							{(language: string) => (
 								<Combobox.Item key={language} value={language}>
 									{language}
-									<Combobox.ItemIndicator />
 								</Combobox.Item>
 							)}
 						</Combobox.List>

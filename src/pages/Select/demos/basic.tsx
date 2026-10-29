@@ -16,7 +16,6 @@ export default function Basic() {
 							{languages.map((language) => (
 								<Select.Item key={language} value={language}>
 									<Select.ItemText>{language}</Select.ItemText>
-									<Select.ItemIndicator />
 								</Select.Item>
 							))}
 						</Select.List>
