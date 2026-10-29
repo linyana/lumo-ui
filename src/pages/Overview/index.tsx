@@ -174,7 +174,7 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 			<div
 				className={cn(
 					'min-h-0 flex-1 overflow-auto p-5',
-					'[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+					'scrollbar-none [&::-webkit-scrollbar]:hidden',
 					// A demo drawn in the muted fill would vanish into the tile, so the one that is gets a
 					// panel of the page inset into it instead — a screenshot inside a frame.
 					canvas === 'page' && 'm-3 rounded-xl bg-background',
@@ -184,7 +184,7 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 					<Demo />
 				</div>
 			</div>
-			<div data-slot="overview-card-open" className="absolute end-3 top-3 flex items-center">
+			<div data-slot="overview-card-open" className="absolute inset-e-3 top-3 flex items-center">
 				<Button
 					size="sm"
 					variant="secondary"
@@ -269,7 +269,7 @@ export function OverviewPage() {
 							className={cn(
 								'rounded-xl',
 								'max-w-full overflow-x-auto',
-								'[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+								'scrollbar-none [&::-webkit-scrollbar]:hidden',
 							)}
 						>
 							<Tabs.Tab value="all">All</Tabs.Tab>

@@ -584,7 +584,7 @@ function SourceDialog({
 			<Dialog.Portal>
 				<Dialog.Backdrop />
 				<Dialog.Viewport>
-					<Dialog.Popup className="flex h-[80vh] max-h-[44rem] w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
+					<Dialog.Popup className="flex h-[80vh] max-h-176 w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
 						<SourcePane path={path} name={name} about={about} />
 					</Dialog.Popup>
 				</Dialog.Viewport>
@@ -677,7 +677,7 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 				    one was scrolled to. */}
 				<div
 					key={shown?.path ?? selected}
-					className="min-w-0 flex-1 overflow-auto px-3 pb-3 [scrollbar-gutter:stable]"
+					className="min-w-0 flex-1 overflow-auto px-3 pb-3 scrollbar-gutter-stable"
 				>
 					{/* The way to take the file sits in the file's own corner, where the code starts, and
 					    stays there while it is scrolled — a copy of what is on screen, not of a header's
@@ -755,14 +755,14 @@ function ViewCode({ className, ...props }: ComponentProps<typeof Button>) {
 					aria-hidden="true"
 					className={cn(
 						'flex h-[1em] w-0 shrink-0 items-center overflow-hidden',
-						'transition-[width] ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+						'transition-[width] ease-(--ease-spring) duration-(--duration-state)',
 						'group-hover/code:w-5 group-focus-visible/code:w-5',
 					)}
 				>
 					<CodeGlyph
 						className={cn(
 							'translate-y-full opacity-0',
-							'transition-[translate,opacity] ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+							'transition-[translate,opacity] ease-(--ease-spring) duration-(--duration-state)',
 							'group-hover/code:translate-y-0 group-hover/code:opacity-100',
 							'group-focus-visible/code:translate-y-0 group-focus-visible/code:opacity-100',
 						)}
