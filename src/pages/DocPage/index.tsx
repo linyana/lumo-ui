@@ -140,10 +140,12 @@ function DocActions({ title, description }: { title: string; description?: strin
 }
 
 export type DocPageProps = {
-	title: string;
+	/** The page's own name. A page that opens on its own chrome — the overview — leaves it out. */
+	title?: string;
 	description?: string;
 	/** The column is prose-wide by default; a page of cards takes the whole of the surface. */
 	wide?: boolean;
+	className?: string;
 	children: ReactNode;
 };
 
@@ -151,25 +153,28 @@ export type DocPageProps = {
  * The shell a doc page draws inside `Layout.Content`: the page's own title, the column, and the
  * section list beside it. It keeps no chrome of its own — the title scrolls with the page.
  */
-export function DocPage({ title, description, wide = false, children }: DocPageProps) {
+export function DocPage({ title, description, wide = false, className, children }: DocPageProps) {
 	return (
 		<div
 			data-slot="doc-page"
 			className={cn(
 				'mx-auto flex w-full items-start gap-12 p-8',
 				!wide && 'max-w-3xl xl:max-w-5xl',
+				className,
 			)}
 		>
 			<div data-slot="doc-page-content" className="min-w-0 flex-1 space-y-12">
-				<div data-slot="doc-page-head" className="space-y-2">
-					<div className="flex items-start justify-between gap-4">
-						<h1 className="text-2xl font-semibold">{title}</h1>
-						<DocActions title={title} description={description} />
+				{title !== undefined && (
+					<div data-slot="doc-page-head" className="space-y-2">
+						<div className="flex items-start justify-between gap-4">
+							<h1 className="text-2xl font-semibold">{title}</h1>
+							<DocActions title={title} description={description} />
+						</div>
+						{description !== undefined && (
+							<p className="text-muted-foreground">{description}</p>
+						)}
 					</div>
-					{description !== undefined && (
-						<p className="text-muted-foreground">{description}</p>
-					)}
-				</div>
+				)}
 				{children}
 			</div>
 			<Toc titles={sectionTitles(children)} />

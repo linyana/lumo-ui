@@ -245,7 +245,7 @@ export function OverviewPage() {
 	};
 
 	return (
-		<DocPage wide title="overview" description="base ui behaviour + token-driven styling">
+		<DocPage wide className="pt-0">
 			{/* The toast demo reads its queue from context, and shows it in the fixed strip. */}
 			<Toast.Provider>
 				<div className="space-y-6">
