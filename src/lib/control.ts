@@ -33,6 +33,11 @@ export const iconSlot = '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:si
  * The shell of a text control — the input, and the textarea, which differ only in the element they
  * are drawn on and the shape of their size. Selection is not here: it is one rule in the theme,
  * because a reader expects the same colour wherever they drag across a page.
+ *
+ * Read-only is not here either, though it looks like it belongs: `:read-only` matches every element
+ * that is not editable, a `<button>` and a `<div>` included, so the tint would follow a select's
+ * trigger around for its whole life. Only a field that can be typed into and is being withheld — the
+ * input, the textarea — puts it on, and a control with a state of its own spells that state instead.
  */
 export const fieldShell = cn(
 	'w-full min-w-0 rounded-md border border-input bg-background text-foreground',
@@ -40,8 +45,6 @@ export const fieldShell = cn(
 	'transition-colors duration-(--duration-state)',
 	'disabled:cursor-not-allowed disabled:opacity-50',
 	'data-disabled:cursor-not-allowed data-disabled:opacity-50',
-	// Still selectable, so still a field — but a settled one, like a value that is being shown.
-	'read-only:bg-muted',
 	// Written by Field when the control fails validation; aria-invalid is the same fact for a form
 	// that is not Base UI's.
 	'data-invalid:border-destructive aria-invalid:border-destructive',

@@ -5,7 +5,9 @@ import { cn } from '@/lib/cn';
 import { fieldShell } from '@/lib/control';
 
 export const textareaVariants = tv({
-	base: [fieldShell, 'resize-y'],
+	// `read-only` is the textarea's own: the shell is shared with controls that cannot be typed into,
+	// where `:read-only` matches for their whole life.
+	base: [fieldShell, 'read-only:bg-muted', 'resize-y'],
 	variants: {
 		size: {
 			sm: 'min-h-16 px-2.5 py-1.5 text-sm',

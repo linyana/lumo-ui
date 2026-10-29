@@ -7,6 +7,9 @@ import { fieldShell } from '@/lib/control';
 export const inputVariants = tv({
 	base: [
 		fieldShell,
+		// A field that is settled rather than edited: still selectable, so still a field, but it reads
+		// as a value being shown.
+		'read-only:bg-muted',
 		// A file input is a field with a button in it; the button is the browser's, so its shape is
 		// settled here rather than in a part.
 		'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
