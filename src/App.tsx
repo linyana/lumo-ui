@@ -32,9 +32,6 @@ const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => ({
  */
 export default function App() {
 	const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
-	// The shell reports the fold; where it is remembered is the app's business, so the cookie is
-	// written here and never by Layout itself.
-	const [folded, setFolded] = useState(() => document.cookie.includes('layout_folded=1'));
 	const { pathname } = useLocation();
 
 	useEffect(() => {
@@ -62,12 +59,6 @@ export default function App() {
 					resetScrollKey={pathname}
 					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
 					title="lumo-ui"
-					collapsible
-					collapsed={folded}
-					onCollapsedChange={(next) => {
-						setFolded(next);
-						document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
-					}}
 					brandActions={
 						<Button
 							variant="ghost"

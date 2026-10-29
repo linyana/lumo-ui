@@ -202,8 +202,9 @@ export function LayoutPage() {
 				note={
 					<>
 						what you are reading in is the <Mono>default</Mono> variant of this
-						component. the shell reports the fold; where it is remembered is the app’s
-						business, so this app writes a cookie and Layout never does.
+						component. it passes a title and the theme switch through{' '}
+						<Mono>brandActions</Mono>, and leaves the fold alone — the rail stays open
+						here.
 					</>
 				}
 			>
