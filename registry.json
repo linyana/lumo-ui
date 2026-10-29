@@ -675,6 +675,21 @@
 					"target": "~/src/components/lumo/ui/Progress.tsx"
 				}
 			]
+		},
+		{
+			"name": "table",
+			"type": "registry:ui",
+			"title": "Table",
+			"description": "Records in columns: a frame that scrolls, the header that names them — sticky when the rows have somewhere to go — rows that answer the pointer with the tint a nav row takes, an empty row that keeps the columns, and an arrow that says which way a column runs without ever reordering anything.",
+			"dependencies": ["tailwind-variants", "lucide-react"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Table.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Table.tsx"
+				}
+			]
 		}
 	]
 }

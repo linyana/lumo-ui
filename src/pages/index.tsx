@@ -27,6 +27,7 @@ import { SkeletonPage } from './Skeleton';
 import { SpinnerPage } from './Spinner';
 import { StepsPage } from './Steps';
 import { SwitchPage } from './Switch';
+import { TablePage } from './Table';
 import { TabsPage } from './Tabs';
 import { TextareaPage } from './Textarea';
 import { ToastPage } from './Toast';
@@ -88,6 +89,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'steps', label: 'Steps', section: 'Components', element: <StepsPage /> },
 	{ path: 'switch', label: 'Switch', section: 'Components', element: <SwitchPage /> },
+	{ path: 'table', label: 'Table', section: 'Components', element: <TablePage /> },
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
 	{ path: 'textarea', label: 'Textarea', section: 'Components', element: <TextareaPage /> },
 	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },

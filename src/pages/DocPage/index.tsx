@@ -29,6 +29,7 @@ import { Dialog } from '@/components/lumo/ui/Dialog';
 import { Nav } from '@/components/lumo/ui/Nav';
 import { Skeleton } from '@/components/lumo/ui/Skeleton';
 import { Steps } from '@/components/lumo/ui/Steps';
+import { Table } from '@/components/lumo/ui/Table';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { cn } from '@/lib/cn';
@@ -910,42 +911,43 @@ function PropHint({ name, description }: { name: string; description: string }) 
 export function PropTable({ props }: PropTableProps) {
 	return (
 		<Tooltip.Provider delay={150}>
-			<div data-slot="prop-table" className="overflow-x-auto rounded-lg border">
-				<table className="w-full border-collapse text-left text-xs">
-					<thead>
-						<tr className="border-b bg-muted">
-							{['prop', 'type', 'default'].map((label) => (
-								<th
-									key={label}
-									scope="col"
-									className="px-3 py-2 font-medium text-muted-foreground"
-								>
-									{label}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{Object.entries(props).map(([name, node]) => (
-							<tr key={name} className="border-b last:border-b-0">
-								<td className="px-3 py-2 align-top whitespace-nowrap">
-									<span className="inline-flex items-center gap-1.5 font-mono">
-										{name}
-										{!node.required && '?'}
-										{node.description !== undefined && (
-											<PropHint name={name} description={node.description} />
-										)}
-									</span>
-								</td>
-								<td className="px-3 py-2 align-top font-mono">{node.type}</td>
-								<td className="px-3 py-2 align-top font-mono text-muted-foreground">
-									{node.default ?? '—'}
-								</td>
-							</tr>
+			<Table.Root
+				size="sm"
+				// The panel is the docs’ own, so it also drops the last row’s rule: the row’s line and
+				// the panel’s edge would otherwise sit on top of each other as one 2px line.
+				className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
+				aria-label="props"
+			>
+				<Table.Header>
+					<Table.Row>
+						{['prop', 'type', 'default'].map((label) => (
+							<Table.Head key={label}>{label}</Table.Head>
 						))}
-					</tbody>
-				</table>
-			</div>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{Object.entries(props).map(([name, node]) => (
+						<Table.Row key={name}>
+							{/* Top-aligned, because a prop and its sentence are never the same height. */}
+							<Table.Cell className="align-top">
+								<span className="inline-flex items-center gap-1.5 font-mono">
+									{name}
+									{!node.required && '?'}
+									{node.description !== undefined && (
+										<PropHint name={name} description={node.description} />
+									)}
+								</span>
+							</Table.Cell>
+							<Table.Cell className="align-top whitespace-normal font-mono">
+								{node.type}
+							</Table.Cell>
+							<Table.Cell className="align-top font-mono text-muted-foreground">
+								{node.default ?? '—'}
+							</Table.Cell>
+						</Table.Row>
+					))}
+				</Table.Body>
+			</Table.Root>
 		</Tooltip.Provider>
 	);
 }
@@ -963,39 +965,39 @@ export type DocTableProps = {
 /* oxlint-disable react/no-array-index-key -- a row has no id of its own; its position is its identity */
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
-		<div data-slot="doc-table" className="overflow-x-auto rounded-lg border">
-			<table className="w-full border-collapse text-left text-xs">
-				<thead>
-					<tr className="border-b bg-muted">
-						{head.map((label) => (
-							<th
-								key={label}
-								scope="col"
-								className="px-3 py-2 font-medium text-muted-foreground"
-							>
-								{label}
-							</th>
-						))}
-					</tr>
-				</thead>
-				<tbody>
-					{rows.map((row, rowIndex) => (
-						<tr key={rowIndex} className="border-b last:border-b-0">
-							{row.map((cell, cellIndex) => (
-								<td
-									key={cellIndex}
-									className={cn(
-										'px-3 py-2 align-top',
-										mono?.includes(cellIndex) && 'font-mono',
-									)}
-								>
-									{cell}
-								</td>
-							))}
-						</tr>
+		<Table.Root
+			size="sm"
+			// See `PropTable`: the panel closes the table, so the last row does not.
+			className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
+		>
+			<Table.Header>
+				<Table.Row>
+					{head.map((label) => (
+						<Table.Head key={label}>{label}</Table.Head>
 					))}
-				</tbody>
-			</table>
-		</div>
+				</Table.Row>
+			</Table.Header>
+			<Table.Body>
+				{rows.map((row, rowIndex) => (
+					<Table.Row key={rowIndex}>
+						{row.map((cell, cellIndex) => (
+							<Table.Cell
+								key={cellIndex}
+								className={cn(
+									'align-top',
+									// A name and its value are identifiers and do not break mid-token; the
+									// sentence beside them does.
+									mono?.includes(cellIndex)
+										? 'font-mono whitespace-nowrap'
+										: 'whitespace-normal',
+								)}
+							>
+								{cell}
+							</Table.Cell>
+						))}
+					</Table.Row>
+				))}
+			</Table.Body>
+		</Table.Root>
 	);
 }

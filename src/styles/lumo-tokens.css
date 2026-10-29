@@ -58,6 +58,19 @@
 	--color-input-strong: var(--input-strong);
 	--color-ring: var(--ring);
 
+	/* A table: the band its column names sit in, the same band under the pointer, and the three fills a
+	   row can wear. All five are washes mixed with `transparent` or with the page, never colours of
+	   their own — a row's hover has to read on the page as well as inside a card, and a band has to be
+	   opaque enough that the rows of a sticky header do not show through it. The band is faint, because
+	   it names the columns and is not a record itself; the pointer deepens it to the weight of the rule
+	   under it. The colours are named rather than written once in `:root`, because a mix written there
+	   would freeze the light theme's `--primary` into the value it hands down to `.dark`. */
+	--color-table-head: color-mix(in oklch, var(--foreground) 2%, var(--background));
+	--color-table-head-hover: color-mix(in oklch, var(--foreground) 8%, var(--background));
+	--color-row-hover: color-mix(in oklch, var(--foreground) 5%, transparent);
+	--color-row-selected: color-mix(in oklch, var(--primary) 8%, transparent);
+	--color-row-selected-hover: color-mix(in oklch, var(--primary) 12%, transparent);
+
 	/* --radius is the only knob; the whole scale derives from it. */
 	--radius-sm: calc(var(--radius) * 0.6);
 	--radius-md: calc(var(--radius) * 0.8);

@@ -34,6 +34,7 @@ import SkeletonBasic from '@/pages/Skeleton/demos/basic';
 import SpinnerBasic from '@/pages/Spinner/demos/basic';
 import StepsVertical from '@/pages/Steps/demos/vertical';
 import SwitchBasic from '@/pages/Switch/demos/basic';
+import TableBasic from '@/pages/Table/demos/basic';
 import TabsBasic from '@/pages/Tabs/demos/basic';
 import TextareaBasic from '@/pages/Textarea/demos/basic';
 import ToastKinds from '@/pages/Toast/demos/kinds';
@@ -112,6 +113,14 @@ const groups: PreviewGroup[] = [
 			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic, room: 'tall' },
 			{ path: 'code-tree', label: 'CodeTree', Demo: CodeTreeBasic, room: 'tall' },
 			{ path: 'collapsible', label: 'Collapsible', Demo: CollapsibleBasic, room: 'compact' },
+			{
+				path: 'table',
+				label: 'Table',
+				Demo: TableBasic,
+				// A table is drawn as a bordered box in a page, and the tile's own grey would show
+				// through the transparent frame as a box drawn on nothing.
+				canvas: 'page',
+			},
 			{ path: 'popover', label: 'Popover', Demo: PopoverBasic, room: 'compact' },
 			{ path: 'tooltip', label: 'Tooltip', Demo: TooltipBasic, room: 'compact' },
 		],
