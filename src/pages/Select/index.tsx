@@ -152,7 +152,7 @@ const partRows = [
 	[
 		'Select.Item',
 		'one option',
-		'a Menu row: the same padding, the same `data-highlighted` tint — and the chosen one filled with `selected`.',
+		'a Menu row: the same padding, the same `data-highlighted` tint — and the chosen one tinted with it too.',
 	],
 	['Select.ItemText', 'the option’s label', 'what the trigger shows once it is chosen.'],
 	['Select.Separator', 'a line between groups', 'mx-1, h-px.'],
@@ -177,12 +177,12 @@ const hookRows = [
 	[
 		'data-highlighted',
 		'on one row',
-		'the row the pointer or the arrow keys are on, filled with `accent`.',
+		'the row the pointer or the arrow keys are on, tinted at `--state-layer-hover-opacity`.',
 	],
 	[
 		'data-selected',
 		'on the chosen row',
-		'filled with `selected`, a notch above the hover tint — so chosen and hovered never read as one.',
+		'tinted at that same step, so chosen and hovered are one colour — and stepped up to `--state-layer-selected-hover-opacity` while the pointer or the arrows stay on it.',
 	],
 	['data-disabled', 'on the root, the trigger, a row', 'no pointer, half opacity.'],
 	[

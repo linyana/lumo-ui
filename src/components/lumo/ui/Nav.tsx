@@ -109,12 +109,27 @@ export function useNav() {
 	return useContext(NavContext);
 }
 
+/**
+ * What being here looks like. A nav row's hover already means "go here", so the row you have gone to
+ * wears the very tint the pointer leaves on it rather than a deeper fill of its own: one state, kept.
+ * The weight lifts too, because that tint is drawn over whatever the shell put behind the row — 6% of
+ * the row's own text colour — and on the rail that is only a suggestion. A pointer arriving on the
+ * row you are already on is the one thing left to say, so it takes a step of its own: past the hover,
+ * short of the press.
+ */
+const activeRow = cn(
+	'data-active:font-medium data-active:text-accent-foreground',
+	'data-active:after:opacity-(--state-layer-hover-opacity)',
+	'data-active:hover:after:opacity-(--state-layer-selected-hover-opacity)',
+	'data-active:active:after:opacity-(--state-layer-pressed-opacity)',
+);
+
 export const navButtonVariants = tv({
 	base: [
 		'peer/nav-button relative flex w-full cursor-pointer items-center gap-2 overflow-hidden',
 		'rounded-md p-2 text-left text-sm select-none',
 		stateLayer,
-		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
+		activeRow,
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
 		iconSlot,
 		// The rail: one square holding a single glyph, so the gap goes and the content centres.
@@ -547,7 +562,7 @@ export const navSubButtonVariants = tv({
 		'relative flex h-7 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden',
 		'rounded-md px-2 select-none',
 		stateLayer,
-		'data-active:bg-selected data-active:font-medium data-active:text-accent-foreground',
+		activeRow,
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
 		iconSlot,
 		'group-data-[compact]:hidden',
