@@ -48,7 +48,7 @@
 			"name": "control",
 			"type": "registry:file",
 			"title": "control idioms",
-			"description": "The four things every control in the library looks the same way: the tint a hover or a press leaves, the size an icon slot takes from the text around it, the shell of a text field, and the box a tick or a dot is drawn in. Required by Button, Input, Textarea, Checkbox, RadioGroup, Collapsible, Menu, Nav and Steps; installed automatically as a dependency.",
+			"description": "The five things every control in the library looks the same way: the tint a hover or a press leaves, the size an icon slot takes from the text around it, the shell of a text field, the box a tick or a dot is drawn in, and the row a list of choices is made of. Required by Button, Input, Textarea, Checkbox, RadioGroup, Collapsible, Menu, Select, Nav and Steps; installed automatically as a dependency.",
 			"files": [
 				{
 					"path": "src/lib/control.ts",
@@ -172,6 +172,25 @@
 					"path": "src/components/lumo/ui/Tooltip.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/ui/Tooltip.tsx"
+				}
+			]
+		},
+		{
+			"name": "combobox",
+			"type": "registry:ui",
+			"title": "Combobox",
+			"description": "A select whose options are found by typing: the field is the control, so the chosen label stays in it and the query narrows the list under it. A caret opens the list without typing, a clear button appears only while there is something to clear, and the rows are the same rows Menu and Select draw. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/control",
+				"linyana/lumo-ui/surface"
+			],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Combobox.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Combobox.tsx"
 				}
 			]
 		},
@@ -358,6 +377,25 @@
 					"path": "src/components/lumo/ui/ScrollArea.tsx",
 					"type": "registry:file",
 					"target": "~/src/components/lumo/ui/ScrollArea.tsx"
+				}
+			]
+		},
+		{
+			"name": "select",
+			"type": "registry:ui",
+			"title": "Select",
+			"description": "One value out of many, in a list laid under the control that opened it: an Input's shell as a trigger with a caret that turns itself, a row shared with Menu, a check on the chosen row only, and scroll arrows at the ends of a long list. The popup opens under the trigger rather than over it. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/control",
+				"linyana/lumo-ui/surface"
+			],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Select.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Select.tsx"
 				}
 			]
 		},

@@ -12,6 +12,7 @@ import CodeBasic from '@/pages/Code/demos/basic';
 import CodeDiffBasic from '@/pages/CodeDiff/demos/basic';
 import CodeTreeBasic from '@/pages/CodeTree/demos/basic';
 import CollapsibleBasic from '@/pages/Collapsible/demos/basic';
+import ComboboxBasic from '@/pages/Combobox/demos/basic';
 import DialogBasic from '@/pages/Dialog/demos/basic';
 import DrawerBasic from '@/pages/Drawer/demos/basic';
 import FieldBasic from '@/pages/Field/demos/basic';
@@ -21,6 +22,7 @@ import NavBasic from '@/pages/Nav/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
 import RadioGroupBasic from '@/pages/RadioGroup/demos/basic';
 import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
+import SelectBasic from '@/pages/Select/demos/basic';
 import SeparatorBasic from '@/pages/Separator/demos/basic';
 import SkeletonBasic from '@/pages/Skeleton/demos/basic';
 import SpinnerBasic from '@/pages/Spinner/demos/basic';
@@ -56,9 +58,11 @@ const groups: PreviewGroup[] = [
 		title: 'forms & input',
 		previews: [
 			{ path: 'checkbox', label: 'Checkbox', Demo: CheckboxBasic },
+			{ path: 'combobox', label: 'Combobox', Demo: ComboboxBasic },
 			{ path: 'field', label: 'Field', Demo: FieldBasic },
 			{ path: 'input', label: 'Input', Demo: InputBasic },
 			{ path: 'radio-group', label: 'RadioGroup', Demo: RadioGroupBasic },
+			{ path: 'select', label: 'Select', Demo: SelectBasic },
 			{ path: 'switch', label: 'Switch', Demo: SwitchBasic },
 			{ path: 'textarea', label: 'Textarea', Demo: TextareaBasic },
 		],

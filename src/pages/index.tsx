@@ -6,6 +6,7 @@ import { CodePage } from './Code';
 import { CodeDiffPage } from './CodeDiff';
 import { CodeTreePage } from './CodeTree';
 import { CollapsiblePage } from './Collapsible';
+import { ComboboxPage } from './Combobox';
 import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
 import { FieldPage } from './Field';
@@ -17,6 +18,7 @@ import { OverviewPage } from './Overview';
 import { PopoverPage } from './Popover';
 import { RadioGroupPage } from './RadioGroup';
 import { ScrollAreaPage } from './ScrollArea';
+import { SelectPage } from './Select';
 import { SeparatorPage } from './Separator';
 import { SkeletonPage } from './Skeleton';
 import { SpinnerPage } from './Spinner';
@@ -54,6 +56,7 @@ export const docRoutes: DocRoute[] = [
 		section: 'Components',
 		element: <CollapsiblePage />,
 	},
+	{ path: 'combobox', label: 'Combobox', section: 'Components', element: <ComboboxPage /> },
 	{ path: 'dialog', label: 'Dialog', section: 'Components', element: <DialogPage /> },
 	{ path: 'drawer', label: 'Drawer', section: 'Components', element: <DrawerPage /> },
 	{ path: 'field', label: 'Field', section: 'Components', element: <FieldPage /> },
@@ -73,6 +76,7 @@ export const docRoutes: DocRoute[] = [
 		section: 'Components',
 		element: <ScrollAreaPage />,
 	},
+	{ path: 'select', label: 'Select', section: 'Components', element: <SelectPage /> },
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'skeleton', label: 'Skeleton', section: 'Components', element: <SkeletonPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
