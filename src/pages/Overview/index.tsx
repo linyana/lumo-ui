@@ -40,7 +40,7 @@ import TransitionSize from '@/pages/Transition/demos/size';
  * How much of the column a tile takes. It is not a look: a demo that lays out a list or a pane needs
  * the height before its own layout reads, and one that is a row of buttons would only be padding.
  */
-type Room = 'compact' | 'regular' | 'tall';
+type Room = 'compact' | 'regular' | 'tall' | 'xtall';
 
 type ComponentPreview = {
 	/** The route, which the rail and the router already use. */
@@ -70,8 +70,9 @@ const groups: PreviewGroup[] = [
 		title: 'Navigation',
 		previews: [
 			{ path: 'menu', label: 'Menu', Demo: MenuBasic },
-			// The rail and the vertical steps are lists: they scroll in a tile before they are cut.
-			{ path: 'nav', label: 'Nav', Demo: NavBasic, room: 'tall' },
+			// The rail is a list from its first group to its last: it takes the one step above `tall`,
+			// so neither end of it is cut.
+			{ path: 'nav', label: 'Nav', Demo: NavBasic, room: 'xtall' },
 			{ path: 'steps', label: 'Steps', Demo: StepsVertical, room: 'tall' },
 			{ path: 'tabs', label: 'Tabs', Demo: TabsBasic, room: 'compact' },
 		],
@@ -131,6 +132,9 @@ const rooms: Record<Room, string> = {
 	compact: 'h-52',
 	regular: 'h-72',
 	tall: 'h-96',
+	// One demo is a whole rail rather than a row or a panel, and is the only one that outgrows
+	// `tall`: the list is not cut at either end.
+	xtall: 'h-116',
 };
 
 type PreviewProps = ComponentPreview;
