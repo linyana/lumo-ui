@@ -47,9 +47,14 @@ const layoutProps: Record<string, PropNode> = {
 		description:
 			'The product’s name beside the mark — not a page title, which belongs to the page.',
 	},
+	brandActions: {
+		type: 'ReactNode',
+		description:
+			'Controls at the far end of the brand row, before the fold toggle — a theme switch, a tint. A bare icon button belongs here; the narrow rail stacks them.',
+	},
 	footer: {
 		type: 'ReactNode',
-		description: 'Pinned to the rail’s bottom edge: an account row, a version, a status.',
+		description: 'Pinned to the rail’s bottom edge: a version, a status, a link.',
 	},
 	collapsible: {
 		type: 'boolean',
@@ -130,6 +135,11 @@ const hookRows = [
 		'sticky top-0, bg-inherit, so it takes the surface’s colour rather than its own.',
 	],
 	['data-slot="layout-sidebar"', 'the rail', 'holds the brand row, the nav and the footer.'],
+	[
+		'data-slot="layout-brand-actions"',
+		'the brand row’s trailing end',
+		'the consumer’s controls and the fold toggle, inline — a column while narrow.',
+	],
 	['data-collapsed', 'present while narrow', 'on the shell, and read by the rail’s own parts.'],
 ];
 

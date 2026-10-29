@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Moon, Sun, User } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/lumo/blocks/Layout';
-import { Nav } from '@/components/lumo/ui/Nav';
+import { Button } from '@/components/lumo/ui/Button';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
 import { ThemeProvider } from '@/pages/theme';
@@ -68,19 +68,16 @@ export default function App() {
 						setFolded(next);
 						document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
 					}}
-					footer={
-						<Nav.List>
-							<Nav.Item>
-								<Nav.Button icon={<User />} label="account" />
-							</Nav.Item>
-							<Nav.Item>
-								<Nav.Button
-									icon={dark ? <Sun /> : <Moon />}
-									label={dark ? 'light theme' : 'dark theme'}
-									onClick={() => setDark((current) => !current)}
-								/>
-							</Nav.Item>
-						</Nav.List>
+					brandActions={
+						<Button
+							variant="ghost"
+							size="icon"
+							className="size-8 shrink-0"
+							aria-label={dark ? 'light theme' : 'dark theme'}
+							onClick={() => setDark((current) => !current)}
+						>
+							{dark ? <Sun /> : <Moon />}
+						</Button>
 					}
 				>
 					<Layout.Content className="p-0">

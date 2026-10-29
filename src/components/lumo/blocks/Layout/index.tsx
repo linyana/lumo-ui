@@ -53,7 +53,9 @@ export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 	/** The brand mark in the rail's top-left, sized to its text. */
 	logo?: ReactNode;
 	title?: ReactNode;
-	/** Pinned to the rail's bottom edge: an account row, a version, a status. */
+	/** Controls at the far end of the brand row, before the fold toggle — a theme switch, a tint. */
+	brandActions?: ReactNode;
+	/** Pinned to the rail's bottom edge: a version, a status, a link. */
 	footer?: ReactNode;
 	/** Lets the rail narrow to its icons: the brand row carries the toggle, and cmd/ctrl+b does it. */
 	collapsible?: boolean;
@@ -76,6 +78,7 @@ function LayoutRoot({
 	onSelect,
 	logo,
 	title,
+	brandActions,
 	footer,
 	collapsible = false,
 	defaultCollapsed = false,
@@ -136,6 +139,7 @@ function LayoutRoot({
 				onSelect={onSelect}
 				logo={logo}
 				title={title}
+				brandActions={brandActions}
 				footer={footer}
 				collapsible={collapsible}
 				collapsed={isCollapsed}
