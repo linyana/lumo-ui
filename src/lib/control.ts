@@ -92,18 +92,23 @@ export const toggleMark = cn(
 
 /**
  * One row in a list of choices — a menu's action, a select's option. The fill is one `before` layer,
- * drawn by every row and coloured by two of them: inset by the popup's own corner and rounded to
- * match it, so a row changes colour rather than gaining a box. The tint is what the pointer or the
- * arrows leave; the row that is chosen is a notch darker, because chosen and hovered must not read
- * as the same thing, and it keeps its own fill while the pointer is over it. The padding on the
+ * inset by the popup's own corner and rounded to match it, so a row changes colour rather than gaining
+ * a box — and it is the row's own text colour at a state-layer opacity, not a colour of its own, so
+ * the same three steps read on a menu, in a select and on a nav row. The tint is what the pointer or
+ * the arrows leave. The row that is chosen wears that same tint: being chosen is what the pointer was
+ * already saying, so it is not a louder thing, only a lasting one. It deepens a notch while the
+ * pointer or the arrows are still on it, so a row that is both does not go still. The padding on the
  * right is the caller's: a row that carries an action of its own needs more room.
  */
 export const row = cn(
 	'flex py-2 pl-4 text-sm leading-4 outline-none select-none',
 	'relative z-0',
 	"before:absolute before:inset-x-1 before:inset-y-0 before:z-[-1] before:rounded-sm before:content-['']",
-	'data-highlighted:text-accent-foreground data-highlighted:not-data-selected:before:bg-accent',
-	'data-selected:before:bg-selected',
+	'before:bg-current before:opacity-0',
+	'data-highlighted:text-accent-foreground',
+	'data-highlighted:before:opacity-(--state-layer-hover-opacity)',
+	'data-selected:before:opacity-(--state-layer-hover-opacity)',
+	'data-selected:data-highlighted:before:opacity-(--state-layer-selected-hover-opacity)',
 );
 
 /** The name over a group of rows: quieter than the rows, and never one of them. */

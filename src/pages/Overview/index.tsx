@@ -1,12 +1,15 @@
 import { ArrowUpRight, Search } from 'lucide-react';
-import { useState, type ComponentType } from 'react';
+import { useRef, useState, type ComponentType } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/lumo/ui/Button';
 import { Card } from '@/components/lumo/ui/Card';
 import { Input } from '@/components/lumo/ui/Input';
+import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Toast } from '@/components/lumo/ui/Toast';
 import { cn } from '@/lib/cn';
 import { DocPage } from '@/pages/DocPage';
+import AvatarBasic from '@/pages/Avatar/demos/basic';
+import BadgeBasic from '@/pages/Badge/demos/basic';
 import ButtonBasic from '@/pages/Button/demos/basic';
 import CardBasic from '@/pages/Card/demos/basic';
 import CheckboxBasic from '@/pages/Checkbox/demos/basic';
@@ -22,6 +25,7 @@ import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
 import NavBasic from '@/pages/Nav/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
+import ProgressBasic from '@/pages/Progress/demos/basic';
 import RadioGroupBasic from '@/pages/RadioGroup/demos/basic';
 import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
 import SelectBasic from '@/pages/Select/demos/basic';
@@ -93,6 +97,16 @@ const groups: PreviewGroup[] = [
 	{
 		title: 'Data Display',
 		previews: [
+			{
+				path: 'avatar',
+				label: 'Avatar',
+				Demo: AvatarBasic,
+				room: 'compact',
+				// The initials sit in `bg-muted`, the same fill the tile is drawn in: without a page of
+				// its own under them, the two empty surfaces would be one.
+				canvas: 'page',
+			},
+			{ path: 'badge', label: 'Badge', Demo: BadgeBasic, room: 'compact' },
 			{ path: 'card', label: 'Card', Demo: CardBasic, room: 'tall' },
 			{ path: 'code', label: 'Code', Demo: CodeBasic, room: 'tall' },
 			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic, room: 'tall' },
@@ -107,6 +121,7 @@ const groups: PreviewGroup[] = [
 		previews: [
 			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic, room: 'compact' },
 			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic, room: 'compact' },
+			{ path: 'progress', label: 'Progress', Demo: ProgressBasic, room: 'compact' },
 			{
 				path: 'skeleton',
 				label: 'Skeleton',
@@ -137,6 +152,15 @@ const rooms: Record<Room, string> = {
 	xtall: 'h-116',
 };
 
+/**
+ * How a group of tiles arrives: it rises the one step a `Tabs.Panel` moves by, on the overlay's own
+ * timing, so switching groups reads here the way it reads anywhere else in the library.
+ */
+const arrive = cn(
+	'transition-[opacity,translate] duration-(--duration-overlay) ease-(--ease-overlay)',
+	'starting:translate-y-(--shift-content) starting:opacity-0',
+);
+
 type PreviewProps = ComponentPreview;
 
 /**
@@ -164,7 +188,7 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 			<div
 				className={cn(
 					'min-h-0 flex-1 overflow-auto p-5',
-					'[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+					'scrollbar-none [&::-webkit-scrollbar]:hidden',
 					// A demo drawn in the muted fill would vanish into the tile, so the one that is gets a
 					// panel of the page inset into it instead — a screenshot inside a frame.
 					canvas === 'page' && 'm-3 rounded-xl bg-background',
@@ -174,7 +198,10 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 					<Demo />
 				</div>
 			</div>
-			<div data-slot="overview-card-open" className="absolute end-3 top-3 flex items-center">
+			<div
+				data-slot="overview-card-open"
+				className="absolute inset-e-3 top-3 flex items-center"
+			>
 				<Button
 					size="sm"
 					variant="secondary"
@@ -187,15 +214,16 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 					// Hidden until the tile is pointed at, but reachable before it is: a link that
 					// could not be seen while it held focus would be a target with no target.
 					className={cn(
-						'rounded-full bg-background px-3 text-muted-foreground',
+						'rounded-full border bg-background px-3 text-muted-foreground',
 						// The pill drops into its corner out of the edge it belongs to, so the tile answers
 						// the pointer with motion rather than with a change in its own fill.
 						'-translate-y-1 scale-95 opacity-0',
 						'transition-[color,opacity,translate,scale] ease-(--ease-spring) duration-(--duration-turn)',
 						'group-hover/tile:translate-y-0 group-hover/tile:scale-100 group-hover/tile:opacity-100',
 						'focus-visible:translate-y-0 focus-visible:scale-100 focus-visible:opacity-100',
-						// The fill is the tile's opposite and stays that way under the pointer. What moves
-						// is the ink: the name and the arrow deepen to the foreground.
+						// The pill is white, and the demo under it may be drawn on a white page of its own, so
+						// the edge is what keeps it a pill there. What moves under the pointer is the ink: the
+						// name and the arrow deepen to the foreground.
 						'hover:text-foreground after:hidden',
 					)}
 				>
@@ -206,32 +234,15 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 	);
 }
 
-/** One entry of the filter row: a group, or everything. */
-function FilterChip({
-	active,
-	onSelect,
-	children,
-}: {
-	active: boolean;
-	onSelect: () => void;
-	children: string;
-}) {
-	return (
-		<Button
-			size="lg"
-			variant={active ? 'default' : 'secondary'}
-			aria-pressed={active}
-			onClick={onSelect}
-			className="rounded-full px-4 text-sm"
-		>
-			{children}
-		</Button>
-	);
-}
-
 export function OverviewPage() {
 	const [query, setQuery] = useState('');
 	const [active, setActive] = useState<string>('all');
+	/**
+	 * Whether a group has been picked yet: the list the page opens on is not one that arrived from
+	 * anywhere, so only a switch is re-keyed and so animated.
+	 */
+	const [switched, setSwitched] = useState(false);
+	const list = useRef<HTMLDivElement | null>(null);
 	const needle = query.trim().toLowerCase();
 	const shown = groups
 		.filter((group) => active === 'all' || group.title === active)
@@ -241,38 +252,59 @@ export function OverviewPage() {
 			),
 		);
 
+	// A group change replaces the list, and the reader is somewhere inside the old one. The shell owns
+	// the box that scrolls, so the page cannot put it back; the list can be brought into view instead,
+	// and its scroll margin is the bar already pinned above it.
+	const select = (next: string) => {
+		setSwitched(true);
+		setActive(next);
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		list.current?.scrollIntoView({ block: 'start', behavior: reduce ? 'instant' : 'smooth' });
+	};
+
 	return (
-		<DocPage wide title="overview" description="base ui behaviour + token-driven styling">
+		<DocPage wide className="pt-0">
 			{/* The toast demo reads its queue from context, and shows it in the fixed strip. */}
 			<Toast.Provider>
 				<div className="space-y-6">
-					{/* The filter stays put: the column it filters is longer than the screen. */}
-					<div
+					{/*
+						The filter stays put: the column it filters is longer than the screen. The groups
+						are one of many, so they are a `Tabs.List` — the library's own shape for a choice
+						that is picked from a row — and the bar is the root, which only holds them.
+					*/}
+					<Tabs.Root
+						value={active}
+						onValueChange={(next) => select(String(next))}
 						data-slot="overview-filter"
 						className={cn(
-							'sticky top-0 z-10 -mx-8 flex flex-wrap items-center gap-2',
+							'sticky top-0 z-10 -mx-8 flex flex-wrap items-center gap-3',
 							'bg-background/90 px-8 py-3 backdrop-blur',
 						)}
 					>
-						<FilterChip active={active === 'all'} onSelect={() => setActive('all')}>
-							All
-						</FilterChip>
-						{groups.map((group) => (
-							<FilterChip
-								key={group.title}
-								active={active === group.title}
-								onSelect={() => setActive(group.title)}
-							>
-								{group.title}
-							</FilterChip>
-						))}
-						<div className="relative ms-auto">
+						{/* A phone cannot hold seven groups, so the track scrolls rather than overflows. */}
+						<Tabs.List
+							aria-label="component groups"
+							className={cn(
+								'rounded-xl',
+								'max-w-full overflow-x-auto',
+								'scrollbar-none [&::-webkit-scrollbar]:hidden',
+							)}
+						>
+							<Tabs.Tab value="all">All</Tabs.Tab>
+							{groups.map((group) => (
+								<Tabs.Tab key={group.title} value={group.title}>
+									{group.title}
+								</Tabs.Tab>
+							))}
+							<Tabs.Indicator className="rounded-lg" />
+						</Tabs.List>
+						<div className="relative ms-auto w-full sm:w-56">
 							<Search
 								aria-hidden
-								className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground"
+								className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
 							/>
 							<Input
-								type="text"
+								type="search"
 								size="lg"
 								value={query}
 								onChange={(event) => setQuery(event.target.value)}
@@ -280,37 +312,49 @@ export function OverviewPage() {
 								aria-label="filter components"
 								autoComplete="off"
 								spellCheck={false}
-								className="w-full rounded-full ps-10 sm:w-64"
+								className="rounded-xl ps-9"
 							/>
 						</div>
-					</div>
+					</Tabs.Root>
 
-					{shown.length === 0 ? (
-						<div className="flex flex-col items-center gap-3 py-16 text-sm text-muted-foreground">
-							<p>no component matches “{query.trim() || active}”.</p>
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => {
-									setQuery('');
-									setActive('all');
-								}}
+					{/*
+						The group is the key: a list chosen again is an element that arrives, so it can be
+						animated into place. A search is not a key — a grid that re-entered on every keypress
+						would be a grid that flickers.
+					*/}
+					<div
+						key={switched ? active : undefined}
+						ref={list}
+						data-slot="overview-results"
+						className={cn('scroll-mt-20', switched && arrive)}
+					>
+						{shown.length === 0 ? (
+							<div className="flex flex-col items-center gap-3 py-16 text-sm text-muted-foreground">
+								<p>no component matches “{query.trim() || active}”.</p>
+								<Button
+									variant="secondary"
+									size="sm"
+									onClick={() => {
+										setQuery('');
+										select('all');
+									}}
+								>
+									clear filters
+								</Button>
+							</div>
+						) : (
+							/* Columns, not a grid: a tile keeps its own height and the next one starts right
+							   under it, which is what makes the column read as one run down the page. */
+							<div
+								data-slot="overview-columns"
+								className="columns-1 gap-4 md:columns-2 xl:columns-3"
 							>
-								clear filters
-							</Button>
-						</div>
-					) : (
-						/* Columns, not a grid: a tile keeps its own height and the next one starts right
-						   under it, which is what makes the column read as one run down the page. */
-						<div
-							data-slot="overview-columns"
-							className="columns-1 gap-4 md:columns-2 xl:columns-3"
-						>
-							{shown.map((preview) => (
-								<Preview {...preview} key={preview.path} />
-							))}
-						</div>
-					)}
+								{shown.map((preview) => (
+									<Preview {...preview} key={preview.path} />
+								))}
+							</div>
+						)}
+					</div>
 				</div>
 				<Toast.Toaster />
 			</Toast.Provider>

@@ -1,4 +1,6 @@
 import type { ReactElement } from 'react';
+import { AvatarPage } from './Avatar';
+import { BadgePage } from './Badge';
 import { ButtonPage } from './Button';
 import { CardPage } from './Card';
 import { CheckboxPage } from './Checkbox';
@@ -16,6 +18,7 @@ import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
 import { OverviewPage } from './Overview';
 import { PopoverPage } from './Popover';
+import { ProgressPage } from './Progress';
 import { RadioGroupPage } from './RadioGroup';
 import { ScrollAreaPage } from './ScrollArea';
 import { SelectPage } from './Select';
@@ -44,6 +47,8 @@ export type DocRoute = {
 /** One page per component, in the order the rail lists them: a section, then alphabetical. */
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
+	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
+	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },
 	{ path: 'card', label: 'Card', section: 'Components', element: <CardPage /> },
 	{ path: 'checkbox', label: 'Checkbox', section: 'Components', element: <CheckboxPage /> },
@@ -64,6 +69,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'nav', label: 'Nav', section: 'Components', element: <NavPage /> },
 	{ path: 'popover', label: 'Popover', section: 'Components', element: <PopoverPage /> },
+	{ path: 'progress', label: 'Progress', section: 'Components', element: <ProgressPage /> },
 	{
 		path: 'radio-group',
 		label: 'RadioGroup',

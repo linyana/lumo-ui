@@ -140,10 +140,12 @@ function DocActions({ title, description }: { title: string; description?: strin
 }
 
 export type DocPageProps = {
-	title: string;
+	/** The page's own name. A page that opens on its own chrome — the overview — leaves it out. */
+	title?: string;
 	description?: string;
 	/** The column is prose-wide by default; a page of cards takes the whole of the surface. */
 	wide?: boolean;
+	className?: string;
 	children: ReactNode;
 };
 
@@ -151,25 +153,28 @@ export type DocPageProps = {
  * The shell a doc page draws inside `Layout.Content`: the page's own title, the column, and the
  * section list beside it. It keeps no chrome of its own — the title scrolls with the page.
  */
-export function DocPage({ title, description, wide = false, children }: DocPageProps) {
+export function DocPage({ title, description, wide = false, className, children }: DocPageProps) {
 	return (
 		<div
 			data-slot="doc-page"
 			className={cn(
 				'mx-auto flex w-full items-start gap-12 p-8',
 				!wide && 'max-w-3xl xl:max-w-5xl',
+				className,
 			)}
 		>
 			<div data-slot="doc-page-content" className="min-w-0 flex-1 space-y-12">
-				<div data-slot="doc-page-head" className="space-y-2">
-					<div className="flex items-start justify-between gap-4">
-						<h1 className="text-2xl font-semibold">{title}</h1>
-						<DocActions title={title} description={description} />
+				{title !== undefined && (
+					<div data-slot="doc-page-head" className="space-y-2">
+						<div className="flex items-start justify-between gap-4">
+							<h1 className="text-2xl font-semibold">{title}</h1>
+							<DocActions title={title} description={description} />
+						</div>
+						{description !== undefined && (
+							<p className="text-muted-foreground">{description}</p>
+						)}
 					</div>
-					{description !== undefined && (
-						<p className="text-muted-foreground">{description}</p>
-					)}
-				</div>
+				)}
 				{children}
 			</div>
 			<Toc titles={sectionTitles(children)} />
@@ -579,7 +584,7 @@ function SourceDialog({
 			<Dialog.Portal>
 				<Dialog.Backdrop />
 				<Dialog.Viewport>
-					<Dialog.Popup className="flex h-[80vh] max-h-[44rem] w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
+					<Dialog.Popup className="flex h-[80vh] max-h-176 w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
 						<SourcePane path={path} name={name} about={about} />
 					</Dialog.Popup>
 				</Dialog.Viewport>
@@ -672,7 +677,7 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 				    one was scrolled to. */}
 				<div
 					key={shown?.path ?? selected}
-					className="min-w-0 flex-1 overflow-auto px-3 pb-3 [scrollbar-gutter:stable]"
+					className="min-w-0 flex-1 overflow-auto px-3 pb-3 scrollbar-gutter-stable"
 				>
 					{/* The way to take the file sits in the file's own corner, where the code starts, and
 					    stays there while it is scrolled — a copy of what is on screen, not of a header's
@@ -750,14 +755,14 @@ function ViewCode({ className, ...props }: ComponentProps<typeof Button>) {
 					aria-hidden="true"
 					className={cn(
 						'flex h-[1em] w-0 shrink-0 items-center overflow-hidden',
-						'transition-[width] ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+						'transition-[width] ease-(--ease-spring) duration-(--duration-state)',
 						'group-hover/code:w-5 group-focus-visible/code:w-5',
 					)}
 				>
 					<CodeGlyph
 						className={cn(
 							'translate-y-full opacity-0',
-							'transition-[translate,opacity] ease-[var(--ease-spring)] duration-[var(--duration-state)]',
+							'transition-[translate,opacity] ease-(--ease-spring) duration-(--duration-state)',
 							'group-hover/code:translate-y-0 group-hover/code:opacity-100',
 							'group-focus-visible/code:translate-y-0 group-focus-visible/code:opacity-100',
 						)}

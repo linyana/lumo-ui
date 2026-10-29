@@ -41,7 +41,6 @@
 	--color-muted-foreground: var(--muted-foreground);
 	--color-accent: var(--accent);
 	--color-accent-foreground: var(--accent-foreground);
-	--color-selected: var(--selected);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
 	--color-success: var(--success);
@@ -65,6 +64,22 @@
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) * 1.4);
 	--radius-2xl: calc(var(--radius) * 1.8);
+
+	/* The one keyframe the theme owns: a bar whose end is unknown sweeps a segment of itself from
+	   one end of its groove to the other. It lives here rather than in Progress because the
+	   distances are what makes it work — the segment is 40% of the groove, so travelling from
+	   -100% of itself to 250% of itself is exactly one groove, edge to edge. */
+	--animate-progress-sweep: lumo-progress-sweep 1.2s ease-in-out infinite;
+
+	@keyframes lumo-progress-sweep {
+		from {
+			translate: -100% 0;
+		}
+
+		to {
+			translate: 250% 0;
+		}
+	}
 }
 
 :root {
@@ -81,6 +96,11 @@
 	--state-layer-pressed-opacity: 0.14;
 	--state-layer-fill-hover-opacity: 0.16;
 	--state-layer-fill-pressed-opacity: 0.26;
+	/* The one step between hover and press, for a control that is already lit — a nav row you are on,
+	   a chosen row of a menu or a select that the pointer is still over. A tint that is a press and a
+	   tint that is a mark left behind cannot be the same weight: the first is gone in a frame, the
+	   second has to sit under a pointer that stays and still say something. */
+	--state-layer-selected-hover-opacity: 0.1;
 	--press-offset: 1px;
 	/* A box easing to the size of the content inside it is a spring, not a token: see springSize
 	   in lib/motion.ts. A theme still reaches it, because the file is source. */
@@ -117,13 +137,6 @@
 	--muted-foreground: oklch(0.556 0 0);
 	--accent: oklch(0.97 0 0);
 	--accent-foreground: oklch(0.205 0 0);
-	/* Selection needs a step of its own: `--accent` equals `--muted`, and the shell's rail is
-	   `bg-muted`, so a selected row would fill with its own background and read as nothing.
-	   Each value is `--foreground` mixed 8% into `--muted` — one notch above the hover tint,
-	   which is as close as the two can get before hover stops reading on the rail. Written out
-	   rather than as `color-mix`, which the build compiles to a `@supports` fallback of bare
-	   `--foreground` and would paint it black. */
-	--selected: oklch(0.904 0 0);
 	--destructive: oklch(0.577 0.245 27.325);
 	--destructive-foreground: oklch(0.985 0 0);
 	/* Additions in a diff. The pair to `--destructive`, at the same weight, because the two are
@@ -181,7 +194,6 @@
 	--muted-foreground: oklch(0.708 0 0);
 	--accent: oklch(0.269 0 0);
 	--accent-foreground: oklch(0.985 0 0);
-	--selected: oklch(0.326 0 0);
 	--destructive: oklch(0.704 0.191 22.216);
 	--destructive-foreground: oklch(0.205 0 0);
 	--success: oklch(0.723 0.219 149.579);

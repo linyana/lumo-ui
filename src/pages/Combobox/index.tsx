@@ -150,7 +150,7 @@ const partRows = [
 	[
 		'Combobox.Item',
 		'one option',
-		'a Menu row: the same tint while the pointer or the arrows are on it — and the chosen one filled with `selected`.',
+		'a Menu row: the same tint while the pointer or the arrows are on it — and the chosen one tinted with it too.',
 	],
 	['Combobox.Separator', 'a line between groups', 'mx-1, h-px.'],
 ];
@@ -166,7 +166,7 @@ const hookRows = [
 	[
 		'data-selected',
 		'on the chosen row',
-		'filled with `selected`, a notch above the hover tint — so chosen and hovered never read as one.',
+		'tinted at that same step, so chosen and hovered are one colour — and stepped up to `--state-layer-selected-hover-opacity` while the pointer or the arrows stay on it.',
 	],
 	[
 		'data-list-empty',

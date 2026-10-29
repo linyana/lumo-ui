@@ -94,7 +94,7 @@ const hookRows = [
 	[
 		'data-active',
 		'the file on screen',
-		'set by the row’s isActive and painted with bg-selected. Only the file carries it — a tree of filled ancestors says nothing.',
+		'set by the row’s isActive and painted with the nav’s kept hover tint. Only the file carries it — a tree of filled ancestors says nothing.',
 	],
 	[
 		'data-quiet',

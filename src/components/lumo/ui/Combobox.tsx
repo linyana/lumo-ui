@@ -277,8 +277,9 @@ export type ItemProps = Omit<ComponentProps<typeof BaseCombobox.Item>, 'classNam
 
 /**
  * One option: the library's row, so it highlights exactly as a menu's action does — and the chosen
- * one is filled, not marked, so the label never shifts between the two states. The cursor is a
- * pointer, unlike a menu row's: this is a thing to pick out of a list.
+ * one is filled with that same tint rather than marked, so the label never shifts between the two
+ * states, deepening a notch while the pointer is still on it. The cursor is a pointer, unlike a menu
+ * row's: this is a thing to pick out of a list.
  */
 export function Item({ className, ...props }: ItemProps) {
 	return (

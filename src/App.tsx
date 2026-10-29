@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Moon, Sun, User } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/lumo/blocks/Layout';
-import { Nav } from '@/components/lumo/ui/Nav';
+import { Button } from '@/components/lumo/ui/Button';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
 import { ThemeProvider } from '@/pages/theme';
@@ -32,9 +32,6 @@ const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => ({
  */
 export default function App() {
 	const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
-	// The shell reports the fold; where it is remembered is the app's business, so the cookie is
-	// written here and never by Layout itself.
-	const [folded, setFolded] = useState(() => document.cookie.includes('layout_folded=1'));
 	const { pathname } = useLocation();
 
 	useEffect(() => {
@@ -62,25 +59,16 @@ export default function App() {
 					resetScrollKey={pathname}
 					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
 					title="lumo-ui"
-					collapsible
-					collapsed={folded}
-					onCollapsedChange={(next) => {
-						setFolded(next);
-						document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
-					}}
-					footer={
-						<Nav.List>
-							<Nav.Item>
-								<Nav.Button icon={<User />} label="account" />
-							</Nav.Item>
-							<Nav.Item>
-								<Nav.Button
-									icon={dark ? <Sun /> : <Moon />}
-									label={dark ? 'light theme' : 'dark theme'}
-									onClick={() => setDark((current) => !current)}
-								/>
-							</Nav.Item>
-						</Nav.List>
+					brandActions={
+						<Button
+							variant="ghost"
+							size="icon"
+							className="size-8 shrink-0"
+							aria-label={dark ? 'light theme' : 'dark theme'}
+							onClick={() => setDark((current) => !current)}
+						>
+							{dark ? <Sun /> : <Moon />}
+						</Button>
 					}
 				>
 					<Layout.Content className="p-0">

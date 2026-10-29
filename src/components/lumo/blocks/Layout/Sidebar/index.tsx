@@ -12,6 +12,8 @@ export type SidebarProps = {
 	onSelect?: (key: string) => void;
 	logo?: ReactNode;
 	title?: ReactNode;
+	/** Controls at the far end of the brand row, before the fold toggle. */
+	brandActions?: ReactNode;
 	/** Rows for the bottom edge, rendered inside this rail's own nav root. */
 	footer?: ReactNode;
 	/** Whether the rail can narrow to its icons at all. */
@@ -42,6 +44,7 @@ export function Sidebar({
 	onSelect,
 	logo,
 	title,
+	brandActions,
 	footer,
 	collapsible = false,
 	collapsed = false,
@@ -177,10 +180,18 @@ export function Sidebar({
 				className,
 			)}
 		>
-			{(logo !== undefined || title !== undefined || collapsible) && (
+			{(logo !== undefined ||
+				title !== undefined ||
+				brandActions !== undefined ||
+				collapsible) && (
 				<div
 					data-slot="layout-brand"
-					className="flex h-14 shrink-0 items-center gap-2 px-2 text-sm font-semibold [&_svg]:size-4 [&_svg]:shrink-0"
+					className={cn(
+						'flex shrink-0 items-center gap-2 px-2 text-sm font-semibold [&_svg]:size-4 [&_svg]:shrink-0',
+						// The narrow rail is a single 32px column wide, so its brand controls stand on
+						// top of each other instead of beside each other.
+						collapsed ? 'flex-col py-2' : 'h-14',
+					)}
 				>
 					{!collapsed && (logo !== undefined || title !== undefined) && (
 						<div className="flex min-w-0 flex-1 items-center gap-2 ps-2">
@@ -188,17 +199,28 @@ export function Sidebar({
 							{title !== undefined && <span className="truncate">{title}</span>}
 						</div>
 					)}
-					{collapsible && (
-						<Button
-							variant="ghost"
-							size="icon"
-							className="ms-auto size-8 shrink-0"
-							aria-label={collapsed ? 'expand sidebar' : 'collapse sidebar'}
-							aria-expanded={!collapsed}
-							onClick={onToggle}
+					{(brandActions !== undefined || collapsible) && (
+						<div
+							data-slot="layout-brand-actions"
+							className={cn(
+								'ms-auto flex shrink-0 items-center gap-1',
+								collapsed && 'flex-col',
+							)}
 						>
-							<PanelLeft />
-						</Button>
+							{brandActions}
+							{collapsible && (
+								<Button
+									variant="ghost"
+									size="icon"
+									className="size-8 shrink-0"
+									aria-label={collapsed ? 'expand sidebar' : 'collapse sidebar'}
+									aria-expanded={!collapsed}
+									onClick={onToggle}
+								>
+									<PanelLeft />
+								</Button>
+							)}
+						</div>
 					)}
 				</div>
 			)}

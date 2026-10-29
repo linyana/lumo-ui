@@ -29,6 +29,18 @@ const ACTION = 24;
 /** What a row that is context rather than the thing is drawn with. */
 const QUIET = 'text-muted-foreground';
 
+/**
+ * The box a row is scrolled in: the nearest ancestor whose overflow is its own. One that does not
+ * happen to overflow right now is still the answer — it is the box that will move when it has to.
+ */
+function scrollerAround(row: HTMLElement) {
+	for (let box = row.parentElement; box !== null; box = box.parentElement) {
+		const { overflowY } = getComputedStyle(box);
+		if (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') return box;
+	}
+	return null;
+}
+
 export type CodeTreeProps = Omit<ComponentProps<'div'>, 'children' | 'onSelect'> & {
 	/** The files to draw, as full paths (`src/lib/cn.ts`). The folders between them are the tree. */
 	paths: string[];
@@ -93,13 +105,29 @@ export function CodeTree({
 	const tree = useRef<HTMLDivElement>(null);
 
 	// A selection that arrives from outside — the dialog's own file, an arrow key, a link — is
-	// brought into view: a selection nobody can see is not a selection.
+	// brought into view: a selection nobody can see is not a selection. The first one is not: it is
+	// the caller's own, and the frame it lands in is the caller's to arrange, so a tree mounted below
+	// the fold of a long page does not pull that page down to itself as it appears. Only the box the
+	// tree is scrolled in moves — `scrollIntoView` would take every ancestor with it.
+	const shown = useRef(current);
 	useEffect(() => {
-		if (current === undefined) return;
+		if (current === undefined || shown.current === current) return;
+		shown.current = current;
+
 		const row = tree.current?.querySelector<HTMLElement>(
 			'[data-slot="nav-sub-button"][data-active]',
 		);
-		row?.scrollIntoView({ block: 'nearest' });
+		if (row === null || row === undefined) return;
+		const box = scrollerAround(row);
+		if (box === null) return;
+
+		// `nearest`, as `scrollIntoView` would have it: only move when the row is outside the box, and
+		// then only as far as it takes to bring it back in.
+		const rowRect = row.getBoundingClientRect();
+		const top = rowRect.top - box.getBoundingClientRect().top;
+		const bottom = top + rowRect.height;
+		if (top < 0) box.scrollTop += top;
+		else if (bottom > box.clientHeight) box.scrollTop += bottom - box.clientHeight;
 	}, [current]);
 
 	return (

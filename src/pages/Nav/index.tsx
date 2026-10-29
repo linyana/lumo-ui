@@ -198,7 +198,7 @@ const hookRows = [
 	[
 		'data-active',
 		'on the row',
-		'bg-selected and the font weight; a router’s link sets it through isActive.',
+		'the hover tint kept, the font weight up — and one more step of tint while the pointer is on it. A router’s link sets it through isActive.',
 	],
 	['aria-current="page"', 'on a current link', 'set by the row when it draws its own anchor.'],
 	[
