@@ -11,7 +11,7 @@ const primary = [
 
 /** What that component installs around itself. */
 const dependencies = [
-	'src/components/lumo/ui/Menu.tsx',
+	'src/components/lumo/ui/Nav.tsx',
 	'src/components/lumo/ui/Collapsible.tsx',
 	'src/lib/cn.ts',
 	'src/styles/lumo-tokens.css',

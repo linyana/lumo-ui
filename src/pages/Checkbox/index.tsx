@@ -101,7 +101,11 @@ const hookRows = [
 		'—',
 		'half opacity, no pointer; the first is native, the second is what the look reads.',
 	],
-	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
+	[
+		':hover · :focus-visible',
+		'border-input-strong',
+		'the box’s edge steps one darker for both, and focus draws no outline. A checked box answers focus only — hover has nothing to add to “on”.',
+	],
 ];
 
 const usageImport = "import { Checkbox } from '@/components/lumo/ui/Checkbox';";

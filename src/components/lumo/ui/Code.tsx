@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Button } from '@/components/lumo/ui/Button';
 import { cn } from '@/lib/cn';
+import { useCopy } from '@/lib/clipboard';
 import { type CodeLine, highlight, highlighted, whenIdle } from '@/lib/shiki';
 import { tv, type VariantProps } from 'tailwind-variants';
 
@@ -22,13 +23,7 @@ export type CopyProps = {
 
 /** Copies `value`, then says so for a moment. Silently does nothing where the clipboard is denied. */
 export function Copy({ value, className }: CopyProps) {
-	const [copied, setCopied] = useState(false);
-
-	useEffect(() => {
-		if (!copied) return;
-		const timer = setTimeout(() => setCopied(false), 1600);
-		return () => clearTimeout(timer);
-	}, [copied]);
+	const { copied, copy } = useCopy();
 
 	return (
 		<Button
@@ -38,12 +33,7 @@ export function Copy({ value, className }: CopyProps) {
 			icon={copied ? <Check /> : <CopyIcon />}
 			aria-label={copied ? 'copied' : 'copy code'}
 			className={cn('size-7', className)}
-			onClick={() => {
-				navigator.clipboard.writeText(value).then(
-					() => setCopied(true),
-					() => {},
-				);
-			}}
+			onClick={() => void copy(value)}
 		/>
 	);
 }

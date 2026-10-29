@@ -27,7 +27,9 @@ export default function Size() {
 					<Button
 						key={item.value}
 						size="sm"
-						variant={item.value === value ? 'secondary' : 'ghost'}
+						// A filled step rather than a tint: the trigger row has to say which note is open
+						// wherever the demo is drawn, and `secondary` only reads on a white page.
+						variant={item.value === value ? 'default' : 'ghost'}
 						onClick={() => setValue(item.value)}
 					>
 						{item.label}

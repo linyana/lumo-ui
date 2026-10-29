@@ -2,16 +2,16 @@ import { type ComponentProps, type ReactNode, createContext, useContext } from '
 import { Toast as BaseToast, type ToastRootToastObject } from '@base-ui/react/toast';
 import { cn } from '@/lib/cn';
 import { X, CircleCheck, CircleX, Info, TriangleAlert } from 'lucide-react';
+import { buttonVariants } from '@/components/lumo/ui/Button';
 import { Spinner } from '@/components/lumo/ui/Spinner';
 
+/**
+ * A toast's action is a Button's small secondary shape, pulled up a pixel so it sits on the text's
+ * line rather than the row's full height.
+ */
 const actionClasses = cn(
-	'-my-1 inline-flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-md px-2',
-	'bg-secondary text-secondary-foreground',
-	'text-xs font-medium whitespace-nowrap select-none',
-	'transition-colors duration-(--duration-state)',
-	'hover:bg-accent hover:text-accent-foreground',
-	'data-disabled:pointer-events-none data-disabled:opacity-50',
-	'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+	buttonVariants({ variant: 'secondary', size: 'sm' }),
+	'-my-1 h-7 px-2 text-xs',
 );
 
 export type ActionProps = Omit<ComponentProps<typeof BaseToast.Action>, 'className'> & {
@@ -34,11 +34,8 @@ export function Action({ className, ...props }: ActionProps) {
 }
 
 const closeClasses = cn(
-	'-my-1 inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md',
-	'text-muted-foreground',
-	'transition-colors duration-(--duration-state)',
-	'hover:bg-accent hover:text-accent-foreground',
-	'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-3.5',
+	buttonVariants({ variant: 'ghost', size: 'icon' }),
+	'-my-1 size-7 text-muted-foreground',
 );
 
 const closeGlyph = <X />;
@@ -192,7 +189,7 @@ export function Root({ className, toast, ...props }: RootProps) {
 					// Newest first in the DOM, so the painting order has to be asked for explicitly.
 					'[z-index:calc(100-var(--toast-index,0))]',
 					'pointer-events-auto origin-top',
-					'rounded-lg border bg-popover text-popover-foreground shadow-md',
+					'rounded-lg border bg-popover text-popover-foreground shadow-lifted',
 					// The stack is entirely these variables: Base UI reports each toast's index, its
 					// measured height and — expanded — the summed height above it, so the newest sits
 					// against the top edge and the rest peek out below it, scaled back a little.
@@ -260,7 +257,9 @@ export function Viewport({ className, ...props }: ViewportProps) {
 			data-slot="toast-viewport"
 			className={cn(
 				// Over-constrained left/right with auto margins is what centres it at every width.
-				'pointer-events-none fixed inset-x-4 top-4 z-50 mx-auto max-w-96',
+				'pointer-events-none fixed inset-x-4 top-4 mx-auto max-w-96',
+				// Above everything: a toast is true whatever else is open.
+				'z-70',
 				className,
 			)}
 			{...props}

@@ -156,8 +156,8 @@ export function CollapsiblePage() {
 						and glides between the peek and whatever the body needs. the panel stays in
 						the DOM while closed — that is what there is to animate — so it is{' '}
 						<Mono>inert</Mono> until it opens, rather than <Mono>hidden</Mono>. a spring
-						is for a size that travels, so a fold of a couple of rows — a submenu — is a
-						short ease instead: it arrives while the reader is still looking at the
+						is for a size that travels, so a fold of a couple of rows — a nav sub list —
+						is a short ease instead: it arrives while the reader is still looking at the
 						click, rather than four hundred milliseconds later.
 					</>
 				}

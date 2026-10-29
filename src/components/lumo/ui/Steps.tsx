@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
+import { iconSlot } from '@/lib/control';
 
 export type StepStatus = 'wait' | 'process' | 'finish' | 'error';
 export type StepsOrientation = 'horizontal' | 'vertical';
@@ -31,6 +32,13 @@ const StepsContext = createContext<StepsContextValue>({
 
 /** `Root` hands each direct child its position, so an item never has to state its own index. */
 const StepIndexContext = createContext<number | undefined>(undefined);
+
+/**
+ * The status of the item a part is drawn in. `Item` also writes it to the DOM, where a part whose
+ * look is a CSS rule can read it; a part whose look is a variant — the circle, the connector —
+ * reads it here instead, so neither has to be handed a status it could have found out.
+ */
+const StepStatusContext = createContext<StepStatus | undefined>(undefined);
 
 function useSteps() {
 	return useContext(StepsContext);
@@ -149,7 +157,7 @@ export const stepsIndicatorVariants = tv({
 		'size-(--steps-indicator) font-medium tabular-nums select-none',
 		'border transition-[color,background-color,border-color]',
 		'duration-(--duration-state) ease-(--ease-spring)',
-		'[&_svg]:shrink-0 [&_svg]:size-[1em]',
+		iconSlot,
 	],
 	variants: {
 		variant: {
@@ -203,8 +211,9 @@ export type IndicatorProps = Omit<ComponentProps<'div'>, 'className'> &
 /** The circle: the number, a check, a glyph a caller handed in, or a dot. */
 export function Indicator({ className, variant, status, children, ...props }: IndicatorProps) {
 	const context = useSteps();
+	const itemStatus = useContext(StepStatusContext);
 	const resolvedVariant = variant ?? context.variant;
-	const resolvedStatus = status ?? 'wait';
+	const resolvedStatus = status ?? itemStatus ?? 'wait';
 
 	return (
 		<div
@@ -266,8 +275,9 @@ export type SeparatorProps = Omit<ComponentProps<'div'>, 'className'> &
 /** The line between two indicators. Decorative: the order is the list's. */
 export function Separator({ className, orientation, status, ...props }: SeparatorProps) {
 	const context = useSteps();
+	const itemStatus = useContext(StepStatusContext);
 	const resolvedOrientation = orientation ?? context.orientation;
-	const resolvedStatus = status ?? 'wait';
+	const resolvedStatus = status ?? itemStatus ?? 'wait';
 
 	return (
 		<div
@@ -317,11 +327,13 @@ export function Item({ className, status, icon, children, ...props }: ItemProps)
 			className={cn(stepsItemVariants({ orientation }), className)}
 			{...props}
 		>
-			<Indicator status={resolved}>{glyph}</Indicator>
-			<div data-slot="steps-content" className={stepsContentVariants({ orientation })}>
-				{children}
-			</div>
-			<Separator status={resolved} />
+			<StepStatusContext.Provider value={resolved}>
+				<Indicator>{glyph}</Indicator>
+				<div data-slot="steps-content" className={stepsContentVariants({ orientation })}>
+					{children}
+				</div>
+				<Separator />
+			</StepStatusContext.Provider>
 		</li>
 	);
 }

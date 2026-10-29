@@ -68,7 +68,11 @@ const hookRows = [
 		'half opacity, no pointer; a read-only one keeps `bg-muted`, because it is still a value.',
 	],
 	['::placeholder', 'text-muted-foreground', 'the only colour a placeholder is allowed.'],
-	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
+	[
+		':hover · :focus-visible',
+		'border-input-strong',
+		'the border steps one darker for both, and focus draws no outline: the field moves its own edge instead.',
+	],
 ];
 
 const usageImport = "import { Textarea } from '@/components/lumo/ui/Textarea';";

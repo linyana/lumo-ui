@@ -49,6 +49,14 @@
 	--color-info: var(--info);
 	--color-border: var(--border);
 	--color-input: var(--input);
+
+	/* Shadows: a surface has three of them, and they are drawn as several layers of the same black
+	   at a few percent, each roughly doubling in blur. One layer at a readable alpha leaves a
+	   visible edge just outside the border; stacked low-alpha layers read as one soft halo. */
+	--shadow-surface: var(--shadow-surface);
+	--shadow-lifted: var(--shadow-lifted);
+	--shadow-overlay: var(--shadow-overlay);
+	--color-input-strong: var(--input-strong);
 	--color-ring: var(--ring);
 
 	/* --radius is the only knob; the whole scale derives from it. */
@@ -129,7 +137,33 @@
 	--info: oklch(0.546 0.245 262.881);
 	--border: oklch(0.922 0 0);
 	--input: oklch(0.922 0 0);
+	/* The second step a field's border has: the one it wears while a pointer is over it or a
+	   keyboard has arrived in it. Both states are this colour and not two colours, because a field
+	   is saying the same thing either way — this is the box you are working in — and a border that
+	   moved twice for the same meaning would read as two different states. */
+	--input-strong: oklch(0.78 0 0);
 	--ring: oklch(0.708 0 0);
+	/* The scrim behind a modal surface. A colour of its own rather than `foreground` at an opacity:
+	   a scrim is dark in both themes — it is the page being pushed back, not the text on it — and
+	   in the dark one it has to be deeper still, because the popup above it is only a little
+	   lighter than the page it covers. */
+	--overlay: oklch(0 0 0 / 50%);
+
+	/* The resting card barely leaves the page: two short layers, so the edge is closed by the border
+	   more than by the shadow. The lifted one spreads to nearly the height of the card, which is
+	   what a pointer arriving says. Both are black rather than a token colour — a shadow is the page
+	   below the surface being darker, not a hue of its own. */
+	--shadow-surface: 0 1px 2px rgb(0 0 0 / 4%), 0 2px 4px rgb(0 0 0 / 2%);
+	--shadow-lifted:
+		0 17.5px 23.4px rgb(0 0 0 / 4%), 0 9.4px 12.5px rgb(0 0 0 / 3%),
+		0 5.25px 7px rgb(0 0 0 / 2%), 0 2.8px 3.7px -2px rgb(0 0 0 / 1%),
+		0 1.2px 1.5px rgb(0 0 0 / 1%);
+	/* The third step belongs to a surface that takes the page away rather than sitting on it — a
+	   dialog, a drawer. It spreads twice as far as the lifted one, which is what separates "this is
+	   above the page" from "the pointer is over this". */
+	--shadow-overlay:
+		0 40px 80px rgb(0 0 0 / 6%), 0 20px 40px rgb(0 0 0 / 5%), 0 10px 20px rgb(0 0 0 / 4%),
+		0 5px 10px rgb(0 0 0 / 3%), 0 2px 4px rgb(0 0 0 / 2%);
 }
 
 .dark {
@@ -155,7 +189,20 @@
 	--info: oklch(0.623 0.214 259.815);
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
+	/* A step lighter rather than darker: on a dark page an edge is found by adding light. */
+	--input-strong: oklch(1 0 0 / 30%);
 	--ring: oklch(0.556 0 0);
+	--overlay: oklch(0 0 0 / 65%);
+	/* Darker, not lighter: black over a dark page needs more of itself to be seen at all, which is
+	   the opposite of the border, where an edge is found by adding light. */
+	--shadow-surface: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 4px rgb(0 0 0 / 3%);
+	--shadow-lifted:
+		0 17.5px 23.4px rgb(0 0 0 / 6%), 0 9.4px 12.5px rgb(0 0 0 / 5%),
+		0 5.25px 7px rgb(0 0 0 / 3%), 0 2.8px 3.7px -2px rgb(0 0 0 / 2%),
+		0 1.2px 1.5px rgb(0 0 0 / 2%);
+	--shadow-overlay:
+		0 40px 80px rgb(0 0 0 / 9%), 0 20px 40px rgb(0 0 0 / 8%), 0 10px 20px rgb(0 0 0 / 6%),
+		0 5px 10px rgb(0 0 0 / 5%), 0 2px 4px rgb(0 0 0 / 3%);
 }
 
 @layer base {
@@ -167,6 +214,13 @@
 		background-color: var(--background);
 		color: var(--foreground);
 		-webkit-font-smoothing: antialiased;
+	}
+
+	/* Selection belongs to the page, not to each control: a reader expects the same colour wherever
+	   they drag across text — a field, a code block, a paragraph. */
+	::selection {
+		background-color: var(--primary);
+		color: var(--primary-foreground);
 	}
 
 	/* Focus is declared once, here, and never in a component: a control reached by keyboard says

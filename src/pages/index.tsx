@@ -6,17 +6,19 @@ import { CodePage } from './Code';
 import { CodeDiffPage } from './CodeDiff';
 import { CodeTreePage } from './CodeTree';
 import { CollapsiblePage } from './Collapsible';
+import { ComboboxPage } from './Combobox';
 import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
-import { DropdownPage } from './Dropdown';
 import { FieldPage } from './Field';
 import { InputPage } from './Input';
 import { LayoutPage } from './Layout';
 import { MenuPage } from './Menu';
+import { NavPage } from './Nav';
 import { OverviewPage } from './Overview';
 import { PopoverPage } from './Popover';
 import { RadioGroupPage } from './RadioGroup';
 import { ScrollAreaPage } from './ScrollArea';
+import { SelectPage } from './Select';
 import { SeparatorPage } from './Separator';
 import { SkeletonPage } from './Skeleton';
 import { SpinnerPage } from './Spinner';
@@ -54,12 +56,13 @@ export const docRoutes: DocRoute[] = [
 		section: 'Components',
 		element: <CollapsiblePage />,
 	},
+	{ path: 'combobox', label: 'Combobox', section: 'Components', element: <ComboboxPage /> },
 	{ path: 'dialog', label: 'Dialog', section: 'Components', element: <DialogPage /> },
 	{ path: 'drawer', label: 'Drawer', section: 'Components', element: <DrawerPage /> },
-	{ path: 'dropdown', label: 'Dropdown', section: 'Components', element: <DropdownPage /> },
 	{ path: 'field', label: 'Field', section: 'Components', element: <FieldPage /> },
 	{ path: 'input', label: 'Input', section: 'Components', element: <InputPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
+	{ path: 'nav', label: 'Nav', section: 'Components', element: <NavPage /> },
 	{ path: 'popover', label: 'Popover', section: 'Components', element: <PopoverPage /> },
 	{
 		path: 'radio-group',
@@ -73,6 +76,7 @@ export const docRoutes: DocRoute[] = [
 		section: 'Components',
 		element: <ScrollAreaPage />,
 	},
+	{ path: 'select', label: 'Select', section: 'Components', element: <SelectPage /> },
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'skeleton', label: 'Skeleton', section: 'Components', element: <SkeletonPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },

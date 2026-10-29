@@ -11,237 +11,111 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
-import Compact from './demos/compact';
-import Loading from './demos/loading';
+import Detached from './demos/detached';
 
 const files = ['src/components/lumo/ui/Menu.tsx'];
 
-const buttonProps: Record<string, PropNode> = {
-	icon: {
-		type: 'ReactNode',
-		default: 'null',
-		description:
-			'Leading glyph, at the text’s own size. It is the only thing the compact menu keeps.',
-	},
-	label: {
-		type: 'string',
-		description:
-			'The row’s text. Given it, the compact menu can stand in with its first letter when there is no icon, and the tooltip has something to say.',
-	},
-	href: {
-		type: 'string',
-		description:
-			'Where the row goes. Given it the row is an anchor rather than a button — it navigates, opens in a new tab and can be copied from the context menu.',
-	},
-	render: {
-		type: 'RenderProp',
-		description:
-			'Draws the row with an element of your own, such as a router’s link. The row still supplies the href, the active state and the classes.',
-	},
-	isActive: {
+const rootProps: Record<string, PropNode> = {
+	open: {
 		type: 'boolean',
-		default: 'false',
-		description:
-			'Marks the row as the page you are on. On a link of its own it also sets aria-current="page".',
-	},
-	variant: {
-		type: '"default" | "outline"',
-		default: '"default"',
-		description:
-			'Outline is for a row that is a control on its own — a button in the rail, not a page.',
-	},
-	size: {
-		type: '"sm" | "md" | "lg"',
-		default: '"md"',
-		description: '28 / 32 / 48 tall. The large one is for a rail’s primary rows.',
-	},
-	tooltip: {
-		type: 'ReactNode',
-		default: 'label',
-		description:
-			'Shown only while the menu is compact. false where something else already opens from the row, such as a submenu popover.',
-	},
-	tooltipSide: {
-		type: '"top" | "right" | "bottom" | "left"',
-		default: '"right"',
-		description: 'Which side the rail’s hint hangs on.',
-	},
-	disabled: {
-		type: 'boolean',
-		default: 'false',
-		description: 'Half opacity and no pointer; a disabled link also leaves the tab order.',
-	},
-	onClick: {
-		type: 'MouseEventHandler',
-		description:
-			'A row that does something rather than going somewhere, given no href and no render.',
-	},
-};
-
-const subProps: Record<string, PropNode> = {
-	label: {
-		required: true,
-		type: 'string',
-		description: 'The row’s text, and the title of the popover once the menu is compact.',
-	},
-	children: {
-		required: true,
-		type: 'ReactNode',
-		description: 'SubItem rows. The same ones serve the inline list and the compact popover.',
-	},
-	icon: {
-		type: 'ReactNode',
-		default: 'null',
-		description: 'Leading glyph, as on any other row.',
-	},
-	isActive: {
-		type: 'boolean',
-		default: 'false',
-		description:
-			'Highlights the parent, so a group reads as current when one of its children is.',
+		description: 'The menu, controlled. Leave it out and the root keeps the state itself.',
 	},
 	defaultOpen: {
 		type: 'boolean',
 		default: 'false',
-		description: 'Whether the inline list starts expanded. Ignored once the menu is compact.',
+		description: 'Where it starts, uncontrolled.',
 	},
-	popoverSide: {
-		type: '"top" | "right" | "bottom" | "left"',
-		default: '"right"',
-		description: 'Which side the popover opens on while the menu is compact.',
+	onOpenChange: {
+		type: '(open: boolean, event, reason) => void',
+		description: 'Fires on the trigger, on a click outside, and on escape.',
 	},
-};
-
-const skeletonProps: Record<string, PropNode> = {
-	showIcon: {
+	modal: {
 		type: 'boolean',
-		default: 'false',
-		description: 'Draws the leading square as well, so the rail loads into its final shape.',
-	},
-	width: {
-		type: 'string',
-		default: '"70%"',
+		default: 'true',
 		description:
-			'The bar’s width. Deterministic on purpose: a random width differs between server and client.',
+			'Whether the page behind is inert while the menu is open. Off, the menu follows a scroll of the page it belongs to — which is what a menu on a long page wants.',
 	},
-};
-
-const actionProps: Record<string, PropNode> = {
-	showOnHover: {
+	loop: {
 		type: 'boolean',
-		default: 'false',
-		description:
-			'Keeps the action out of the way until its own row is hovered, or until it is reached by the keyboard. It is held back by pointer events as well as opacity, so the row underneath still takes the click — the action only takes the pointer once the row has handed it over.',
+		default: 'true',
+		description: 'Whether arrow keys wrap at the ends.',
 	},
 };
 
 const partRows = [
+	['Menu.Root', 'the state', 'one root per menu, or one for many triggers through handle.'],
+	['Menu.Trigger', 'the row you click', 'a button, h-8, with the state layer every control has.'],
+	['Menu.Portal', 'where it is mounted', 'the body, so nothing can clip the popup.'],
 	[
-		'Menu.Root',
-		'the layout, and compact',
-		'the one fact a menu has about its container: whether it is a rail.',
+		'Menu.Positioner',
+		'where it points',
+		'the offset, the side and the flip, in Base UI’s hands.',
 	],
 	[
-		'Menu.List',
-		'a column of rows',
-		'gap-1, no padding — the group around it decides the padding.',
-	],
-	['Menu.Group', 'a block of rows', 'p-2, and the box a group action is positioned against.'],
-	[
-		'Menu.GroupLabel',
-		'its name',
-		'collapses to nothing in the rail, but keeps its text in the DOM.',
+		'Menu.Popup',
+		'the panel',
+		'rounded-lg, bordered, from 90% as it arrives; sized to the row it holds.',
 	],
 	[
-		'Menu.GroupAction',
-		'the group’s own button',
-		'the “+” that belongs to the section, not to one row.',
+		'Menu.Viewport',
+		'the sliding window',
+		'one popup can hold several panels; the old slides out the way the new came in.',
 	],
-	['Menu.Item', 'one row’s box', 'what a badge and an action are positioned against.'],
-	['Menu.Button', 'the row', 'a link with href, a button without it; either way the same look.'],
-	[
-		'Menu.Action',
-		'a secondary action',
-		'rides on the row’s trailing edge, optional showOnHover.',
-	],
-	['Menu.Badge', 'a count or a state', 'decorative — the row has to say it too.'],
-	[
-		'Menu.Separator',
-		'a line between groups',
-		'inset, so it does not run into the rounded corners.',
-	],
-	[
-		'Menu.Sub',
-		'a row that owns rows',
-		'expands inline, and opens a popover once the menu is compact.',
-	],
-	[
-		'Menu.SubList · SubItem · SubButton',
-		'the nested rows',
-		'indented by a border, hidden in the rail.',
-	],
-	[
-		'Menu.Skeleton',
-		'a row while loading',
-		'the same square as a real row, so nothing shifts when it lands.',
-	],
+	['Menu.Group', 'a block of rows', 'grouped for the arrow keys as well as the eye.'],
+	['Menu.GroupLabel', 'its name', 'muted, not focusable.'],
+	['Menu.Item', 'one action', 'highlighted by Base UI, which is what the background follows.'],
+	['Menu.Separator', 'a line between groups', 'mx-1, h-px.'],
 ];
 
 const hookRows = [
+	['data-slot="menu-trigger"', 'the row you click', 'data-pressed while the menu is open.'],
 	[
-		'data-slot="menu-root"',
-		'the menu',
-		'group, and the scope every compact rule is written against.',
+		'data-slot="menu-popup"',
+		'the panel',
+		'w-(--popup-width), so a wider panel is wider, not a wider box.',
 	],
-	['data-compact', 'present in the rail', 'empty-valued, as Base UI writes its own flags.'],
+	['data-highlighted', 'on one item', 'written by Base UI as the keyboard or the pointer moves.'],
+	['data-pressed', 'on the trigger', 'the state layer’s hover weight, held while open.'],
 	[
-		'data-slot="menu-button"',
-		'one row',
-		'data-active on the current one, data-size for its height.',
-	],
-	[
-		'data-active',
-		'on the row',
-		'bg-selected and the font weight; a router’s link sets it through isActive.',
-	],
-	['aria-current="page"', 'on a current link', 'set by the row when it draws its own anchor.'],
-	[
-		'data-slot="menu-button-label"',
-		'the row’s text',
-		'w-0 in the rail, so the a11y name survives the collapse.',
+		'data-starting-style · data-ending-style',
+		'entering / leaving',
+		'scale-90 and opacity-0; data-instant drops the travel.',
 	],
 	[
-		'data-slot="menu-button-initial"',
-		'the first letter',
-		'drawn only in the rail, and only without an icon.',
+		'--popup-width · --popup-height',
+		'the current panel’s size',
+		'set by the viewport, so the popup eases between panels.',
 	],
 	[
-		'data-slot="menu-badge" · menu-action',
-		'the trailing edge',
-		'hidden in the rail, where there is no room for either.',
-	],
-	[
-		'group-data-[compact]',
-		'the rail, as a selector',
-		'one attribute on the root drives every part into its shape.',
+		'data-activation-direction',
+		'left | right | up | down',
+		'on the viewport; which way the panels slide.',
 	],
 ];
 
 const usageImport = "import { Menu } from '@/components/lumo/ui/Menu';";
-const usageExample = `<Menu.Root compact={folded}>
-	<Menu.Group>
-		<Menu.GroupLabel>workspace</Menu.GroupLabel>
-		<Menu.List>
-			<Menu.Item>
-				<Menu.Button icon={<Folder />} label="projects" render={<NavLink to="/projects" />} />
-			</Menu.Item>
-		</Menu.List>
-	</Menu.Group>
+const usageExample = `<Menu.Root>
+	<Menu.Trigger>share</Menu.Trigger>
+	<Menu.Portal>
+		<Menu.Positioner sideOffset={8} align="start">
+			<Menu.Popup>
+				<Menu.Group>
+					<Menu.GroupLabel>share</Menu.GroupLabel>
+					<Menu.Item onClick={copyLink}>copy link</Menu.Item>
+				</Menu.Group>
+				<Menu.Separator />
+				<Menu.Item>share to social</Menu.Item>
+			</Menu.Popup>
+		</Menu.Positioner>
+	</Menu.Portal>
 </Menu.Root>`;
 
 export function MenuPage() {
 	return (
-		<DocPage title="menu" description="navigation rows: groups, icons, badges, submenus">
+		<DocPage
+			title="menu"
+			description="actions on a trigger, with groups, separators and one popup many triggers can share"
+		>
 			<DocPreview path="src/pages/Menu/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
@@ -250,39 +124,22 @@ export function MenuPage() {
 				title="installation"
 				note={
 					<>
-						one file that reaches for four others: <Mono>Collapsible</Mono> for a sub
-						row that expands, <Mono>Popover</Mono> for the same row once there is no
-						room, plus <Mono>Tooltip</Mono> for the rail and <Mono>Skeleton</Mono> for
-						the loading rows.
+						one file. the keyboard, the flip, the dismissal and the typeahead are Base
+						UI’s; what is here is the surface and the row.
 					</>
 				}
 			>
 				<DocInstall
 					name="menu"
-					packages={['@base-ui/react', 'lucide-react', 'tailwind-variants']}
+					packages={['@base-ui/react']}
 					files={files}
-					reaches={[
-						'src/components/lumo/ui/Collapsible.tsx',
-						'src/components/lumo/ui/Popover.tsx',
-						'src/components/lumo/ui/Tooltip.tsx',
-						'src/components/lumo/ui/Separator.tsx',
-						'src/components/lumo/ui/Skeleton.tsx',
-						'src/components/lumo/ui/Transition.tsx',
-						'src/lib/motion.ts',
-						'src/lib/measure.ts',
-						'src/lib/cn.ts',
-					]}
+					reaches={['src/lib/cn.ts']}
 				/>
 			</DocSection>
 
 			<DocSection
 				title="usage"
-				note={
-					<>
-						the menu knows nothing about the shell it sits in. it takes rows, draws
-						them, and reports a selection; the shell decides what a selection means.
-					</>
-				}
+				note="a trigger, a portal, a positioner, a popup. the positioner is what Base UI moves."
 			>
 				<div className="space-y-3">
 					<Code code={usageImport} language="tsx" header={false} />
@@ -291,76 +148,49 @@ export function MenuPage() {
 			</DocSection>
 
 			<DocSection
-				title="a row is a link or a button"
+				title="one popup, three triggers"
 				note={
 					<>
-						a row that goes somewhere is an anchor, not a button with an anchor inside —
-						Base UI’s button would put <Mono>role=&quot;button&quot;</Mono> on the
-						anchor and take the link’s own semantics away. <Mono>render</Mono> hands the
-						row to a router’s link, which keeps the navigation and sets its own{' '}
-						<Mono>aria-current</Mono>.
+						no trigger owns the popup — one <Mono>handle</Mono> does, and each trigger
+						hands it its own payload. the popup never unmounts, so moving between
+						triggers slides the old panel out the way the new one came in, and the box
+						eases from one width to the other.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Menu/demos/detached.tsx">
+					<Detached />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="what is not here"
+				note={
+					<>
+						no rows that check, no rows that nest. Base UI has both —{' '}
+						<Mono>CheckboxItem</Mono>, <Mono>RadioItem</Mono> and <Mono>Submenu</Mono> —
+						and each is a one-line export and a class away; the menu stays the list of
+						actions, and navigation rows are <Mono>Menu</Mono>’s job.
 					</>
 				}
 			>
 				<p className="text-sm text-muted-foreground">
-					with no <Mono>href</Mono> and no <Mono>render</Mono> the row is a button, and{' '}
-					<Mono>onClick</Mono> is what it does. the difference is one prop, and the
-					appearance is the same on both.
+					an <Mono>Item</Mono> closes the menu when it is chosen. Give it{' '}
+					<Mono>closeOnClick={'{false}'}</Mono> to keep it open, which is what a row with
+					a switch of its own would need.
 				</p>
 			</DocSection>
 
 			<DocSection
-				title="the compact rail"
-				note={
-					<>
-						<Mono>compact</Mono> is the whole of what the menu knows about its width:
-						rows keep one glyph, labels and badges go, and a row with children opens
-						them in a popover instead of expanding into room that is not there.
-					</>
-				}
-			>
-				<DocPreview path="src/pages/Menu/demos/compact.tsx">
-					<Compact />
-				</DocPreview>
-			</DocSection>
-
-			<DocSection
-				title="while it loads"
-				note="a skeleton row is the height and shape of a real one, so the menu does not move when the navigation lands."
-			>
-				<DocPreview path="src/pages/Menu/demos/loading.tsx">
-					<Loading />
-				</DocPreview>
-			</DocSection>
-
-			<DocSection
 				title="api reference"
-				note="the row is where the props are; the rest are boxes with an opinion about layout."
+				note="the root takes Base UI’s props; every other part is a styled element."
 			>
 				<div className="space-y-6">
 					<div className="space-y-2">
 						<p className="text-sm text-muted-foreground">
-							<Mono>Menu.Button</Mono> — one row
+							<Mono>Menu.Root</Mono> — the state
 						</p>
-						<PropTable props={buttonProps} />
-					</div>
-					<div className="space-y-2">
-						<p className="text-sm text-muted-foreground">
-							<Mono>Menu.Sub</Mono> — a row that owns rows
-						</p>
-						<PropTable props={subProps} />
-					</div>
-					<div className="space-y-2">
-						<p className="text-sm text-muted-foreground">
-							<Mono>Menu.Skeleton</Mono> — a row while loading
-						</p>
-						<PropTable props={skeletonProps} />
-					</div>
-					<div className="space-y-2">
-						<p className="text-sm text-muted-foreground">
-							<Mono>Menu.Action</Mono> — a secondary action
-						</p>
-						<PropTable props={actionProps} />
+						<PropTable props={rootProps} />
 					</div>
 					<div className="space-y-2">
 						<p className="text-sm text-muted-foreground">the parts</p>
@@ -371,7 +201,7 @@ export function MenuPage() {
 
 			<DocSection
 				title="hooks"
-				note="one attribute on the root is what every compact rule is written against, so nothing is passed down by hand."
+				note="the popup’s size is a variable the viewport sets, which is how one box holds panels of different widths."
 			>
 				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
 			</DocSection>

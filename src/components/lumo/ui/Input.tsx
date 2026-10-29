@@ -2,21 +2,17 @@ import { Input as BaseInput } from '@base-ui/react/input';
 import type { ComponentProps } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
+import { fieldShell } from '@/lib/control';
 
 export const inputVariants = tv({
 	base: [
-		'w-full min-w-0 rounded-md border border-input bg-background text-foreground',
-		'placeholder:text-muted-foreground',
-		'selection:bg-primary selection:text-primary-foreground',
-		'transition-colors duration-(--duration-state)',
-		'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
-		'disabled:cursor-not-allowed disabled:opacity-50',
-		'data-disabled:cursor-not-allowed data-disabled:opacity-50',
-		// Still selectable, so still a field — but a settled one, like a value that is being shown.
+		fieldShell,
+		// A field that is settled rather than edited: still selectable, so still a field, but it reads
+		// as a value being shown.
 		'read-only:bg-muted',
-		// Written by Field when the control fails validation; aria-invalid is the same fact for a
-		// form that is not Base UI's.
-		'data-invalid:border-destructive aria-invalid:border-destructive',
+		// A file input is a field with a button in it; the button is the browser's, so its shape is
+		// settled here rather than in a part.
+		'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
 	],
 	variants: {
 		size: {

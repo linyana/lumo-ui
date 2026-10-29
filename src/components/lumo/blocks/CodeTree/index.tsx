@@ -2,20 +2,20 @@ import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { Folder, FolderOpen } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import { Collapsible } from '@/components/lumo/ui/Collapsible';
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Nav } from '@/components/lumo/ui/Nav';
 import { cn } from '@/lib/cn';
 import { fileGlyph } from './glyph';
 import { foldersOf, normalPath, treeOf, type CodeTreeNode } from './tree';
 
 /**
- * What a row is drawn with at each size, and the one measure the tree adds to a menu row: one level
+ * What a row is drawn with at each size, and the one measure the tree adds to a nav row: one level
  * of nesting, in px.
  *
  * The type is the page's at both sizes: a path is text a reader reads, not code they compare, so the
- * two sizes are a row height rather than a type scale. `Menu.SubList` indents 28px per level, which
+ * two sizes are a row height rather than a type scale. `Nav.SubList` indents 28px per level, which
  * is right for a sidebar with one level of sub rows and wrong for a path five folders deep in a
  * 240px column. So a folder here is the same recipe `Sub` uses — a Base UI collapsible around a
- * `Menu.Button` with the menu's own caret — and the children are a list whose rows carry their own
+ * `Nav.Button` with the nav's own caret — and the children are a list whose rows carry their own
  * indent.
  */
 const rowsOf = {
@@ -24,7 +24,7 @@ const rowsOf = {
 } as const;
 const STEP = 8;
 const INSET = 8;
-/** What the trailing action of a row takes: `Menu.Action` is 20 wide, four from the end. */
+/** What the trailing action of a row takes: `Nav.Action` is 20 wide, four from the end. */
 const ACTION = 24;
 /** What a row that is context rather than the thing is drawn with. */
 const QUIET = 'text-muted-foreground';
@@ -55,8 +55,8 @@ export type CodeTreeProps = Omit<ComponentProps<'div'>, 'children' | 'onSelect'>
 /**
  * A list of paths, drawn as the navigation it is.
  *
- * No row is drawn here: a file is `Menu.SubButton` and a folder is `Menu.Button`, so the cursor, the
- * hover layer, the active fill, the caret, the type scale and the focus ring are the menu's — the
+ * No row is drawn here: a file is `Nav.SubButton` and a folder is `Nav.Button`, so the cursor, the
+ * hover layer, the active fill, the caret, the type scale and the focus ring are the nav's — the
  * same ones a sidebar uses. What is left is the shape: paths in, folders out, one level of indent,
  * and the glyph each file is drawn with.
  */
@@ -97,7 +97,7 @@ export function CodeTree({
 	useEffect(() => {
 		if (current === undefined) return;
 		const row = tree.current?.querySelector<HTMLElement>(
-			'[data-slot="menu-sub-button"][data-active]',
+			'[data-slot="nav-sub-button"][data-active]',
 		);
 		row?.scrollIntoView({ block: 'nearest' });
 	}, [current]);
@@ -110,7 +110,7 @@ export function CodeTree({
 			className={cn('w-full min-w-0', className)}
 			{...props}
 		>
-			<Menu.List className="gap-px">
+			<Nav.List className="gap-px">
 				{nodes.map((node) => (
 					<Node
 						key={node.path}
@@ -125,7 +125,7 @@ export function CodeTree({
 						onSelect={onSelect}
 					/>
 				))}
-			</Menu.List>
+			</Nav.List>
 		</div>
 	);
 }
@@ -155,16 +155,16 @@ function Node({ node, depth, size, shut, leading, about, current, action, onSele
 		const quiet = about !== null && !about.has(node.path) && !active;
 
 		return (
-			<Menu.SubItem>
-				<Menu.SubButton
+			<Nav.SubItem>
+				<Nav.SubButton
 					icon={fileGlyph(node.name)}
 					isActive={active}
 					aria-current={active ? 'true' : undefined}
 					data-quiet={quiet || undefined}
 					className={cn(
 						rowsOf[size],
-						// What `Menu.Action` measures itself against, and the room it takes on the row.
-						action !== undefined && 'peer/menu-button',
+						// What `Nav.Action` measures itself against, and the room it takes on the row.
+						action !== undefined && 'peer/nav-button',
 						quiet && QUIET,
 					)}
 					style={
@@ -175,9 +175,9 @@ function Node({ node, depth, size, shut, leading, about, current, action, onSele
 					onClick={onSelect === undefined ? undefined : () => onSelect(node.path)}
 				>
 					{node.name}
-				</Menu.SubButton>
+				</Nav.SubButton>
 				{action?.(node.path)}
-			</Menu.SubItem>
+			</Nav.SubItem>
 		);
 	}
 
@@ -186,14 +186,14 @@ function Node({ node, depth, size, shut, leading, about, current, action, onSele
 	const quiet = leading !== null && !leading.has(node.path);
 
 	return (
-		<Menu.SubItem>
+		<Nav.SubItem>
 			<BaseCollapsible.Root defaultOpen={!shut.has(node.path) && !quiet}>
-				{/* The same two parts `Menu.Sub` composes, in a different order: the caret leads the row
+				{/* The same two parts `Nav.Sub` composes, in a different order: the caret leads the row
 				    instead of trailing it, because in a tree the caret is what marks the level — a row
 				    that ends in one reads as a sidebar's, not as a file's. */}
 				<BaseCollapsible.Trigger
 					render={
-						<Menu.Button
+						<Nav.Button
 							icon={
 								<>
 									<Collapsible.Icon />
@@ -208,7 +208,7 @@ function Node({ node, depth, size, shut, leading, about, current, action, onSele
 					}
 				/>
 				<Collapsible.Panel>
-					<Menu.List className="gap-px">
+					<Nav.List className="gap-px">
 						{node.children.map((child) => (
 							<Node
 								key={child.path}
@@ -223,10 +223,10 @@ function Node({ node, depth, size, shut, leading, about, current, action, onSele
 								onSelect={onSelect}
 							/>
 						))}
-					</Menu.List>
+					</Nav.List>
 				</Collapsible.Panel>
 			</BaseCollapsible.Root>
-		</Menu.SubItem>
+		</Nav.SubItem>
 	);
 }
 

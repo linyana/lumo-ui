@@ -15,15 +15,15 @@ import {
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
-import { frameOf, scaleOf } from '@/lib/measure';
+import { iconSlot } from '@/lib/control';
+import { frameOf, HAIRLINE, scaleOf } from '@/lib/measure';
 import {
-	glide,
+	interrupt,
 	quickSize,
 	sizePreset,
-	speedOf,
 	springSize,
 	springSlide,
-	toTiming,
+	startGlide,
 	useSpring,
 	type Run,
 } from '@/lib/motion';
@@ -307,24 +307,20 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 
 		const from = edge.fit(rect.height / scale.y, edge.y);
 		const to = edge.fit(borderBox, edge.y);
-		// Read before the animation is cancelled: after that there is no curve to ask.
-		const velocity = growing.current === null ? 0 : speedOf(growing.current);
-		growing.current?.animation.cancel();
-		growing.current = null;
+		// Read before the glide is interrupted: after that there is no curve to ask.
+		const velocity = interrupt(growing);
 
 		box.style.height = `${to}px`;
-		// A few pixels is a settle, not a move — see HAIRLINE in Transition.
-		if (Math.abs(from - to) < 4 || !painted.current) return;
+		// A few pixels is a settle, not a move.
+		if (Math.abs(from - to) < HAIRLINE || !painted.current) return;
 
-		const timing = toTiming(sizePreset(to - from, size, quick), { from, to, velocity });
-		const animation = glide(box, [{ height: `${from}px` }, { height: `${to}px` }], timing);
-		if (animation === undefined) return;
-
-		growing.current = { animation, timing, from, to };
-		const park = () => {
-			if (growing.current?.animation === animation) growing.current = null;
-		};
-		animation.finished.then(park, park);
+		startGlide(
+			growing,
+			box,
+			[{ height: `${from}px` }, { height: `${to}px` }],
+			sizePreset(to - from, size, quick),
+			{ from, to, velocity },
+		);
 	}, [index, quick, size]);
 
 	// The track, as one percentage translate with a pixel correction on top of it. The correction is
@@ -337,28 +333,20 @@ export function Panels({ className, children, ...props }: PanelsProps) {
 		const to = `${-index * 100}%`;
 		const before = track.getBoundingClientRect();
 		const scale = scaleOf(track, getComputedStyle(track), before);
-		// Read before the animation is cancelled: after that there is no curve to ask.
-		const velocity = sliding.current === null ? 0 : speedOf(sliding.current);
-		sliding.current?.animation.cancel();
-		sliding.current = null;
+		// Read before the glide is interrupted: after that there is no curve to ask.
+		const velocity = interrupt(sliding);
 
 		track.style.transform = `translateX(${to})`;
 		const jump = (before.left - track.getBoundingClientRect().left) / scale.x;
 		if (Math.abs(jump) < 0.5) return;
 
-		const timing = toTiming(slide, { from: jump, to: 0, velocity });
-		const animation = glide(
+		startGlide(
+			sliding,
 			track,
 			[{ translate: `${jump}px 0px` }, { translate: '0px 0px' }],
-			timing,
+			slide,
+			{ from: jump, to: 0, velocity },
 		);
-		if (animation === undefined) return;
-
-		sliding.current = { animation, timing, from: jump, to: 0 };
-		const park = () => {
-			if (sliding.current?.animation === animation) sliding.current = null;
-		};
-		animation.finished.then(park, park);
 	}, [index, slide]);
 
 	useLayoutEffect(() => {
@@ -465,7 +453,7 @@ export const tabVariants = tv({
 		'active:translate-y-(--press-offset)',
 		'hover:text-foreground data-active:text-foreground',
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
-		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+		iconSlot,
 	],
 	variants: {
 		variant: {

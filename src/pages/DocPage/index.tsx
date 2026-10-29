@@ -26,12 +26,13 @@ import { Button } from '@/components/lumo/ui/Button';
 import { Code, Copy } from '@/components/lumo/ui/Code';
 import { CodeTree } from '@/components/lumo/blocks/CodeTree';
 import { Dialog } from '@/components/lumo/ui/Dialog';
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Nav } from '@/components/lumo/ui/Nav';
 import { Skeleton } from '@/components/lumo/ui/Skeleton';
 import { Steps } from '@/components/lumo/ui/Steps';
 import { Tabs } from '@/components/lumo/ui/Tabs';
 import { Tooltip } from '@/components/lumo/ui/Tooltip';
 import { cn } from '@/lib/cn';
+import { useCopy } from '@/lib/clipboard';
 import { highlight } from '@/lib/shiki';
 import { filesOf, installFiles, itemOf, languageOf, readSource } from './sources';
 import { zipOf } from './zip';
@@ -66,13 +67,7 @@ export function DocNeighborsProvider({
 }
 
 function CopyPage({ title, description }: { title: string; description?: string }) {
-	const [copied, setCopied] = useState(false);
-
-	useEffect(() => {
-		if (!copied) return;
-		const timer = setTimeout(() => setCopied(false), 1600);
-		return () => clearTimeout(timer);
-	}, [copied]);
+	const { copied, copy } = useCopy();
 
 	return (
 		<Button
@@ -80,14 +75,12 @@ function CopyPage({ title, description }: { title: string; description?: string 
 			variant="secondary"
 			icon={copied ? <Check /> : <CopyIcon />}
 			aria-label={copied ? 'copied' : 'copy page'}
-			onClick={() => {
-				const content = document.querySelector('[data-slot=doc-page-content]');
-				const text = `${title}\n\n${description ?? ''}\n\n${content?.textContent ?? ''}`;
-				navigator.clipboard.writeText(text).then(
-					() => setCopied(true),
-					() => {},
-				);
-			}}
+			onClick={() =>
+				void copy(() => {
+					const content = document.querySelector('[data-slot=doc-page-content]');
+					return `${title}\n\n${description ?? ''}\n\n${content?.textContent ?? ''}`;
+				})
+			}
 		>
 			{copied ? 'copied' : 'copy page'}
 		</Button>
@@ -245,32 +238,17 @@ function ManualFiles({ paths }: { paths: string[] }) {
  * first — which is what makes reading the manual file by file a route of its own.
  */
 function CopyFile({ path }: { path: string }) {
-	const [copied, setCopied] = useState(false);
-
-	useEffect(() => {
-		if (!copied) return;
-		const timer = setTimeout(() => setCopied(false), 1600);
-		return () => clearTimeout(timer);
-	}, [copied]);
+	const { copied, copy } = useCopy();
 
 	return (
-		<Menu.Action
+		<Nav.Action
 			type="button"
 			showOnHover
 			aria-label={copied ? `copied ${path}` : `copy ${path}`}
-			onClick={() => {
-				readSource(path).then(
-					(text) =>
-						navigator.clipboard.writeText(text ?? '').then(
-							() => setCopied(true),
-							() => {},
-						),
-					() => {},
-				);
-			}}
+			onClick={() => void copy(async () => (await readSource(path)) ?? undefined)}
 		>
 			{copied ? <Check /> : <CopyIcon />}
-		</Menu.Action>
+		</Nav.Action>
 	);
 }
 

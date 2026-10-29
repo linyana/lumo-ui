@@ -45,6 +45,47 @@
 			]
 		},
 		{
+			"name": "control",
+			"type": "registry:file",
+			"title": "control idioms",
+			"description": "The five things every control in the library looks the same way: the tint a hover or a press leaves, the size an icon slot takes from the text around it, the shell of a text field, the box a tick or a dot is drawn in, and the row a list of choices is made of. Required by Button, Input, Textarea, Checkbox, RadioGroup, Collapsible, Menu, Select, Nav and Steps; installed automatically as a dependency.",
+			"files": [
+				{
+					"path": "src/lib/control.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/control.ts"
+				}
+			],
+			"registryDependencies": ["linyana/lumo-ui/cn"]
+		},
+		{
+			"name": "surface",
+			"type": "registry:file",
+			"title": "overlay surfaces",
+			"description": "What every floating surface shares: the layer ladder (a backdrop, a popup, a tooltip, a toast), the scrim, the way a popup arrives, the box its positioner is measured in, the viewport that slides one panel to the next, and the arrow that points back at its trigger. Required by Dialog, Drawer, Popover, Tooltip and Menu; installed automatically as a dependency.",
+			"files": [
+				{
+					"path": "src/lib/surface.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/surface.ts"
+				}
+			],
+			"registryDependencies": ["linyana/lumo-ui/cn"]
+		},
+		{
+			"name": "clipboard",
+			"type": "registry:file",
+			"title": "useCopy",
+			"description": "A copy button's two halves — the write, and the moment of 'copied' that says it landed — so every copy in the library forgets at the same speed and none of them claims a copy the clipboard refused.",
+			"files": [
+				{
+					"path": "src/lib/clipboard.ts",
+					"type": "registry:file",
+					"target": "~/src/lib/clipboard.ts"
+				}
+			]
+		},
+		{
 			"name": "theme",
 			"type": "registry:file",
 			"title": "lumo-ui theme tokens",
@@ -91,7 +132,11 @@
 			"title": "Button",
 			"description": "The reference component: tailwind-variants API, token-driven appearance, data-slot / data-variant hooks.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/spinner",
+				"linyana/lumo-ui/control"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Button.tsx",
@@ -104,7 +149,7 @@
 			"name": "card",
 			"type": "registry:ui",
 			"title": "Card",
-			"description": "One surface for one subject: a header with its title, description and action, a body that takes the slack, and a footer. Two sizes, set once on the root and read by every part.",
+			"description": "One surface for one subject: a header with its title, description and action, a body that takes the slack, and a footer. Two sizes, set once on the root and read by every part, and a `hoverable` root for a card that is a target.",
 			"dependencies": ["tailwind-variants"],
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [
@@ -121,7 +166,7 @@
 			"title": "Tooltip",
 			"description": "Hover and focus hint anchored to its trigger. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Tooltip.tsx",
@@ -131,12 +176,31 @@
 			]
 		},
 		{
+			"name": "combobox",
+			"type": "registry:ui",
+			"title": "Combobox",
+			"description": "A select whose options are found by typing: the field is the control, so the chosen label stays in it and the query narrows the list under it. A caret opens the list without typing, a clear button appears only while there is something to clear, and the rows are the same rows Menu and Select draw. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/control",
+				"linyana/lumo-ui/surface"
+			],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Combobox.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Combobox.tsx"
+				}
+			]
+		},
+		{
 			"name": "dialog",
 			"type": "registry:ui",
 			"title": "Dialog",
 			"description": "Modal dialog. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Dialog.tsx",
@@ -151,7 +215,11 @@
 			"title": "Collapsible",
 			"description": "Disclosure region that expands and collapses one panel. Its height belongs to Transition, so a fold is one box on the one size spring rather than two animations of the same edge. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/transition"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/transition",
+				"linyana/lumo-ui/control"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Collapsible.tsx",
@@ -166,7 +234,7 @@
 			"title": "Popover",
 			"description": "Anchored panel that holds rich content. One popup can be shared by several detached triggers, each with its own payload. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Popover.tsx",
@@ -176,17 +244,21 @@
 			]
 		},
 		{
-			"name": "dropdown",
+			"name": "menu",
 			"type": "registry:ui",
-			"title": "Dropdown",
-			"description": "A dropdown of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share. Behaviour from Base UI, appearance from tokens.",
-			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"title": "Menu",
+			"description": "A menu of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/surface",
+				"linyana/lumo-ui/button"
+			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Dropdown.tsx",
+					"path": "src/components/lumo/ui/Menu.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dropdown.tsx"
+					"target": "~/src/components/lumo/ui/Menu.tsx"
 				}
 			]
 		},
@@ -211,7 +283,7 @@
 			"title": "Steps",
 			"description": "A sequence of steps as an ordered list: one current index makes the items before it finish and the ones after wait, and the connector is drawn by the item so the spacing is never placed by hand.",
 			"dependencies": ["lucide-react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Steps.tsx",
@@ -230,7 +302,8 @@
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/motion",
 				"linyana/lumo-ui/measure",
-				"linyana/lumo-ui/transition"
+				"linyana/lumo-ui/transition",
+				"linyana/lumo-ui/control"
 			],
 			"files": [
 				{
@@ -246,7 +319,7 @@
 			"title": "Drawer",
 			"description": "A panel that slides in from an edge and can be swiped away. Each of the four edges is one swipe direction. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Drawer.tsx",
@@ -270,10 +343,10 @@
 			]
 		},
 		{
-			"name": "menu",
+			"name": "nav",
 			"type": "registry:ui",
-			"title": "Menu",
-			"description": "A list of navigation rows: groups, icons, active state, badges, inline submenus, and a compact rail where a row with children opens them in a popover. The menu knows nothing about the shell it sits in.",
+			"title": "Nav",
+			"description": "A list of navigation rows: groups, icons, active state, badges, inline sub rows, and a compact rail where a row with children opens them in a popover. The nav knows nothing about the shell it sits in — width, position and scrolling are the caller’s.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
@@ -281,13 +354,14 @@
 				"linyana/lumo-ui/popover",
 				"linyana/lumo-ui/separator",
 				"linyana/lumo-ui/skeleton",
-				"linyana/lumo-ui/tooltip"
+				"linyana/lumo-ui/tooltip",
+				"linyana/lumo-ui/control"
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Menu.tsx",
+					"path": "src/components/lumo/ui/Nav.tsx",
 					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu.tsx"
+					"target": "~/src/components/lumo/ui/Nav.tsx"
 				}
 			]
 		},
@@ -307,15 +381,34 @@
 			]
 		},
 		{
+			"name": "select",
+			"type": "registry:ui",
+			"title": "Select",
+			"description": "One value out of many, in a list laid under the control that opened it: an Input's shell as a trigger with a caret that turns itself, a row shared with Menu whose chosen line is filled rather than checked, and scroll arrows at the ends of a long list. The popup opens under the trigger rather than over it. Behaviour from Base UI, appearance from tokens.",
+			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/control",
+				"linyana/lumo-ui/surface"
+			],
+			"files": [
+				{
+					"path": "src/components/lumo/ui/Select.tsx",
+					"type": "registry:file",
+					"target": "~/src/components/lumo/ui/Select.tsx"
+				}
+			]
+		},
+		{
 			"name": "layout",
 			"type": "registry:block",
 			"title": "Layout",
-			"description": "The app shell: a sidebar drawn from a menu array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
-			"dependencies": ["tailwind-variants"],
+			"description": "The app shell: a rail drawn from a nav array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
+			"dependencies": ["lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/button",
-				"linyana/lumo-ui/menu",
+				"linyana/lumo-ui/nav",
 				"linyana/lumo-ui/scroll-area"
 			],
 			"files": [
@@ -355,7 +448,8 @@
 			"registryDependencies": [
 				"linyana/lumo-ui/cn",
 				"linyana/lumo-ui/button",
-				"linyana/lumo-ui/shiki"
+				"linyana/lumo-ui/shiki",
+				"linyana/lumo-ui/clipboard"
 			],
 			"files": [
 				{
@@ -384,9 +478,13 @@
 			"name": "code-tree",
 			"type": "registry:block",
 			"title": "CodeTree",
-			"description": "A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active. The rows are Menu — hover, active fill, caret and focus come from there — so the tree only supplies the shape and the glyph each file is drawn with.",
+			"description": "A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active. The rows are Nav — hover, active fill, caret and focus come from there — so the tree only supplies the shape and the glyph each file is drawn with.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/menu", "linyana/lumo-ui/cn"],
+			"registryDependencies": [
+				"linyana/lumo-ui/nav",
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/collapsible"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/blocks/CodeTree/index.tsx",
@@ -411,7 +509,11 @@
 			"title": "Toast",
 			"description": "Transient messages in a corner stack: behaviour from Base UI, appearance from tokens, and a Toaster that maps the queue to parts so a caller only ever queues a toast.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/spinner"],
+			"registryDependencies": [
+				"linyana/lumo-ui/cn",
+				"linyana/lumo-ui/spinner",
+				"linyana/lumo-ui/button"
+			],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Toast.tsx",
@@ -460,7 +562,7 @@
 			"title": "Input",
 			"description": "A single line of text in the same 32 / 36 / 40 tiers a Button takes, so the two line up. Registers itself with a surrounding Field and reads the invalid border off it.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Input.tsx",
@@ -475,7 +577,7 @@
 			"title": "Checkbox",
 			"description": "One of several, any number of them: a 16px box, the tick inside it, and a real hidden input so a form and a label both see a checkbox. Indeterminate draws a dash in place of the tick.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Checkbox.tsx",
@@ -490,7 +592,7 @@
 			"title": "RadioGroup",
 			"description": "Exactly one of these, and never none: Base UI's group and its radio as one namespace, so the value, the arrow keys and the dot between them arrive together.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/RadioGroup.tsx",
@@ -520,7 +622,7 @@
 			"title": "Textarea",
 			"description": "Several lines of text in the same box as an Input. The element is the browser's, mounted through Field.Control, which is what gives it a name, a describedby and the invalid border inside a field.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
 			"files": [
 				{
 					"path": "src/components/lumo/ui/Textarea.tsx",

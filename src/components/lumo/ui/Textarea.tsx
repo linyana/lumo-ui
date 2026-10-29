@@ -2,21 +2,12 @@ import { Field } from '@base-ui/react/field';
 import type { ComponentProps } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { cn } from '@/lib/cn';
+import { fieldShell } from '@/lib/control';
 
 export const textareaVariants = tv({
-	base: [
-		'w-full min-w-0 resize-y rounded-md border border-input bg-background text-foreground',
-		'placeholder:text-muted-foreground',
-		'selection:bg-primary selection:text-primary-foreground',
-		'transition-colors duration-(--duration-state)',
-		'disabled:cursor-not-allowed disabled:opacity-50',
-		'data-disabled:cursor-not-allowed data-disabled:opacity-50',
-		// Still selectable, so still a field — but a settled one, like a value that is being shown.
-		'read-only:bg-muted',
-		// Written by Field when the control fails validation; aria-invalid is the same fact for a
-		// form that is not Base UI's.
-		'data-invalid:border-destructive aria-invalid:border-destructive',
-	],
+	// `read-only` is the textarea's own: the shell is shared with controls that cannot be typed into,
+	// where `:read-only` matches for their whole life.
+	base: [fieldShell, 'read-only:bg-muted', 'resize-y'],
 	variants: {
 		size: {
 			sm: 'min-h-16 px-2.5 py-1.5 text-sm',

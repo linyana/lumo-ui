@@ -12,6 +12,7 @@ import {
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
 import Flush from './demos/flush';
+import Hoverable from './demos/hoverable';
 import Sizes from './demos/sizes';
 import Stretch from './demos/stretch';
 
@@ -23,6 +24,12 @@ const rootProps: Record<string, PropNode> = {
 		default: '"md"',
 		description:
 			'The padding and the gap between parts. Set once on the root: every part reads it back off the root, so a dense list of cards changes at one place.',
+	},
+	hoverable: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'Whether the surface answers the pointer. Hover is owned by the card, not by whatever inside it is clicked, so a tile whose bar is the link still lifts as a whole: the shadow spreads from a line hugging the card to a halo around it. The edge takes one small step, and only where the shadow is not enough — in the dark theme. The fill never moves, and neither does the cursor: a card is a div, the link is the consumer’s.',
 	},
 	className: {
 		type: 'string',
@@ -66,6 +73,11 @@ const partRows = [
 const hookRows = [
 	['data-slot="card"', 'the surface', 'a div; the card adds the look, nothing else.'],
 	['data-size', 'sm | md', 'on the root, and read by every part through group-data-[size=…].'],
+	[
+		'data-hoverable',
+		'present only when hoverable',
+		'also on the root, so a part can keep time with the surface: group-data-[hoverable]/card:…',
+	],
 	[
 		'data-slot="card-header"',
 		'the top block',
@@ -146,6 +158,24 @@ export function CardPage() {
 			>
 				<DocPreview path="src/pages/Card/demos/sizes.tsx">
 					<Sizes />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="hoverable"
+				note={
+					<>
+						<Mono>hoverable</Mono> puts the hover on the surface instead of on whatever
+						inside it happens to be clickable, so a tile answers as one thing from a
+						pointer anywhere inside it. The shadow spreads from a line hugging the card
+						to a halo around it; the edge only steps to <Mono>input</Mono>, which is the
+						same colour as <Mono>border</Mono> in the light theme and one small step
+						above it in the dark one.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Card/demos/hoverable.tsx">
+					<Hoverable />
 				</DocPreview>
 			</DocSection>
 

@@ -1,23 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Moon, Sun, User } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
-import { Layout, type LayoutMenuEntry, type LayoutMenuItem } from '@/components/lumo/blocks/Layout';
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/lumo/blocks/Layout';
+import { Nav } from '@/components/lumo/ui/Nav';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
 import { ThemeProvider } from '@/pages/theme';
 
 const to = (path: string) => `/${path}`;
 
-/** A row that is a route: the anchor comes from the router, the look from the menu. */
-const row = (path: string, label: string): LayoutMenuItem => ({
+/** A row that is a route: the anchor comes from the router, the look from the nav. */
+const row = (path: string, label: string): LayoutNavItem => ({
 	key: path,
 	label,
 	href: to(path),
 	render: <NavLink to={to(path)} />,
 });
 
-const menu: LayoutMenuEntry[] = docSections.map((section): LayoutMenuEntry => ({
+const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => ({
 	type: 'group',
 	label: section,
 	children: docRoutes
@@ -27,7 +27,7 @@ const menu: LayoutMenuEntry[] = docSections.map((section): LayoutMenuEntry => ({
 
 /**
  * The shell, and the only place that knows the rail is a set of routes. Every row is a `NavLink`
- * handed to the menu through `render`, so the url selects the row — there is no second copy of
+ * handed to the nav through `render`, so the url selects the row — there is no second copy of
  * that state to keep in sync, and a reload or a shared link lands on the same page.
  */
 export default function App() {
@@ -57,7 +57,7 @@ export default function App() {
 			<DocNeighborsProvider value={neighbors}>
 				<Layout
 					variant="default"
-					menu={menu}
+					nav={nav}
 					selectedKey={selectedKey}
 					resetScrollKey={pathname}
 					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
@@ -69,18 +69,18 @@ export default function App() {
 						document.cookie = `layout_folded=${next ? 1 : 0}; path=/; max-age=2592000`;
 					}}
 					footer={
-						<Menu.List>
-							<Menu.Item>
-								<Menu.Button icon={<User />} label="account" />
-							</Menu.Item>
-							<Menu.Item>
-								<Menu.Button
+						<Nav.List>
+							<Nav.Item>
+								<Nav.Button icon={<User />} label="account" />
+							</Nav.Item>
+							<Nav.Item>
+								<Nav.Button
 									icon={dark ? <Sun /> : <Moon />}
 									label={dark ? 'light theme' : 'dark theme'}
 									onClick={() => setDark((current) => !current)}
 								/>
-							</Menu.Item>
-						</Menu.List>
+							</Nav.Item>
+						</Nav.List>
 					}
 				>
 					<Layout.Content className="p-0">

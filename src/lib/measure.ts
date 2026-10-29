@@ -7,6 +7,13 @@
  * lands at its own size times the scale.
  */
 
+/**
+ * Below this many pixels a change is not worth a glide. A spring covers the same time whatever the
+ * distance, so a 2px settle would take half a second to arrive and read as lag rather than motion.
+ * Shared, because every box that glides has to agree on what counts as having moved.
+ */
+export const HAIRLINE = 4;
+
 /** A length the browser resolved, or `undefined` when it is a keyword (`auto`, `none`). */
 function length(value: string) {
 	const parsed = Number.parseFloat(value);

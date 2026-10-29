@@ -123,7 +123,11 @@ const hookRows = [
 		'—',
 		'half opacity and no pointer, on the item or on the whole group.',
 	],
-	[':focus-visible', '—', 'the ring, around the item, declared once in lumo-tokens.css.'],
+	[
+		':hover · :focus-visible',
+		'border-input-strong',
+		'the item’s edge steps one darker for both, and focus draws no outline. A selected item answers focus only — the ring around the dot already says “on”.',
+	],
 ];
 
 const usageImport = "import { RadioGroup } from '@/components/lumo/ui/RadioGroup';";

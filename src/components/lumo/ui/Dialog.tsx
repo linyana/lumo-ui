@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
 import { cn } from '@/lib/cn';
+import { backdrop, description, title } from '@/lib/surface';
 
 export type BackdropProps = ComponentProps<typeof BaseDialog.Backdrop>;
 
@@ -8,13 +9,7 @@ export function Backdrop({ className, ...props }: BackdropProps) {
 	return (
 		<BaseDialog.Backdrop
 			data-slot="dialog-backdrop"
-			className={cn(
-				'fixed inset-0 z-40 min-h-dvh bg-black/50 transition-opacity duration-(--duration-state) ease-(--ease-overlay)',
-				// iOS 26+: a fixed backdrop falls short of the visible viewport while scrolling.
-				'supports-[-webkit-touch-callout:none]:absolute',
-				'data-starting-style:opacity-0 data-ending-style:opacity-0',
-				className,
-			)}
+			className={cn(backdrop, className)}
 			{...props}
 		/>
 	);
@@ -28,7 +23,7 @@ export function Description({ className, ...props }: DescriptionProps) {
 	return (
 		<BaseDialog.Description
 			data-slot="dialog-description"
-			className={cn('mt-1.5 text-sm text-muted-foreground', className)}
+			className={cn(description, className)}
 			{...props}
 		/>
 	);
@@ -41,7 +36,7 @@ export function Popup({ className, ...props }: PopupProps) {
 		<BaseDialog.Popup
 			data-slot="dialog-popup"
 			className={cn(
-				'w-full max-w-md rounded-xl border bg-popover p-6 text-popover-foreground shadow-lg',
+				'w-full max-w-md rounded-xl border bg-popover p-6 text-popover-foreground shadow-overlay',
 				'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-overlay)',
 				'data-starting-style:scale-95 data-starting-style:opacity-0',
 				'data-ending-style:scale-95 data-ending-style:opacity-0',
@@ -60,11 +55,7 @@ export type TitleProps = ComponentProps<typeof BaseDialog.Title>;
 
 export function Title({ className, ...props }: TitleProps) {
 	return (
-		<BaseDialog.Title
-			data-slot="dialog-title"
-			className={cn('text-base font-semibold', className)}
-			{...props}
-		/>
+		<BaseDialog.Title data-slot="dialog-title" className={cn(title, className)} {...props} />
 	);
 }
 

@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { Spinner } from '@/components/lumo/ui/Spinner';
 import { cn } from '@/lib/cn';
+import { iconSlot, stateLayer } from '@/lib/control';
 
 /** Reference component — other components follow this shape. */
 export const buttonVariants = tv({
@@ -10,17 +11,13 @@ export const buttonVariants = tv({
 		'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap',
 		'relative rounded-md font-medium select-none',
 		'transition-[color,background-color,border-color,translate]',
-		'ease-[var(--ease-spring)] duration-[var(--duration-state)]',
-		'active:not-aria-[haspopup]:translate-y-[var(--press-offset)]',
-		'active:not-aria-[haspopup]:duration-[var(--duration-press)]',
-		'after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit]',
-		'after:bg-current after:opacity-0 after:transition-opacity',
-		'after:duration-[var(--duration-state)]',
-		'hover:after:opacity-[var(--state-layer-hover-opacity)]',
-		'active:after:opacity-[var(--state-layer-pressed-opacity)]',
+		'ease-(--ease-spring) duration-(--duration-state)',
+		'active:not-aria-[haspopup]:translate-y-(--press-offset)',
+		'active:not-aria-[haspopup]:duration-(--duration-press)',
+		stateLayer,
 		'data-disabled:pointer-events-none',
 		'data-disabled:not-data-loading:opacity-50',
-		'[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-[1em]',
+		iconSlot,
 		'cursor-pointer',
 	],
 	variants: {

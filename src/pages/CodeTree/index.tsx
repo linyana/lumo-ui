@@ -35,7 +35,7 @@ const codeTreeProps: Record<string, PropNode> = {
 	onSelect: {
 		type: '(path: string) => void',
 		description:
-			'Called with the path of a clicked file. The row is a menu row, so it is focusable either way — given no handler it simply does nothing.',
+			'Called with the path of a clicked file. The row is a nav row, so it is focusable either way — given no handler it simply does nothing.',
 	},
 	defaultCollapsed: {
 		type: 'string[]',
@@ -56,7 +56,7 @@ const codeTreeProps: Record<string, PropNode> = {
 		type: '"sm" | "md"',
 		default: '"sm"',
 		description:
-			"The row height — sm for a column beside a pane, md on a page. The type is the page's at both, because a path is text a reader reads rather than code they compare. A row is a menu row, so this is the only measure the tree adds to it.",
+			"The row height — sm for a column beside a pane, md on a page. The type is the page's at both, because a path is text a reader reads rather than code they compare. A row is a nav row, so this is the only measure the tree adds to it.",
 	},
 	className: {
 		type: 'string',
@@ -69,12 +69,12 @@ const codeTreeProps: Record<string, PropNode> = {
 };
 
 const hookRows = [
-	['data-slot="code-tree"', 'the tree', 'a div carrying the size; everything under it is Menu.'],
+	['data-slot="code-tree"', 'the tree', 'a div carrying the size; everything under it is Nav.'],
 	['data-size', 'sm | md', 'mirrored onto it, so plain CSS can reach the row density.'],
 	[
-		'data-slot="menu-button"',
+		'data-slot="nav-button"',
 		'a folder',
-		'Menu’s row on Base UI’s collapsible trigger: aria-expanded, aria-controls and the panel id are Base UI’s.',
+		'Nav’s row on Base UI’s collapsible trigger: aria-expanded, aria-controls and the panel id are Base UI’s.',
 	],
 	[
 		'data-panel-open',
@@ -82,14 +82,14 @@ const hookRows = [
 		'set by Base UI on the trigger; the caret turns and the folder glyph swaps off it.',
 	],
 	[
-		'data-slot="menu-list"',
+		'data-slot="nav-list"',
 		'one level',
 		'a ul per folder; the rows carry their own indent, one step per level.',
 	],
 	[
-		'data-slot="menu-sub-button"',
+		'data-slot="nav-sub-button"',
 		'one file',
-		'a menu row: its cursor, hover layer and focus ring are the menu’s, not the tree’s.',
+		'a nav row: its cursor, hover layer and focus ring are the nav’s, not the tree’s.',
 	],
 	[
 		'data-active',
@@ -129,9 +129,9 @@ export function CodeTreePage() {
 				title="installation"
 				note={
 					<>
-						three files, and none of them draws a row: the rows are <Mono>Menu</Mono>’s,
-						so the command takes the menu and its chain too. the glyphs come from
-						lucide, chosen by the file’s own name.
+						three files, and none of them draws a row: the rows are <Mono>Nav</Mono>’s,
+						so the command takes the nav and its chain too. the glyphs come from lucide,
+						chosen by the file’s own name.
 					</>
 				}
 			>
@@ -141,13 +141,13 @@ export function CodeTreePage() {
 					files={files}
 					copyNote={
 						<>
-							the rows are <Mono>Menu</Mono>’s — a folder is its <Mono>Sub</Mono>, a
-							file its <Mono>SubButton</Mono> — and the menu reaches for the
+							the rows are <Mono>Nav</Mono>’s — a folder is its <Mono>Sub</Mono>, a
+							file its <Mono>SubButton</Mono> — and the nav reaches for the
 							collapsible, the tooltip, the popover and <Mono>cn()</Mono> in turn. the
 							list below is that whole chain, the component last to first.
 						</>
 					}
-					reaches={['src/components/lumo/ui/Menu.tsx', 'src/lib/cn.ts']}
+					reaches={['src/components/lumo/ui/Nav.tsx', 'src/lib/cn.ts']}
 				/>
 			</DocSection>
 
@@ -215,13 +215,13 @@ export function CodeTreePage() {
 			</DocSection>
 
 			<DocSection
-				title="the rows are the menu"
+				title="the rows are the nav"
 				note={
 					<>
 						the tree adds no second navigation vocabulary: a file is{' '}
-						<Mono>Menu.SubButton</Mono> and a folder is <Mono>Menu.Button</Mono> — the
-						same ingredients <Mono>Menu.Sub</Mono> is built from, a Base UI collapsible
-						around a menu row. the cursor, the hover layer, the active fill, the caret
+						<Mono>Nav.SubButton</Mono> and a folder is <Mono>Nav.Button</Mono> — the
+						same ingredients <Mono>Nav.Sub</Mono> is built from, a Base UI collapsible
+						around a nav row. the cursor, the hover layer, the active fill, the caret
 						and the focus ring are therefore the ones a sidebar already uses.
 					</>
 				}
@@ -229,15 +229,15 @@ export function CodeTreePage() {
 				<p className="text-sm text-muted-foreground">
 					what the tree does decide is the layout and the type, because a path is not a
 					sidebar: the caret leads its row rather than trailing it, a folder indents its
-					children by 8px rather than <Mono>Menu.SubList</Mono>’s 28px — a sidebar has one
+					children by 8px rather than <Mono>Nav.SubList</Mono>’s 28px — a sidebar has one
 					level of sub rows and a path five folders deep in a 240px column — and the rows
 					read in the page's own type rather than in a monospace, since a path is text a
 					reader reads, not code they compare.
 				</p>
 				<p className="text-sm text-muted-foreground">
-					what is left once <Mono>Menu</Mono> is taken away is two pure functions,{' '}
+					what is left once <Mono>Nav</Mono> is taken away is two pure functions,{' '}
 					<Mono>treeOf</Mono> and <Mono>fileGlyph</Mono>. a hand-drawn row would have been
-					a copy of the menu’s look, and a copy is exactly the thing that drifts.
+					a copy of the nav’s look, and a copy is exactly the thing that drifts.
 				</p>
 			</DocSection>
 

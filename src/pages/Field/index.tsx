@@ -118,7 +118,11 @@ const hookRows = [
 		'true while invalid',
 		'the same fact as data-invalid, in the language of ARIA.',
 	],
-	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
+	[
+		':focus-visible',
+		'border-input-strong',
+		'the same step a hover takes, and no outline: every field in the family moves its own edge.',
+	],
 ];
 
 const usageImport = `import { Field } from '@/components/lumo/ui/Field';

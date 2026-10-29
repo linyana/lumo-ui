@@ -1,18 +1,18 @@
 import { PanelLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/lumo/ui/Button';
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Nav } from '@/components/lumo/ui/Nav';
 import { ScrollArea } from '@/components/lumo/ui/ScrollArea';
 import { cn } from '@/lib/cn';
-import type { LayoutMenuEntry, LayoutMenuItem } from '../types';
+import type { LayoutNavEntry, LayoutNavItem } from '../types';
 
 export type SidebarProps = {
-	menu?: LayoutMenuEntry[];
+	nav?: LayoutNavEntry[];
 	selectedKey?: string;
 	onSelect?: (key: string) => void;
 	logo?: ReactNode;
 	title?: ReactNode;
-	/** Rows for the bottom edge, rendered inside this rail's own menu root. */
+	/** Rows for the bottom edge, rendered inside this rail's own nav root. */
 	footer?: ReactNode;
 	/** Whether the rail can narrow to its icons at all. */
 	collapsible?: boolean;
@@ -21,7 +21,7 @@ export type SidebarProps = {
 	className?: string;
 };
 
-const noMenu: LayoutMenuEntry[] = [];
+const noNav: LayoutNavEntry[] = [];
 
 /**
  * The shell's navigation is what the eye lands on first, so its rows sit a notch above the
@@ -32,12 +32,12 @@ const row = 'h-9 [&_svg]:size-4';
 const subRow = 'h-8 [&_svg]:size-4';
 
 /**
- * The shell's left rail: a brand row, the menu, and whatever is pinned to the bottom. It paints
+ * The shell's left rail: a brand row, the nav, and whatever is pinned to the bottom. It paints
  * nothing of its own — the shell's fill shows through, which is what makes it read as grey next
  * to the card rather than as a second surface.
  */
 export function Sidebar({
-	menu = noMenu,
+	nav = noNav,
 	selectedKey,
 	onSelect,
 	logo,
@@ -50,13 +50,13 @@ export function Sidebar({
 }: SidebarProps) {
 	const isActive = (key: string, explicit?: boolean) => explicit ?? key === selectedKey;
 
-	function renderItem(item: LayoutMenuItem) {
+	function renderItem(item: LayoutNavItem) {
 		const active = isActive(item.key, item.isActive);
 
 		if (item.children !== undefined) {
 			return (
-				<Menu.Item key={item.key}>
-					<Menu.Sub
+				<Nav.Item key={item.key}>
+					<Nav.Sub
 						icon={item.icon}
 						label={item.label}
 						className={row}
@@ -67,8 +67,8 @@ export function Sidebar({
 						defaultOpen={item.defaultOpen}
 					>
 						{item.children.map((child) => (
-							<Menu.SubItem key={child.key}>
-								<Menu.SubButton
+							<Nav.SubItem key={child.key}>
+								<Nav.SubButton
 									icon={child.icon}
 									className={subRow}
 									isActive={isActive(child.key, child.isActive)}
@@ -81,17 +81,17 @@ export function Sidebar({
 									}}
 								>
 									{child.label}
-								</Menu.SubButton>
-							</Menu.SubItem>
+								</Nav.SubButton>
+							</Nav.SubItem>
 						))}
-					</Menu.Sub>
-				</Menu.Item>
+					</Nav.Sub>
+				</Nav.Item>
 			);
 		}
 
 		return (
-			<Menu.Item key={item.key}>
-				<Menu.Button
+			<Nav.Item key={item.key}>
+				<Nav.Button
 					icon={item.icon}
 					label={item.label}
 					className={row}
@@ -104,17 +104,17 @@ export function Sidebar({
 						onSelect?.(item.key);
 					}}
 				/>
-				{item.badge !== undefined && <Menu.Badge>{item.badge}</Menu.Badge>}
-			</Menu.Item>
+				{item.badge !== undefined && <Nav.Badge>{item.badge}</Nav.Badge>}
+			</Nav.Item>
 		);
 	}
 
-	function renderEntry(entry: LayoutMenuEntry, index: number) {
-		if (entry.type === 'separator') return <Menu.Separator key={`separator-${index}`} />;
+	function renderEntry(entry: LayoutNavEntry, index: number) {
+		if (entry.type === 'separator') return <Nav.Separator key={`separator-${index}`} />;
 
 		if (entry.type === 'skeleton') {
 			return (
-				<Menu.Skeleton
+				<Nav.Skeleton
 					key={`skeleton-${index}`}
 					showIcon={entry.showIcon}
 					width={entry.width}
@@ -124,13 +124,13 @@ export function Sidebar({
 
 		if (entry.type === 'group') {
 			return (
-				<Menu.Group key={entry.label ?? `group-${index}`}>
-					{entry.label !== undefined && <Menu.GroupLabel>{entry.label}</Menu.GroupLabel>}
+				<Nav.Group key={entry.label ?? `group-${index}`}>
+					{entry.label !== undefined && <Nav.GroupLabel>{entry.label}</Nav.GroupLabel>}
 					{entry.action}
-					<Menu.List>
+					<Nav.List>
 						{entry.children.map((child, childIndex) => renderEntry(child, childIndex))}
-					</Menu.List>
-				</Menu.Group>
+					</Nav.List>
+				</Nav.Group>
 			);
 		}
 
@@ -143,8 +143,8 @@ export function Sidebar({
 	 * wrapped in one, and an unbroken run of them shares a single group instead of gaining a
 	 * gap per row.
 	 */
-	function renderEntries(entries: LayoutMenuEntry[]) {
-		const blocks = entries.reduce<(LayoutMenuEntry | LayoutMenuEntry[])[]>((acc, entry) => {
+	function renderEntries(entries: LayoutNavEntry[]) {
+		const blocks = entries.reduce<(LayoutNavEntry | LayoutNavEntry[])[]>((acc, entry) => {
 			if (entry.type === 'group' || entry.type === 'separator') return [...acc, entry];
 
 			const last = acc[acc.length - 1];
@@ -155,11 +155,11 @@ export function Sidebar({
 
 		return blocks.map((block, index) =>
 			Array.isArray(block) ? (
-				<Menu.Group
+				<Nav.Group
 					key={`loose-${block.map((entry) => ('key' in entry ? entry.key : entry.type)).join('-')}`}
 				>
-					<Menu.List>{block.map(renderEntry)}</Menu.List>
-				</Menu.Group>
+					<Nav.List>{block.map(renderEntry)}</Nav.List>
+				</Nav.Group>
 			) : (
 				renderEntry(block, index)
 			),
@@ -205,14 +205,14 @@ export function Sidebar({
 			<ScrollArea.Root className="flex-1">
 				<ScrollArea.Viewport>
 					<ScrollArea.Content>
-						<Menu.Root compact={collapsed}>{renderEntries(menu)}</Menu.Root>
+						<Nav.Root compact={collapsed}>{renderEntries(nav)}</Nav.Root>
 					</ScrollArea.Content>
 				</ScrollArea.Viewport>
 				<ScrollArea.Scrollbar />
 			</ScrollArea.Root>
 			{footer !== undefined && (
 				<div data-slot="layout-footer" className="shrink-0 p-2">
-					<Menu.Root compact={collapsed}>{footer}</Menu.Root>
+					<Nav.Root compact={collapsed}>{footer}</Nav.Root>
 				</div>
 			)}
 		</aside>
