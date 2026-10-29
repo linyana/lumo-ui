@@ -1,10 +1,10 @@
 import { User } from 'lucide-react';
 import { Avatar } from '@/components/lumo/ui/Avatar';
 
-// The site's own mark, in `public/`; a project brings its own picture. It is drawn inside its own
-// black tile with a margin of air, which `scale-110` throws away: without it the tile's corners sit
-// inside the circle, and the avatar reads as a rounded square on a light ground.
-const picture = '/logo.svg';
+// A stock portrait, cut to a square on the face by the CDN on the way out — so the picture arrives
+// in the shape the circle wants and needs no crop of its own. A project brings its own.
+const picture =
+	'https://ix-marketing.imgix.net/img-smart-crop_before.png?fit=facearea&facepad=3&w=128&h=128&auto=format,compress&q=80';
 
 const sizes = ['sm', 'md', 'lg'] as const;
 
@@ -14,7 +14,7 @@ export default function Basic() {
 			<div className="flex items-center gap-3">
 				{sizes.map((size) => (
 					<Avatar.Root key={size} size={size}>
-						<Avatar.Image src={picture} alt="" className="scale-110" />
+						<Avatar.Image src={picture} alt="" />
 						<Avatar.Fallback>LT</Avatar.Fallback>
 					</Avatar.Root>
 				))}
