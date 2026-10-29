@@ -184,7 +184,10 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 					<Demo />
 				</div>
 			</div>
-			<div data-slot="overview-card-open" className="absolute inset-e-3 top-3 flex items-center">
+			<div
+				data-slot="overview-card-open"
+				className="absolute inset-e-3 top-3 flex items-center"
+			>
 				<Button
 					size="sm"
 					variant="secondary"
