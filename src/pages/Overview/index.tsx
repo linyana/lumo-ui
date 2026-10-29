@@ -1,6 +1,7 @@
 import { ArrowUpRight, Search } from 'lucide-react';
 import { useState, type ComponentType } from 'react';
 import { Link } from 'react-router';
+import { Button } from '@/components/lumo/ui/Button';
 import { Card } from '@/components/lumo/ui/Card';
 import { Toast } from '@/components/lumo/ui/Toast';
 import { Input } from '@/components/lumo/ui/Input';
@@ -111,36 +112,49 @@ const groups: PreviewGroup[] = [
 	},
 ];
 
-/** The bar is the whole target of the route; the demo under it keeps its own interactions. */
+/** The arrow is the way in; the demo under it keeps its own interactions. */
 function Preview({ path, label, Demo }: ComponentPreview) {
 	return (
 		<Card.Root
 			data-slot="overview-card"
 			hoverable
-			// The tile is drawn edge to edge: the bar and the demo area bring their own padding, so
-			// the card's own gap and vertical padding would only inset the outline from them. The edge
-			// is half the shadcn line as well — a wall of small tiles reads as a table of boxes at the
-			// weight a single card wants — and the hover only lifts the shadow off that softer line.
-			className="aspect-square gap-0 overflow-hidden border-border/50 py-0"
+			// The tile is drawn edge to edge: the header band and the demo area bring their own
+			// padding, so the card's own gap and vertical padding would only inset them twice.
+			className="aspect-square gap-0 overflow-hidden py-0"
 		>
-			<Link
-				to={`/${path}`}
+			<div
 				data-slot="overview-card-bar"
-				// The card steps its edge and its shadow as the tile is pointed at; the bar is the
-				// link, so it says so on its own and lights the arrow that leaves the page.
-				className={cn(
-					'group/bar flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2',
-					'text-xs transition-colors hover:bg-muted/40',
-				)}
+				className="flex shrink-0 items-center justify-between gap-2 py-1 pr-1 pl-3"
 			>
-				<span className="truncate font-medium">{label}</span>
-				<ArrowUpRight
+				{/* The name is not the target — the arrow is — so it only answers the pointer with
+				    its colour, the same step the card's own edge takes. */}
+				<span
 					className={cn(
-						'size-3.5 shrink-0 text-muted-foreground',
-						'transition-colors group-hover/bar:text-foreground',
+						'truncate text-xs font-medium text-muted-foreground',
+						'transition-colors duration-(--duration-state)',
+						'group-hover/card:text-foreground',
+					)}
+				>
+					{label}
+				</span>
+				<Button
+					variant="ghost"
+					size="icon"
+					nativeButton={false}
+					// A link, not a button: the tile navigates, and an anchor keeps the middle-click,
+					// the context menu and the status bar the browser gives every link.
+					render={<Link to={`/${path}`} />}
+					aria-label={label}
+					icon={<ArrowUpRight />}
+					// Hidden until the tile is pointed at, but reachable before it is: a link that
+					// could not be seen while it held focus would be a target with no target.
+					className={cn(
+						'size-7 text-muted-foreground',
+						'opacity-0 transition-opacity duration-(--duration-state)',
+						'group-hover/card:opacity-100 focus-visible:opacity-100',
 					)}
 				/>
-			</Link>
+			</div>
 			{/*
 				Nothing is scaled to fit: a transform here would hand `getBoundingClientRect` a size
 				the demo never had, which is exactly what Transition measures. A demo taller than the
