@@ -149,7 +149,7 @@
 			"name": "card",
 			"type": "registry:ui",
 			"title": "Card",
-			"description": "One surface for one subject: a header with its title, description and action, a body that takes the slack, and a footer. Two sizes, set once on the root and read by every part.",
+			"description": "One surface for one subject: a header with its title, description and action, a body that takes the slack, and a footer. Two sizes, set once on the root and read by every part, and a `hoverable` root for a card that is a target.",
 			"dependencies": ["tailwind-variants"],
 			"registryDependencies": ["linyana/lumo-ui/cn"],
 			"files": [

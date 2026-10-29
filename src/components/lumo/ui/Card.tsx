@@ -78,7 +78,7 @@ export function Header({ className, ...props }: HeaderProps) {
 export const cardVariants = tv({
 	base: [
 		'group/card flex flex-col',
-		'rounded-xl border bg-card text-card-foreground shadow-sm',
+		'rounded-xl border bg-card text-card-foreground shadow-surface',
 		// The inline inset every part is drawn at. A variable rather than a class per part, so a
 		// header, a body and a footer cannot drift apart, and a part added later is inset too
 		// without being told to be.
@@ -89,9 +89,21 @@ export const cardVariants = tv({
 			sm: 'gap-4 py-4 [--card-pad:--spacing(4)]',
 			md: 'gap-6 py-6',
 		},
+		hoverable: {
+			true: [
+				// The shadow is what answers the pointer: it spreads from a line hugging the card to a
+				// halo around it, and nothing about the card's own drawing changes. The edge moves only
+				// as far as it has to — `input` is the same colour as `border` in the light theme and
+				// one small step above it in the dark one, where a shadow has nothing to fall on. The
+				// cursor is not here: a card is a div, the link is the consumer's.
+				'transition-[box-shadow,border-color] duration-(--duration-state)',
+				'hover:border-input hover:shadow-lifted',
+			],
+		},
 	},
 	defaultVariants: {
 		size: 'md',
+		hoverable: false,
 	},
 });
 
@@ -102,13 +114,19 @@ export type RootProps = ComponentProps<'div'> & VariantProps<typeof cardVariants
 /**
  * The surface itself. Its size cascades to the parts: the inset travels as `--card-pad`, and
  * `data-size` is on the DOM for whatever wants to target it from CSS.
+ *
+ * `hoverable` is the one prop that changes how the card behaves, and it only changes how it looks:
+ * the surface owns the hover, so a click target placed anywhere inside it lights the whole tile.
+ * A card is a plain div, so a card that is clicked is still the consumer's to build — the prop says
+ * "this one is a target", not "this one is a button".
  */
-export function Root({ className, size = 'md', ...props }: RootProps) {
+export function Root({ className, size = 'md', hoverable = false, ...props }: RootProps) {
 	return (
 		<div
 			data-slot="card"
 			data-size={size}
-			className={cn(cardVariants({ size }), className)}
+			data-hoverable={hoverable ? '' : undefined}
+			className={cn(cardVariants({ size, hoverable }), className)}
 			{...props}
 		/>
 	);

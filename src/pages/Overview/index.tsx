@@ -1,6 +1,7 @@
 import { ArrowUpRight, Search } from 'lucide-react';
 import { useState, type ComponentType } from 'react';
 import { Link } from 'react-router';
+import { Card } from '@/components/lumo/ui/Card';
 import { Toast } from '@/components/lumo/ui/Toast';
 import { Input } from '@/components/lumo/ui/Input';
 import { cn } from '@/lib/cn';
@@ -113,16 +114,20 @@ const groups: PreviewGroup[] = [
 /** The bar is the whole target of the route; the demo under it keeps its own interactions. */
 function Preview({ path, label, Demo }: ComponentPreview) {
 	return (
-		<div
+		<Card.Root
 			data-slot="overview-card"
-			className={cn(
-				'flex aspect-square flex-col overflow-hidden rounded-xl border bg-card',
-				'text-card-foreground',
-			)}
+			hoverable
+			// The tile is drawn edge to edge: the bar and the demo area bring their own padding, so
+			// the card's own gap and vertical padding would only inset the outline from them. The edge
+			// is half the shadcn line as well — a wall of small tiles reads as a table of boxes at the
+			// weight a single card wants — and the hover only lifts the shadow off that softer line.
+			className="aspect-square gap-0 overflow-hidden border-border/50 py-0"
 		>
 			<Link
 				to={`/${path}`}
 				data-slot="overview-card-bar"
+				// The card steps its edge and its shadow as the tile is pointed at; the bar is the
+				// link, so it says so on its own and lights the arrow that leaves the page.
 				className={cn(
 					'group/bar flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2',
 					'text-xs transition-colors hover:bg-muted/40',
@@ -151,7 +156,7 @@ function Preview({ path, label, Demo }: ComponentPreview) {
 					<Demo />
 				</div>
 			</div>
-		</div>
+		</Card.Root>
 	);
 }
 
