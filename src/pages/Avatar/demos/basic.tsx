@@ -1,7 +1,8 @@
 import { User } from 'lucide-react';
 import { Avatar } from '@/components/lumo/ui/Avatar';
 
-const portrait = 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=96&h=96&q=80';
+// The site's own mark, in `public/`; a project brings its own picture.
+const picture = '/logo.svg';
 
 const sizes = ['sm', 'md', 'lg'] as const;
 
@@ -11,7 +12,7 @@ export default function Basic() {
 			<div className="flex items-center gap-3">
 				{sizes.map((size) => (
 					<Avatar.Root key={size} size={size}>
-						<Avatar.Image src={portrait} alt="" />
+						<Avatar.Image src={picture} alt="" />
 						<Avatar.Fallback>LT</Avatar.Fallback>
 					</Avatar.Root>
 				))}

@@ -120,7 +120,7 @@ const hookRows = [
 	[
 		'overflow-hidden · rounded-full',
 		'the crop',
-		'a portrait is square and the circle is not, so the box cuts it rather than the image being resized.',
+		'a picture is square and the circle is not, so the box cuts it rather than the image being resized.',
 	],
 ];
 
@@ -132,7 +132,7 @@ const usageExample = `<Avatar.Root>
 
 export function AvatarPage() {
 	return (
-		<DocPage title="avatar" description="a face, or the initials standing in for one">
+		<DocPage title="avatar" description="a picture, or the initials standing in for one">
 			<DocPreview path="src/pages/Avatar/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
@@ -195,7 +195,7 @@ export function AvatarPage() {
 					<>
 						the circle is <Mono>bg-muted</Mono> with <Mono>text-muted-foreground</Mono>{' '}
 						ink, the same pair every empty surface in the library uses. it is meant to
-						be quieter than a portrait, so a row of names reads as a list of people
+						be quieter than a picture, so a row of names reads as a list of people
 						rather than as a row of coloured tiles, and no per-person colour is invented
 						to tell them apart.
 					</>
