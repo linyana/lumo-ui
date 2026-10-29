@@ -39,15 +39,25 @@ export const iconSlot = '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:si
  * that is not editable, a `<button>` and a `<div>` included, so the tint would follow a select's
  * trigger around for its whole life. Only a field that can be typed into and is being withheld — the
  * input, the textarea — puts it on, and a control with a state of its own spells that state instead.
+ *
+ * Pointed at, and reached by keyboard, are the same edge: both step the border to `--input-strong`,
+ * and both leave the focus outline off. A field already says with its own box where the reader is
+ * working, and an input takes focus on every click rather than only on a tab, so an outline around
+ * that box would be drawn nearly all the time. The colour is the shell's own second step and not the
+ * ring's, because a hover that was a colour and a focus that was a ring would make one field look
+ * like two different states of attention.
  */
 export const fieldShell = cn(
 	'w-full min-w-0 rounded-md border border-input bg-background text-foreground',
 	'placeholder:text-muted-foreground',
 	'transition-colors duration-(--duration-state)',
+	'hover:not-disabled:not-data-disabled:border-input-strong',
+	'focus-visible:border-input-strong focus-visible:outline-none',
 	'disabled:cursor-not-allowed disabled:opacity-50',
 	'data-disabled:cursor-not-allowed data-disabled:opacity-50',
 	// Written by Field when the control fails validation; aria-invalid is the same fact for a form
-	// that is not Base UI's.
+	// that is not Base UI's. Both sit after the hover and focus rules above, so a field that is
+	// wrong stays destructive while it is pointed at: the stronger thing it has to say wins.
 	'data-invalid:border-destructive aria-invalid:border-destructive',
 );
 
@@ -60,7 +70,13 @@ export const toggleBox = cn(
 	'inline-flex size-4 shrink-0 cursor-pointer items-center justify-center',
 	'border border-input bg-background',
 	'transition-[color,background-color,border-color] duration-(--duration-state)',
+	// The same two states a field wears, on the box instead of the shell. Only focus moves the edge of
+	// a box that is already checked: hover has nothing to add to "on", and a tick that greyed under a
+	// passing cursor would read as being cleared.
+	'hover:not-disabled:not-data-disabled:border-input-strong',
+	'focus-visible:border-input-strong focus-visible:outline-none',
 	'data-checked:border-primary',
+	'data-checked:focus-visible:border-input-strong',
 	'data-invalid:border-destructive',
 	'data-disabled:cursor-not-allowed data-disabled:opacity-50',
 );

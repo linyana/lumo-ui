@@ -72,7 +72,11 @@ const hookRows = [
 		'half opacity, no pointer; the attribute is native, the flag comes from Field.',
 	],
 	['::placeholder', 'text-muted-foreground', 'the only colour a placeholder is allowed.'],
-	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
+	[
+		':hover · :focus-visible',
+		'border-input-strong',
+		'the border steps one darker for both, and focus draws no outline: the field moves its own edge instead.',
+	],
 ];
 
 const usageImport = "import { Input } from '@/components/lumo/ui/Input';";

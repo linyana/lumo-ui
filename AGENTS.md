@@ -10,7 +10,9 @@ registry. No npm package.
    `text-muted-foreground`, `rounded-md`) — never `bg-blue-500`, `#fff` or `rounded-[6px]`.
 2. Don't add a new token without a reason.
 3. Don't write focus styles in components. Focus is defined once, in `:focus-visible` in
-   `lumo-tokens.css`.
+   `lumo-tokens.css`. The field family — a text field's shell, a checkbox, a radio, a switch — is
+   the one exception: it drops the outline and moves its own edge to `--input-strong`, the same step
+   a hover takes.
 4. Base UI supplies behaviour, we supply appearance. Never reimplement focus trapping,
    escape handling, scroll lock, positioning or ARIA.
 5. Merge the consumer's `className` last, with `cn()`.

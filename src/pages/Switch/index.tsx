@@ -91,7 +91,11 @@ const hookRows = [
 		'—',
 		'half opacity, no pointer; the first is native, the second is what the look reads.',
 	],
-	[':focus-visible', '—', 'the ring, drawn around the track, declared once in lumo-tokens.css.'],
+	[
+		':hover · :focus-visible',
+		'bg-input-strong',
+		'the track darkens one step for both, and focus draws no outline. On, it is already `primary`: it keeps the ring instead, because a fill has no step left to take.',
+	],
 ];
 
 const usageImport = "import { Switch } from '@/components/lumo/ui/Switch';";

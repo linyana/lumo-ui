@@ -49,6 +49,7 @@
 	--color-info: var(--info);
 	--color-border: var(--border);
 	--color-input: var(--input);
+	--color-input-strong: var(--input-strong);
 	--color-ring: var(--ring);
 
 	/* --radius is the only knob; the whole scale derives from it. */
@@ -129,6 +130,11 @@
 	--info: oklch(0.546 0.245 262.881);
 	--border: oklch(0.922 0 0);
 	--input: oklch(0.922 0 0);
+	/* The second step a field's border has: the one it wears while a pointer is over it or a
+	   keyboard has arrived in it. Both states are this colour and not two colours, because a field
+	   is saying the same thing either way — this is the box you are working in — and a border that
+	   moved twice for the same meaning would read as two different states. */
+	--input-strong: oklch(0.78 0 0);
 	--ring: oklch(0.708 0 0);
 	/* The scrim behind a modal surface. A colour of its own rather than `foreground` at an opacity:
 	   a scrim is dark in both themes — it is the page being pushed back, not the text on it — and
@@ -160,6 +166,8 @@
 	--info: oklch(0.623 0.214 259.815);
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
+	/* A step lighter rather than darker: on a dark page an edge is found by adding light. */
+	--input-strong: oklch(1 0 0 / 30%);
 	--ring: oklch(0.556 0 0);
 	--overlay: oklch(0 0 0 / 65%);
 }
