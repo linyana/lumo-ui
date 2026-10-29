@@ -189,7 +189,7 @@ export function Root({ className, toast, ...props }: RootProps) {
 					// Newest first in the DOM, so the painting order has to be asked for explicitly.
 					'[z-index:calc(100-var(--toast-index,0))]',
 					'pointer-events-auto origin-top',
-					'rounded-lg border bg-popover text-popover-foreground shadow-md',
+					'rounded-lg border bg-popover text-popover-foreground shadow-lifted',
 					// The stack is entirely these variables: Base UI reports each toast's index, its
 					// measured height and — expanded — the summed height above it, so the newest sits
 					// against the top edge and the rest peek out below it, scaled back a little.

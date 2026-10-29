@@ -181,7 +181,7 @@ export function Popup({ className, ...props }: PopupProps) {
 			data-slot="combobox-popup"
 			className={cn(
 				'relative flex max-h-(--available-height) min-w-(--anchor-width) flex-col',
-				'overflow-clip rounded-lg border bg-popover text-popover-foreground shadow-lg',
+				'overflow-clip rounded-lg border bg-popover text-popover-foreground shadow-lifted',
 				'outline-none',
 				popup,
 				className,

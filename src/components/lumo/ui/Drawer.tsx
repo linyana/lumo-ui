@@ -80,7 +80,7 @@ export function Popup({ className, ...props }: PopupProps) {
 		<BaseDrawer.Popup
 			data-slot="drawer-popup"
 			className={cn(
-				'absolute flex flex-col overflow-hidden bg-popover text-popover-foreground shadow-lg',
+				'absolute flex flex-col overflow-hidden bg-popover text-popover-foreground shadow-overlay',
 				'transition-[translate,transform] duration-(--duration-overlay) ease-(--ease-overlay)',
 				'data-swiping:transition-none',
 				'data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0',

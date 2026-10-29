@@ -23,7 +23,7 @@ export function Popup({ className, ...props }: PopupProps) {
 			data-slot="tooltip-popup"
 			className={cn(
 				'relative rounded-md bg-primary text-xs',
-				'text-primary-foreground shadow-md',
+				'text-primary-foreground shadow-lifted',
 				'px-2.5 py-1',
 				// A Viewport inside brings its own padding, so this one would double up.
 				'has-[>[data-slot=tooltip-viewport]]:p-0',

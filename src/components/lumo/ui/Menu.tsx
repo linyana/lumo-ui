@@ -43,7 +43,7 @@ export function Popup({ className, ...props }: PopupProps) {
 			data-slot="menu-popup"
 			className={cn(
 				'relative rounded-lg border bg-popover py-1 text-popover-foreground',
-				'shadow-lg outline-none',
+				'shadow-lifted outline-none',
 				popup,
 				className,
 			)}

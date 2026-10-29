@@ -49,7 +49,7 @@ export function Popup({ className, ...props }: PopupProps) {
 		<BasePopover.Popup
 			data-slot="popover-popup"
 			className={cn(
-				'relative rounded-lg border bg-popover text-popover-foreground p-3 shadow-lg',
+				'relative rounded-lg border bg-popover text-popover-foreground p-3 shadow-lifted',
 				// A Viewport inside brings its own padding, so this one would double up.
 				'has-[>[data-slot=popover-viewport]]:p-0',
 				'max-w-md',

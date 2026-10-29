@@ -36,7 +36,7 @@ export function Popup({ className, ...props }: PopupProps) {
 		<BaseDialog.Popup
 			data-slot="dialog-popup"
 			className={cn(
-				'w-full max-w-md rounded-xl border bg-popover p-6 text-popover-foreground shadow-lg',
+				'w-full max-w-md rounded-xl border bg-popover p-6 text-popover-foreground shadow-overlay',
 				'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-overlay)',
 				'data-starting-style:scale-95 data-starting-style:opacity-0',
 				'data-ending-style:scale-95 data-ending-style:opacity-0',
