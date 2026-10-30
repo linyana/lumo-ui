@@ -48,8 +48,8 @@ export type DocRoute = {
 
 /** One page per component, in the order the rail lists them: a section, then alphabetical. */
 export const docRoutes: DocRoute[] = [
-	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
+	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },
