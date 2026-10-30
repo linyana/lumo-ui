@@ -50,9 +50,10 @@ export type CodeTreeProps = Omit<ComponentProps<'div'>, 'children' | 'onSelect'>
 	/** Folders shut on the first frame, by path. Everything else opens. */
 	defaultCollapsed?: string[];
 	/**
-	 * The files the tree is about. The folders leading to them start open and every other folder
-	 * starts shut, and a row outside the list is drawn quiet — so a tree of a component and the
-	 * files it installs reads as the component first and its dependencies after.
+	 * The files the tree is about: the files themselves and the folders leading to them at full
+	 * strength, every other row drawn quiet — so a tree of a component and the files it installs
+	 * reads as the component first and its dependencies after. Folding is `defaultCollapsed`'s
+	 * business; this one only decides the colour.
 	 */
 	primary?: string[];
 	/**
@@ -209,13 +210,13 @@ function Node({ node, depth, size, shut, leading, about, current, action, onSele
 		);
 	}
 
-	// A folder off the way to a primary file is the tree's context, and starts as a reader leaves a
-	// dependency: shut and quiet.
+	// A folder off the way to a primary file is the tree's context: quiet, but open like any other —
+	// a tree that folded its context as well would hide the files the reader came to read.
 	const quiet = leading !== null && !leading.has(node.path);
 
 	return (
 		<Nav.SubItem>
-			<BaseCollapsible.Root defaultOpen={!shut.has(node.path) && !quiet}>
+			<BaseCollapsible.Root defaultOpen={!shut.has(node.path)}>
 				{/* The same two parts `Nav.Sub` composes, in a different order: the caret leads the row
 				    instead of trailing it, because in a tree the caret is what marks the level — a row
 				    that ends in one reads as a sidebar's, not as a file's. */}

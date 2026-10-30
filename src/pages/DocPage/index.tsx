@@ -2,6 +2,7 @@ import {
 	ArrowLeft,
 	ArrowRight,
 	Check,
+	ChevronRight,
 	CodeXml as CodeGlyph,
 	Copy as CopyIcon,
 	Download,
@@ -36,7 +37,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCopy } from '@/lib/clipboard';
 import { highlight } from '@/lib/shiki';
-import { filesOf, installFiles, itemOf, languageOf, packagesOf, readSource } from './sources';
+import { installFiles, itemOf, languageOf, packagesOf, readSource } from './sources';
 import { zipOf } from './zip';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
@@ -252,27 +253,6 @@ const TOKENS = 'src/styles/lumo-tokens.css';
 const PALETTE = 'src/styles/lumo-palette.css';
 
 /**
- * The files one step copies, named where they go. A step is a sentence and a list of destinations;
- * the text of every one of them is behind the single dialog at the end of the manual, so the page
- * carries no source and the reader has one place to read from.
- *
- * A file the reader may leave behind says so on its own row: the list is what the archive holds, and
- * a row that vanished would be a file the manual silently decided for them.
- */
-function ManualFiles({ paths, optional = NO_PATHS }: { paths: string[]; optional?: string[] }) {
-	return (
-		<ul data-slot="doc-manual-files" className="font-mono text-xs text-muted-foreground">
-			{paths.map((path) => (
-				<li key={path}>
-					{path}
-					{optional.includes(path) && ' (optional)'}
-				</li>
-			))}
-		</ul>
-	);
-}
-
-/**
  * The copy riding on a file's row in the dialog: one click takes that file, without selecting it
  * first — which is what makes reading the manual file by file a route of its own.
  */
@@ -378,13 +358,11 @@ export function DocInstall({
 	// would copy by hand: the reached files and the stylesheets are named by the manual, not by the
 	// manifest, so they are handed over rather than looked up.
 	const lead = files[0];
-	// The palette is the one file a project may already have; the tokens are not, so both are listed
-	// and only the palette is marked.
+	// The stylesheets the manual names rather than looks up; the palette is the one a project may
+	// already have, which the step's own sentence says.
 	const beside = stylesheet ? [TOKENS, PALETTE] : [];
-	const optional = stylesheet ? [PALETTE] : NO_PATHS;
 	const about = [...reaches, ...beside];
-	// What the step lists and the archive holds: the item, what it installs, and the stylesheets no
-	// manifest names.
+	// What the archive holds: the item, what it installs, and the stylesheets no manifest names.
 	const copy = [...installFiles(name, reaches), ...beside];
 
 	const tabs: DocTabItem[] = [
@@ -480,22 +458,23 @@ export function DocInstall({
 									</>
 								)}
 							</Steps.Description>
-							<div className="space-y-2">
-								<ManualFiles paths={copy} optional={optional} />
-								<div className="flex items-center gap-2">
-									{lead !== undefined && (
-										<SourceDialog path={lead} name={name} about={about}>
-											<Button
-												variant="outline"
-												icon={<CodeGlyph />}
-												className="flex-1 justify-start"
-											>
-												browse the files
-											</Button>
-										</SourceDialog>
-									)}
-									<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
-								</div>
+							<div className="flex items-center gap-2">
+								{lead !== undefined && (
+									<SourceDialog path={lead} name={name} about={about}>
+										<Button
+											variant="secondary"
+											icon={<CodeGlyph />}
+											className="flex-1 justify-start"
+										>
+											browse the files
+											<span className="ml-auto flex items-center gap-1 text-muted-foreground">
+												{copy.length} {copy.length === 1 ? 'file' : 'files'}
+												<ChevronRight aria-hidden="true" />
+											</span>
+										</Button>
+									</SourceDialog>
+								)}
+								<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
 							</div>
 						</Steps.Item>
 						{stylesheet && (
@@ -628,9 +607,9 @@ export type DocPreviewProps = {
 /**
  * The source of an example, and of the files the component it demonstrates installs: the tree on the
  * left is that registry item, drawn in the shape of the repository, and the pane on the right is
- * whichever file is selected. The demo and the component itself lead the tree, because that is what
- * was clicked, and so does anything the caller names beside them; the dependencies the registry
- * installs around them start shut and quiet.
+ * whichever file is selected. The file on screen leads the tree — its own row and the folders above
+ * it, at full strength — and everything else is drawn quiet, so the tree says where the reader is.
+ * No folder starts shut: the dialog is where a reader goes to see the whole install at once.
  *
  * The manifest is in the bundle, so the tree is there on the first frame; only the file's text is
  * fetched, and only for the one file on screen. Nothing outlives the open — the popup is mounted by
@@ -669,16 +648,15 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 	// A caller's array is a new one on every render; the paths are what the tree is built from.
 	const aboutKey = about?.join('\n') ?? '';
 	const named = useMemo(() => (aboutKey === '' ? [] : aboutKey.split('\n')), [aboutKey]);
-	const { own } = useMemo(() => filesOf(name), [name]);
-	// What the tree is about: the clicked file, the component it belongs to, and whatever the caller
-	// named beside them. Everything the registry installs around that is the context, and the tree
-	// starts it shut and quiet.
-	const primary = useMemo(() => [path, ...own, ...named], [path, own, named]);
 	const files = useMemo(
 		() => [...new Set([path, ...installFiles(name, named)])],
 		[path, name, named],
 	);
 	const [selected, setSelected] = useState(path);
+	// What the tree is about, which is one file and not a set: the file on screen, and the folders
+	// above it. Everything else is the context the tree draws quiet — so selecting a dependency moves
+	// the highlight to its own chain instead of leaving it on the component.
+	const primary = useMemo(() => [selected], [selected]);
 	// What the pane is SHOWING, which trails the selection by one read. Keeping the file that is
 	// already there until the next one is ready is what stops the pane blanking between two clicks.
 	const [shown, setShown] = useState<{ path: string; text: string } | null>(null);
