@@ -5,7 +5,6 @@ import {
 	CodeXml as CodeGlyph,
 	Copy as CopyIcon,
 	Download,
-	FolderCode,
 	Info,
 	SquareTerminal,
 	X,
@@ -529,9 +528,9 @@ export function DocInstall({
 							<div className="mt-3 flex flex-wrap items-center gap-2">
 								{lead !== undefined && (
 									<SourceDialog path={lead} name={name} about={about}>
-										<Button icon={<FolderCode />}>
-											browse files
-											<span className="font-normal text-primary-foreground/70">
+										<Button icon={<CodeGlyph />}>
+											View Code
+											<span className="ms-2 font-normal text-primary-foreground/70">
 												{copy.length} {copy.length === 1 ? 'file' : 'files'}
 											</span>
 										</Button>
