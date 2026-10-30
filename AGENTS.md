@@ -113,6 +113,11 @@ Consumers compose with `render` rather than wrapper props:
 <Dialog.Trigger render={<Button />} />
 ```
 
+That is also the axis a component here is compared on. `render` is Base UI's — and it is what
+shadcn's own unstyled layer uses (`@shadcn/react`, a port of base-ui's `useRender`), so a Radix-era
+`asChild` is not a contract this library keeps: a component takes `render`, and the state attributes
+below are Base UI's own.
+
 Don't rename Base UI's state attributes: `data-open`, `data-closed`,
 `data-starting-style`, `data-ending-style`, `data-highlighted`, `data-disabled`.
 
@@ -135,6 +140,11 @@ decision, from that type and the consumer's `components.json`.
 - `registryDependencies` spell the namespace, `@lumo/<name>`; `dependencies` carry npm packages.
   Everything a copied file imports has to be on one of the two lists — the check reads the code and
   fails otherwise.
+- An npm dependency is named bare (`tailwind-variants`), never with a range: an install resolves
+  `latest`, and that is the policy here — no version of this library ever ships an older one. What
+  keeps that honest is the other half of the rule: the check fails on a package an item ships that
+  `package.json` does not declare, so the repository is always on something. Bump here with
+  `bun add <name>@latest` when a major moves; `bun outdated` is how you find out.
 - The theme is not a file. `scripts/theme.ts` reads `src/styles/lumo-tokens.css` and
   `lumo-palette.css` and writes them into two items as `cssVars` + `css`, which the CLI merges
   into the consumer's stylesheet: `theme` (`registry:style`, written over whatever is there) and

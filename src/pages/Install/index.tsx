@@ -43,6 +43,12 @@ export function InstallPage() {
 					<Mono>table</Mono> brings the files it needs, and a file you already have is
 					left alone.
 				</p>
+				<p className="text-sm">
+					What everything here is built on is Base UI: composition is <Mono>render</Mono>,
+					not <Mono>asChild</Mono>, and the state attributes are Base UI's own. That is
+					how to read a component — and the direction shadcn's own unstyled layer took,
+					since <Mono>@shadcn/react</Mono> is a port of Base UI's <Mono>useRender</Mono>.
+				</p>
 			</DocSection>
 
 			<DocSection
@@ -95,8 +101,8 @@ export function InstallPage() {
 									everything a component cannot draw without, and a shadcn theme
 									does not define: the <Mono>@theme</Mono> mappings, the
 									interaction and motion tokens, the radius scale, the outcome
-									colours, the shadows, the focus ring. required. it asks before
-									writing — a style is the one thing allowed to overwrite.
+									colours, the shadows, the focus ring. required, and the one
+									thing allowed to overwrite: it asks before it does.
 								</>,
 							],
 							[
@@ -118,7 +124,9 @@ export function InstallPage() {
 				note={
 					<>
 						the npm packages its files import are installed, and so is every item it
-						reaches for. the next component reuses them.
+						reaches for. a package is named without a range, so it lands at{' '}
+						<Mono>latest</Mono> — this library never hands you something older than it
+						runs on. the next component reuses them.
 					</>
 				}
 			>

@@ -301,6 +301,35 @@ for (const item of registry.items) {
 	}
 }
 
+/**
+ * What a component ships is what this repository is on. The manifest names a package, never a
+ * range: an install resolves `latest`, so a range here would hand a project a version this repo
+ * has never run — and a name this repo does not declare has no version to be authored against at
+ * all. `react` is the app's, and is never installed.
+ */
+const authored: Record<string, string> = (await Bun.file(join(root, 'package.json')).json())
+	.dependencies as Record<string, string>;
+
+for (const item of registry.items) {
+	for (const request of item.dependencies ?? []) {
+		const name = packageName(request);
+
+		if (name !== request) {
+			problems.push(
+				`"${item.name}": "${request}" pins a range — name "${name}" and let the install ` +
+					`resolve latest, which is the version policy here`,
+			);
+			continue;
+		}
+		if (!Object.hasOwn(authored, name)) {
+			problems.push(
+				`"${item.name}": ships "${name}", which package.json does not declare — the repo ` +
+					`has to be on it before a project is`,
+			);
+		}
+	}
+}
+
 /** Everything an item installs: itself, and whatever the dependencies it declares bring. */
 function installs(name: string): Set<string> {
 	const seen = new Set<string>();
@@ -320,9 +349,17 @@ const itemByName = new Map(registry.items.map((item) => [item.name, item]));
 function packagesUnder(installed: Set<string>): Set<string> {
 	const packages = new Set<string>();
 	for (const name of installed) {
-		for (const dependency of itemByName.get(name)?.dependencies ?? []) packages.add(dependency);
+		for (const request of itemByName.get(name)?.dependencies ?? []) {
+			packages.add(packageName(request));
+		}
 	}
 	return packages;
+}
+
+/** `@scope/name@^1` → `@scope/name`; a bare name is already the name. */
+function packageName(request: string): string {
+	const at = request.indexOf('@', request.startsWith('@') ? 1 : 0);
+	return at === -1 ? request : request.slice(0, at);
 }
 
 /**

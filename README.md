@@ -116,6 +116,14 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 ```
 
+**依赖不写版本**：`registry.json` 里的 npm 包一律是裸名字，装的时候 CLI 取 `latest`。所以仓库自己
+必须先在最新 major 上跑通——`bun outdated` 看有没有落后，`bun add <name>@latest` 跟上；`bun run check`
+会挡住「item 声明了某个包、但 `package.json` 没声明」的情况，让两边不会分家。
+
+组合一律走 Base UI 的 `render`（不是 `asChild`）：`<Dialog.Trigger render={<Button />} />`。
+这也是 shadcn 自己的方向——它的 `@shadcn/react` 就是 base-ui `useRender` 的移植——所以拿 Base UI
+来对照就够，不用去追 Radix 时代的写法。
+
 装之前可以先看：
 
 ```bash
