@@ -11,6 +11,7 @@ import {
 import {
 	Children,
 	createContext,
+	Fragment,
 	isValidElement,
 	useContext,
 	useEffect,
@@ -1030,8 +1031,26 @@ export type DocTableProps = {
 	rows: ReactNode[][];
 };
 
+/* oxlint-disable react/no-array-index-key -- a row has no id of its own; its position is its identity, and so is a word's */
 /** What a component puts on the DOM: no props here, so no tooltips — one line per hook. */
-/* oxlint-disable react/no-array-index-key -- a row has no id of its own; its position is its identity */
+/**
+ * A cell of names, wrapped between them and never inside one. `white-space: normal` alone does not
+ * promise that: every browser breaks after a hyphen, so `"-label"` would end one line as `"-` and
+ * start the next as `label"` — two names where there was one. Each word becomes its own inline box,
+ * which leaves the spaces a person wrote as the only places a line can end.
+ */
+function Names({ children }: { children: ReactNode }) {
+	if (typeof children !== 'string') return <>{children}</>;
+
+	return children.split(' ').map((word, index) => (
+		<Fragment key={index}>
+			{index > 0 && ' '}
+			{/* `anywhere` is the escape hatch: a name wider than its column still lands inside it. */}
+			<span className="inline-block [overflow-wrap:anywhere]">{word}</span>
+		</Fragment>
+	));
+}
+
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
 		<Table.Root
@@ -1041,8 +1060,17 @@ export function DocTable({ head, mono, rows }: DocTableProps) {
 		>
 			<Table.Header>
 				<Table.Row>
-					{head.map((label) => (
-						<Table.Head key={label}>{label}</Table.Head>
+					{head.map((label, column) => (
+						<Table.Head
+							key={label}
+							// A name and a value are as wide as they are; the sentence beside them is what the
+							// reader came for, so it gets whatever is left. Left to itself, a table proportions
+							// its columns by how much text each holds, and one cell with six names in it would
+							// take a third of the line from the sentence.
+							className={cn(column === 0 && 'w-[24%]', column === 1 && 'w-[24%]')}
+						>
+							{label}
+						</Table.Head>
 					))}
 				</Table.Row>
 			</Table.Header>
@@ -1053,15 +1081,13 @@ export function DocTable({ head, mono, rows }: DocTableProps) {
 							<Table.Cell
 								key={cellIndex}
 								className={cn(
-									'align-top',
-									// A name and its value are identifiers and do not break mid-token; the
-									// sentence beside them does.
-									mono?.includes(cellIndex)
-										? 'font-mono whitespace-nowrap'
-										: 'whitespace-normal',
+									// The cell's own default is `nowrap`, which one long cell would then spend on the
+									// whole table: six names in one row makes every column beside it be read sideways.
+									'align-top whitespace-normal',
+									mono?.includes(cellIndex) && 'font-mono',
 								)}
 							>
-								{cell}
+								{mono?.includes(cellIndex) ? <Names>{cell}</Names> : cell}
 							</Table.Cell>
 						))}
 					</Table.Row>
