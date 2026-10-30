@@ -3,7 +3,7 @@ import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } fro
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-// Deployment reads public/_headers; Vite needs the same charset declared by middleware.
+// Deployment reads public/_headers; Vite needs the same rules declared by middleware.
 function docsCharset(): Plugin {
 	const configure = (server: ViteDevServer | PreviewServer) => {
 		server.middlewares.use((req, res, next) => {
@@ -11,7 +11,7 @@ function docsCharset(): Plugin {
 			if (
 				pathname === '/llms.txt' ||
 				pathname === '/llms-full.txt' ||
-				(pathname?.startsWith('/docs/') && pathname.endsWith('.md'))
+				pathname?.startsWith('/docs/')
 			) {
 				res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 			}

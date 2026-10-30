@@ -127,8 +127,8 @@ export function LlmsPage() {
 				<DocTable
 					head={['Where you work', 'Where to put it']}
 					rows={[
-						['Claude Code', <Mono>CLAUDE.md</Mono>],
-						['Codex', <Mono>AGENTS.md</Mono>],
+						['Claude Code', <Mono key="claude">CLAUDE.md</Mono>],
+						['Codex', <Mono key="codex">AGENTS.md</Mono>],
 						[
 							'Cursor',
 							<>
@@ -141,7 +141,7 @@ export function LlmsPage() {
 								A workspace rule in <Mono>.windsurf/rules</Mono>.
 							</>,
 						],
-						['Gemini CLI', <Mono>GEMINI.md</Mono>],
+						['Gemini CLI', <Mono key="gemini">GEMINI.md</Mono>],
 						['Other coding assistants', 'Your tool’s project rules or instructions.'],
 						['A chat app', 'Paste it into the conversation or project instructions.'],
 					]}

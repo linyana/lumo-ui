@@ -31,7 +31,9 @@ export const useGlobal = create<GlobalState>()(
 			partialize: (state) => ({ packageManager: state.packageManager }),
 			merge: (persisted, current) => {
 				const value =
-					typeof persisted === 'object' && persisted !== null && 'packageManager' in persisted
+					typeof persisted === 'object' &&
+					persisted !== null &&
+					'packageManager' in persisted
 						? persisted.packageManager
 						: undefined;
 				return {

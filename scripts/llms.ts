@@ -289,6 +289,19 @@ const markdown = [
 	catalogue(),
 ].join('\n\n');
 
+/**
+ * The mark every generated file opens with.
+ *
+ * `_headers` declares the charset, and a reader that honours it needs nothing more — but one that
+ * does not, a Chinese-locale browser or a downloaded copy opened in a Windows editor, falls back to
+ * the machine's own code page, and `—` (`E2 80 94`) then reads as `鈥` beside a replacement
+ * character. A BOM is sniffed before the charset and before any guess from the language, so these
+ * three bytes are what keeps a reader that trusts neither on UTF-8.
+ */
+const BOM = '\uFEFF';
+
+const write = (path: string, text: string) => Bun.write(path, BOM + text);
+
 const itemDocs = new Map<string, string>();
 for (const item of registry.items) itemDocs.set(item.name, await itemDoc(item));
 
@@ -302,10 +315,10 @@ const full = [
 
 await rm(docs, { recursive: true, force: true });
 await mkdir(docs, { recursive: true });
-await Bun.write(join(out, 'llms.txt'), markdown);
-await Bun.write(join(out, 'llms-full.txt'), `${full}\n`);
-await Bun.write(join(docs, 'agents.md'), rules);
-for (const [name, doc] of itemDocs) await Bun.write(join(docs, `${name}.md`), doc);
+await write(join(out, 'llms.txt'), markdown);
+await write(join(out, 'llms-full.txt'), `${full}\n`);
+await write(join(docs, 'agents.md'), rules);
+for (const [name, doc] of itemDocs) await write(join(docs, `${name}.md`), doc);
 
 const size = (text: string) => `${Math.round(text.length / 1024)}K`;
 console.log(
