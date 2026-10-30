@@ -4,9 +4,9 @@ import { Table } from '@/components/ui/table';
 
 export default function States() {
 	return (
-		<div className="flex w-full max-w-2xl flex-col gap-6 md:flex-row md:items-start">
-			<div className="w-full">
-				<Table.Root aria-label="runs, none yet">
+		<div className="grid min-w-0 w-full gap-6 lg:grid-cols-2">
+			<div className="min-w-0 w-full">
+				<Table.Root variant="outlined" hoverable={false} aria-label="runs, none yet">
 					<Table.Header>
 						<Table.Row>
 							<Table.Head>job</Table.Head>
@@ -20,8 +20,13 @@ export default function States() {
 					</Table.Body>
 				</Table.Root>
 			</div>
-			<div className="w-full">
-				<Table.Root aria-label="runs, arriving">
+			<div className="min-w-0 w-full">
+				<Table.Root
+					variant="outlined"
+					hoverable={false}
+					aria-busy
+					aria-label="runs, arriving"
+				>
 					<Table.Header>
 						<Table.Row>
 							<Table.Head>job</Table.Head>

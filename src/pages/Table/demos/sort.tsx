@@ -54,7 +54,7 @@ export default function Sort() {
 				<Table.Body>
 					{rows.map((member) => (
 						<Table.Row key={member.name}>
-							<Table.Cell>{member.name}</Table.Cell>
+							<Table.Head scope="row">{member.name}</Table.Head>
 							<Table.Cell align="end">{member.commits}</Table.Cell>
 						</Table.Row>
 					))}

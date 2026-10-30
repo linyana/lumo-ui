@@ -65,15 +65,12 @@
 	--color-input-strong: var(--input-strong);
 	--color-ring: var(--ring);
 
-	/* A table: the band its column names sit in, the same band under the pointer, and the three fills a
-	   row can wear. All five are washes mixed with `transparent` or with the page, never colours of
-	   their own — a row's hover has to read on the page as well as inside a card, and a band has to be
-	   opaque enough that the rows of a sticky header do not show through it. The band is faint, because
-	   it names the columns and is not a record itself; the pointer deepens it to the weight of the rule
-	   under it. The colours are named rather than written once in `:root`, because a mix written there
-	   would freeze the light theme's `--primary` into the value it hands down to `.dark`. */
-	--color-table-head: color-mix(in oklch, var(--foreground) 2%, var(--background));
-	--color-table-head-hover: color-mix(in oklch, var(--foreground) 8%, var(--background));
+	/* Table bands are opaque so sticky headers hide the records beneath them. A standalone table
+	   supplies its surface; a frameless table can name its host through --table-surface. Row states
+	   stay transparent so the same washes work on either surface. Keep these mixes inline: a value
+	   resolved in :root would freeze the light theme before a dark scope can change its colours. */
+	--color-table-head: color-mix(in oklch, var(--foreground) 2%, var(--table-surface, var(--background)));
+	--color-table-head-hover: color-mix(in oklch, var(--foreground) 8%, var(--table-surface, var(--background)));
 	--color-row-hover: color-mix(in oklch, var(--foreground) 5%, transparent);
 	--color-row-selected: color-mix(in oklch, var(--primary) 8%, transparent);
 	--color-row-selected-hover: color-mix(in oklch, var(--primary) 12%, transparent);

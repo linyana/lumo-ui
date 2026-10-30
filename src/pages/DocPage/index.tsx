@@ -996,9 +996,8 @@ export function PropTable({ props }: PropTableProps) {
 		<Tooltip.Provider delay={150}>
 			<Table.Root
 				size="sm"
-				// The panel is the docs’ own, so it also drops the last row’s rule: the row’s line and
-				// the panel’s edge would otherwise sit on top of each other as one 2px line.
-				className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
+				variant="outlined"
+				hoverable={false}
 				aria-label="props"
 			>
 				<Table.Header>
@@ -1012,7 +1011,7 @@ export function PropTable({ props }: PropTableProps) {
 					{Object.entries(props).map(([name, node]) => (
 						<Table.Row key={name}>
 							{/* Top-aligned, because a prop and its sentence are never the same height. */}
-							<Table.Cell className="align-top">
+							<Table.Head scope="row" className="align-top font-normal">
 								<span className="inline-flex items-center gap-1.5 font-mono">
 									{name}
 									{!node.required && '?'}
@@ -1020,7 +1019,7 @@ export function PropTable({ props }: PropTableProps) {
 										<PropHint name={name} description={node.description} />
 									)}
 								</span>
-							</Table.Cell>
+							</Table.Head>
 							<Table.Cell className="align-top whitespace-normal font-mono">
 								{node.type}
 							</Table.Cell>
@@ -1066,11 +1065,7 @@ function Names({ children }: { children: ReactNode }) {
 
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
-		<Table.Root
-			size="sm"
-			// See `PropTable`: the panel closes the table, so the last row does not.
-			className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
-		>
+		<Table.Root size="sm" variant="outlined" hoverable={false}>
 			<Table.Header>
 				<Table.Row>
 					{head.map((label, column) => (

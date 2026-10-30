@@ -1,5 +1,4 @@
 import { Code } from '@/components/ui/code';
-/* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
 	DocPage,
@@ -11,28 +10,53 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
+import Embedded from './demos/embedded';
+import Scroll from './demos/scroll';
 import Selection from './demos/selection';
 import Sort from './demos/sort';
 import States from './demos/states';
+import Structure from './demos/structure';
+import Surfaces from './demos/surfaces';
 
 const files = ['src/components/ui/table.tsx'];
 
 const rootProps: Record<string, PropNode> = {
+	variant: {
+		type: '"borderless" | "outlined" | "filled"',
+		default: '"borderless"',
+		description:
+			'Transparent records, a card-coloured frame, or a muted surface. Outlined and filled have rounded corners; neither adds a vertical cell grid.',
+	},
 	size: {
 		type: '"sm" | "md"',
 		default: '"md"',
 		description:
-			'How much room a row takes. Every part is inset by the same two variables, so this is the only density knob there is.',
+			'Cell spacing, not text size. Both densities use text-sm; override the font size with className independently.',
+	},
+	hoverable: {
+		type: 'boolean',
+		default: 'true',
+		description:
+			'Highlight body rows under the pointer. False keeps selection visible and leaves sorting controls interactive. Header and footer rows never receive the body hover.',
 	},
 	className: {
 		type: 'string',
 		description:
-			'Merged last through cn(), on the scrolling frame — the element a caller gives a height to. Every other prop is the table’s own.',
+			'Merged last through cn() on the scrolling container. Give it a height, change its surface, or override its density and font size here.',
 	},
 	'...props': {
 		type: 'HTMLTableElement props',
 		description:
-			'`aria-label`, `aria-describedby`, `id` and the rest land on the `<table>`, which is the element a screen reader reads.',
+			'All remaining props, including style, ref, aria-label, aria-busy and id, land on the native table, not the scrolling container.',
+	},
+};
+
+const headerProps: Record<string, PropNode> = {
+	sticky: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'Keep a single header row at the top of the scrolling container. Give Table.Root a height or max-height. Grouped sticky headers, offsets and page-level sticking are not provided.',
 	},
 };
 
@@ -40,109 +64,108 @@ const headProps: Record<string, PropNode> = {
 	align: {
 		type: '"start" | "center" | "end"',
 		default: '"start"',
-		description: 'Which edge the column is set from.',
+		description: 'The logical edge the column is set from. Table.Cell takes the same prop.',
+	},
+	scope: {
+		type: '"col" | "colgroup" | "row" | "rowgroup"',
+		default: '"col"',
+		description:
+			'Native header scope. Row and rowgroup headers keep body text sizing and colour instead of the column-title treatment.',
 	},
 	sort: {
 		type: '"ascending" | "descending" | "none"',
 		description:
-			'Where the column sits in the order, in the words `aria-sort` already uses. Left out, the column cannot be sorted at all — which is not the same as being sortable and unsorted.',
+			'The displayed order and aria-sort value. Omit it for a column that cannot be sorted; none means sortable but currently unsorted.',
 	},
 	onSort: {
 		type: '() => void',
 		description:
-			'Given, the name becomes a button and the cell announces its own direction. Pressing it does not reorder anything: order is a fact about the data, and it is the caller’s to change.',
+			'Makes the title a button. The caller owns the ordering and sort cycle; this primitive does not reorder records.',
+	},
+};
+
+const emptyProps: Record<string, PropNode> = {
+	columns: {
+		type: 'number',
+		required: true,
+		description: 'The number of columns to span, including selection or action columns.',
+	},
+	icon: {
+		type: 'ReactNode',
+		description: 'An optional rendered glyph above the centred message.',
 	},
 };
 
 const partRows = [
 	[
 		'Table.Root',
-		'the table and the box that scrolls',
-		'a div that scrolls, with the `<table>` inside it. It draws nothing itself: the frame, the radius and the surface are the caller’s. The div takes `className`; the table takes the rest.',
+		'scrolling container + table',
+		'The container owns density and surface; all remaining native props belong to the table.',
 	],
-	[
-		'Table.Header',
-		'the column names',
-		'a `<thead>` in a band of its own; `sticky` keeps it in place.',
-	],
-	[
-		'Table.Body',
-		'the records',
-		'a `<tbody>`. Every row keeps its rule, because nothing else closes the table — a caller that draws a box around one drops the last row’s line instead.',
-	],
-	[
-		'Table.Footer',
-		'a line of totals',
-		'a `<tfoot>` wearing the header’s band — one of the rows that is not a record.',
-	],
-	[
-		'Table.Row',
-		'one record',
-		'a `<tr>`. The pointer leaves a wash; `data-selected` leaves a longer one.',
-	],
-	[
-		'Table.Head',
-		'a column name',
-		'a `<th scope="col">`, one step smaller than the data. The band under the pointer deepens. Sorted, the name steps up to full strength.',
-	],
+	['Table.Header', 'thead', 'An opaque column-title band. sticky supports one header row.'],
+	['Table.Body', 'tbody', 'Records, including native row headers and merged cells.'],
+	['Table.Footer', 'tfoot', 'A summary band, not a toolbar or an automatically calculated total.'],
+	['Table.Row', 'tr', 'Body hover, selected and disabled styling; no click or selection logic.'],
+	['Table.Head', 'th', 'Column titles by default; scope="row" identifies a record in the body.'],
 	[
 		'Table.Cell',
-		'one field',
-		'a `<td>`, drawn with the same inset and rule as a head. Text does not wrap by default: a column that should fold says `whitespace-normal`.',
+		'td',
+		'Logical alignment, tabular figures and nowrap by default. Native span props are passed through.',
 	],
+	['Table.Empty', 'tr + td', 'A centred message spanning columns, so the header stays visible.'],
 	[
-		'Table.Empty',
-		'no rows',
-		'a row spanning `columns`, so the header stays over it — a table that emptied into a paragraph would take away the only thing that says what was supposed to be here.',
+		'Table.Caption',
+		'caption',
+		'A native description below the records, inside the scrolling container.',
 	],
-	['Table.Caption', 'what the table is', 'a `<caption>` under it.'],
 ];
 
 const hookRows = [
 	[
 		'data-slot="table-container"',
-		'the box',
-		'the div that scrolls; the `<table>` inside it carries `data-slot="table"`.',
+		'scrolling frame',
+		'className belongs here; the native table carries data-slot="table".',
+	],
+	[
+		'--table-surface',
+		'host background',
+		'Opaque base for the header and footer. Falls back to background; outlined uses card and filled uses muted. Set it explicitly when a borderless table sits on another surface.',
 	],
 	[
 		'--cell-px · --cell-py',
-		'the inset',
-		'set on the frame and read by every head, cell, caption and empty state, so no part can drift out of the table’s rhythm.',
+		'cell spacing',
+		'Set by size on the container, inherited by heads, cells and captions.',
 	],
 	[
-		'bg-table-head',
-		'the band',
-		'a wash of the text colour over whatever the table sits on — faint, because it names the columns and is not a record. It is opaque, which is what a sticky header needs; `bg-table-head-hover` is the same wash a step deeper, for the column under the pointer.',
+		'bg-table-head · bg-table-head-hover',
+		'header bands',
+		'Opaque washes mixed over --table-surface, so a sticky header hides records passing underneath.',
 	],
 	[
-		'bg-row-hover',
-		'the row states',
-		'washes in the theme rather than colours of their own, so a row hover works on the page and inside a card. `bg-row-selected` marks the chosen row, and `bg-row-selected-hover` is that mark under a pointer.',
+		'bg-row-hover · bg-row-selected · bg-row-selected-hover',
+		'body states',
+		'Transparent washes that work on each surface, including row-header cells.',
 	],
 	[
-		'border-separate',
-		'the border model',
-		'with `border-spacing-0`: not `collapse`, because a collapsed border belongs to the table and scrolls with it — a sticky header drawn that way loses its bottom rule the moment it sticks.',
+		'data-variant · data-size · data-hoverable',
+		'container attributes',
+		'The chosen surface, density and body-hover setting.',
 	],
+	['data-align · data-sort', 'cell attributes', 'Logical alignment and the displayed sort direction.'],
 	[
-		'data-size · data-align',
-		'the attributes',
-		'on the frame and on the cell; a head that can be ordered adds `data-sort`.',
+		'data-selected · data-disabled',
+		'row attributes',
+		'Set by the caller. They style a row; they do not implement selection or disable nested controls semantically.',
 	],
 	[
 		'aria-sort',
-		'what is heard',
-		'`ascending`, `descending`, or `none` on a sortable column that is not sorted. Columns that cannot be sorted carry nothing at all.',
-	],
-	[
-		'data-selected · data-disabled',
-		'on a row',
-		'the caller’s, and the only two the row answers.',
+		'header semantics',
+		'Ascending, descending or none on a sortable header; absent on an ordinary column.',
 	],
 ];
 
 const usageImport = "import { Table } from '@/components/ui/table';";
-const usageExample = `<Table.Root aria-label="recent runs">
+const usageExample = `<Table.Root variant="outlined" aria-label="recent runs">
 	<Table.Header>
 		<Table.Row>
 			<Table.Head>job</Table.Head>
@@ -151,7 +174,7 @@ const usageExample = `<Table.Root aria-label="recent runs">
 	</Table.Header>
 	<Table.Body>
 		<Table.Row>
-			<Table.Cell>unit</Table.Cell>
+			<Table.Head scope="row">unit</Table.Head>
 			<Table.Cell align="end">42s</Table.Cell>
 		</Table.Row>
 	</Table.Body>
@@ -159,21 +182,14 @@ const usageExample = `<Table.Root aria-label="recent runs">
 
 export function TablePage() {
 	return (
-		<DocPage title="table" description="records, in columns, in a box that names them">
+		<DocPage title="table" description="records in columns, with a surface when they need one">
 			<DocPreview path="src/pages/Table/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
 
 			<DocSection
 				title="installation"
-				note={
-					<>
-						one file, <Mono>tailwind-variants</Mono> and the washes the theme already
-						carries. there is no Base UI part here: a table is the one thing the browser
-						already knows how to be, so what is added is the band, the row states and
-						the arrow that says which way a column runs.
-					</>
-				}
+				note="One file with native table semantics. Base UI is not needed for the table itself; controls inside it keep their own behaviour."
 			>
 				<DocInstall
 					name="table"
@@ -184,14 +200,7 @@ export function TablePage() {
 
 			<DocSection
 				title="usage"
-				note={
-					<>
-						the table scrolls, so one wider than the column it sits in is read sideways
-						rather than squeezed — and it draws nothing around itself: no frame, no
-						fill, no radius. the box is the caller’s, which is what lets the same table
-						sit on a page and inside a card without saying it twice.
-					</>
-				}
+				note="Compose native sections and cells. The table remains frameless by default; choose a surface when it stands on its own."
 			>
 				<div className="space-y-3">
 					<Code code={usageImport} language="tsx" header={false} />
@@ -200,16 +209,74 @@ export function TablePage() {
 			</DocSection>
 
 			<DocSection
-				title="the header does not sort"
+				title="surfaces"
 				note={
 					<>
-						it says which way the column runs and it calls back when the arrow is
-						pressed, and that is all: order is a fact about the data, so a table that
-						reordered what it was handed would be quietly disagreeing with whoever
-						fetched it. the one column that is sorted steps up to full strength, so the
-						order can be found without reading every arrow.
+						<Mono>borderless</Mono> blends into its host; <Mono>outlined</Mono> draws a
+						card-coloured frame; <Mono>filled</Mono> uses a muted surface without a
+						frame. These static records set <Mono>{'hoverable={false}'}</Mono>.
 					</>
 				}
+			>
+				<DocPreview path="src/pages/Table/demos/surfaces.tsx">
+					<Surfaces />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="scrolling and a sticky header"
+				note={
+					<>
+						Give the container a <Mono>max-height</Mono> to scroll vertically. A single
+						header row can stay at its top while the body moves underneath. Cells do not
+						wrap by default; use <Mono>whitespace-normal</Mono> for notes, and constrain
+						an inner element for truncation. The branch tooltip also opens from
+						keyboard focus. Multi-row sticky headers, offsets and fixed columns are not
+						included.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/scroll.tsx">
+					<Scroll />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="native structure"
+				note={
+					<>
+						Use <Mono>scope="colgroup"</Mono> with <Mono>colSpan</Mono> for grouped
+						headings and <Mono>scope="row"</Mono> to name a record. Native{' '}
+						<Mono>rowSpan</Mono> merges cells; omit the covered cell in later rows.
+						The footer is a summary you calculate, and the caption describes the table.
+						This grouped header is deliberately not sticky.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/structure.tsx">
+					<Structure />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="inside a card"
+				note={
+					<>
+						Keep the table borderless when its host already draws a frame. Set{' '}
+						<Mono>--table-surface: var(--card)</Mono> so the opaque header matches that
+						host in both themes. Remove the content inset and the final row rule only
+						where the card closes the table; no global Card styles need to change.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/embedded.tsx">
+					<Embedded />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="sorting"
+				note="The header displays direction, announces aria-sort and calls onSort. The caller owns the sort state and record order, whether calculated locally or fetched from a server."
 			>
 				<DocPreview path="src/pages/Table/demos/sort.tsx">
 					<Sort />
@@ -218,15 +285,7 @@ export function TablePage() {
 
 			<DocSection
 				title="a chosen row"
-				note={
-					<>
-						two fills, and they are not the same one. the pointer leaves a wash of the
-						text colour, gone a frame after it passes; a chosen row leaves a tint of{' '}
-						<Mono>primary</Mono> that stays. this theme’s primary is also a near-black,
-						so that tint is mixed a step stronger than the wash — otherwise a row would
-						look chosen only while the pointer happened to be on it.
-					</>
-				}
+				note="Checkboxes own their behaviour; the caller owns the selected keys and sets data-selected on each row. The selected tint stays visible after the pointer leaves and deepens on hover."
 			>
 				<DocPreview path="src/pages/Table/demos/selection.tsx">
 					<Selection />
@@ -235,15 +294,7 @@ export function TablePage() {
 
 			<DocSection
 				title="nothing, and not yet"
-				note={
-					<>
-						an empty table keeps its columns: <Mono>Table.Empty</Mono> is a row rather
-						than a box, so the header stays over it. rows on their way are{' '}
-						<Mono>Skeleton</Mono> given the height of the text that will replace them —
-						there is no loading state in the component, because a placeholder is only
-						ever a promise about a size.
-					</>
-				}
+				note="An empty table keeps its header and centres a message across every column. Loading uses Skeleton cells and aria-busy on the table; there is no loading prop or automatic placeholder layout."
 			>
 				<DocPreview path="src/pages/Table/demos/states.tsx">
 					<States />
@@ -252,37 +303,42 @@ export function TablePage() {
 
 			<DocSection
 				title="api reference"
-				note="the box takes the surface and the density; every other part takes a class name and the element's own props."
+				note="A presentation primitive, not a data engine: filtering, pagination, fetching, editing and selection state belong to the caller. All parts accept their native element props."
 			>
 				<div className="space-y-6">
 					<div className="space-y-2">
 						<p className="text-sm text-muted-foreground">
-							<Mono>Table.Root</Mono> — the box
+							<Mono>Table.Root</Mono>
 						</p>
 						<PropTable props={rootProps} />
 					</div>
 					<div className="space-y-2">
 						<p className="text-sm text-muted-foreground">
-							<Mono>Table.Head</Mono> — a column name, and the arrow that moves it
+							<Mono>Table.Header</Mono>
+						</p>
+						<PropTable props={headerProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.Head</Mono>
 						</p>
 						<PropTable props={headProps} />
 					</div>
 					<div className="space-y-2">
-						<p className="text-sm text-muted-foreground">the parts</p>
-						<DocTable
-							head={['part', 'what it is', 'notes']}
-							mono={[0]}
-							rows={partRows}
-						/>
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.Empty</Mono>
+						</p>
+						<PropTable props={emptyProps} />
 					</div>
+					<DocTable head={['part', 'element', 'notes']} mono={[0, 1]} rows={partRows} />
 				</div>
 			</DocSection>
 
 			<DocSection
-				title="hooks"
-				note="four attributes and five variables: everything a project needs to restyle a table without copying it."
+				title="styling hooks"
+				note="The frame takes className; style and ref still belong to the native table. Use container classes for surface overrides and scrolling constraints. Table variants and cell variants are exported for reuse."
 			>
-				<DocTable head={['hook', 'value', 'notes']} mono={[0, 1]} rows={hookRows} />
+				<DocTable head={['hook', 'role', 'notes']} mono={[0]} rows={hookRows} />
 			</DocSection>
 		</DocPage>
 	);

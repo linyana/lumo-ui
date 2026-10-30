@@ -12,9 +12,8 @@ import { iconSlot } from '@/lib/control';
 export type TableSort = 'ascending' | 'descending' | 'none';
 
 /**
- * A table of records, drawn as records rather than as a box: no frame, no fill, no radius. The box
- * is the caller's — a `Card`, a panel, a dialog body — because a table that drew one could not sit
- * inside something that already had one without saying it twice.
+ * Frameless by default so records can sit inside a Card or panel. Standalone tables can choose
+ * an outlined or filled surface; neither adds a grid between the columns.
  *
  * Two measurements, inherited by every part. `--cell-py` and `--cell-px` are the whole density of
  * the table: a head, a cell and the empty state are all inset by them, so the size variant is the
@@ -25,15 +24,30 @@ export type TableSort = 'ascending' | 'descending' | 'none';
  * the moment it sticks. So the line under a row is drawn by each of its cells instead.
  */
 export const tableVariants = tv({
-	base: ['w-full overflow-auto', 'text-sm'],
+	base: [
+		'min-w-0 w-full overflow-auto text-sm',
+		'[&>table:has(>tfoot)>tbody>tr:last-child>*]:border-b-0',
+	],
 	variants: {
 		size: {
-			sm: 'text-xs [--cell-px:--spacing(3)] [--cell-py:--spacing(2)]',
-			md: 'text-sm [--cell-px:--spacing(4)] [--cell-py:--spacing(3)]',
+			sm: '[--cell-px:--spacing(3)] [--cell-py:--spacing(2)]',
+			md: '[--cell-px:--spacing(4)] [--cell-py:--spacing(3)]',
+		},
+		variant: {
+			borderless: '',
+			outlined: [
+				'rounded-lg border bg-card text-card-foreground [--table-surface:var(--card)]',
+				'[&>table>tbody>tr:last-child>*]:border-b-0',
+			],
+			filled: [
+				'rounded-lg bg-muted [--table-surface:var(--muted)]',
+				'[&>table>tbody>tr:last-child>*]:border-b-0',
+			],
 		},
 	},
 	defaultVariants: {
 		size: 'md',
+		variant: 'borderless',
 	},
 });
 
@@ -45,6 +59,8 @@ export type RootProps = Omit<ComponentProps<'table'>, 'className'> &
 		 * table's own, so `aria-label` still lands on the element a screen reader reads.
 		 */
 		className?: string;
+		/** Highlight body rows under the pointer without changing selection or sorting. */
+		hoverable?: boolean;
 	};
 
 /**
@@ -52,12 +68,21 @@ export type RootProps = Omit<ComponentProps<'table'>, 'className'> &
  * than squeezed; the table inside it keeps the semantics, which is the half of this component the
  * browser already knew how to do.
  */
-export function Root({ size = 'md', className, children, ...props }: RootProps) {
+export function Root({
+	size = 'md',
+	variant = 'borderless',
+	hoverable = true,
+	className,
+	children,
+	...props
+}: RootProps) {
 	return (
 		<div
 			data-slot="table-container"
 			data-size={size}
-			className={cn(tableVariants({ size }), className)}
+			data-variant={variant}
+			data-hoverable={hoverable}
+			className={cn(tableVariants({ size, variant }), className)}
 		>
 			<table
 				data-slot="table"
@@ -73,7 +98,7 @@ export function Root({ size = 'md', className, children, ...props }: RootProps) 
 export type HeaderProps = ComponentProps<'thead'> & {
 	/**
 	 * Holds the column names in place while the rows pass under them, which is what a table with a
-	 * height needs and what a table without one cannot see.
+	 * height needs. Supports one header row; grouped headers need their own sticky offsets.
 	 */
 	sticky?: boolean;
 };
@@ -89,8 +114,8 @@ export function Header({ sticky = false, className, ...props }: HeaderProps) {
 			data-slot="table-header"
 			data-sticky={sticky ? '' : undefined}
 			className={cn(
-				'[&_th]:bg-table-head',
-				sticky && '[&_th]:sticky [&_th]:top-0 [&_th]:z-10',
+				'[&>tr>th]:bg-table-head',
+				sticky && '[&>tr>th]:sticky [&>tr>th]:top-0 [&>tr>th]:z-10',
 				className,
 			)}
 			{...props}
@@ -115,7 +140,10 @@ export function Footer({ className, ...props }: FooterProps) {
 	return (
 		<tfoot
 			data-slot="table-footer"
-			className={cn('bg-table-head font-medium [&_td]:border-t [&_td]:border-b-0', className)}
+			className={cn(
+				'bg-table-head font-medium [&>tr:first-child>*]:border-t [&>tr:last-child>*]:border-b-0',
+				className,
+			)}
 			{...props}
 		/>
 	);
@@ -129,9 +157,9 @@ export function Footer({ className, ...props }: FooterProps) {
 export const tableRowVariants = tv({
 	base: [
 		'transition-colors duration-(--duration-state)',
-		'hover:bg-row-hover',
-		'data-selected:bg-row-selected',
-		'data-selected:hover:bg-row-selected-hover',
+		'[[data-slot=table-container][data-hoverable=true]>table>tbody>&]:hover:bg-row-hover',
+		'[tbody>&]:data-selected:bg-row-selected',
+		'[[data-slot=table-container][data-hoverable=true]>table>tbody>&]:data-selected:hover:bg-row-selected-hover',
 		// A row that cannot be acted on is out of the way rather than hidden: the records around it
 		// are still true, so it keeps its place and its text, and loses its answers.
 		'data-disabled:pointer-events-none data-disabled:opacity-50',
@@ -192,26 +220,30 @@ function SortArrow({ sort }: { sort: TableSort }) {
 }
 
 /**
- * A column name, and the cell it is set in. The band under the pointer deepens, so the column being
- * read is named before the pointer has found its arrow. Quiet by default and quieter than its own
- * data, because a header is read once and the column is read every line — and the one column that
- * is sorted steps up to full strength, so the order the table is in can be found without reading
- * every arrow. A sortable one becomes a button whose hit area is grown out to the edge of the cell:
- * the arrow is 1em wide, and aiming at it should not be a skill.
+ * A column title is quieter than its data; a row title (`scope="row"`) keeps the body's size and
+ * colour. A sortable title becomes a button and announces its direction on the enclosing cell.
  */
-export function Head({ align = 'start', sort, onSort, className, children, ...props }: HeadProps) {
+export function Head({
+	align = 'start',
+	scope = 'col',
+	sort,
+	onSort,
+	className,
+	children,
+	...props
+}: HeadProps) {
+	const rowHeader = scope === 'row' || scope === 'rowgroup';
 	return (
 		<th
-			scope="col"
+			scope={scope}
 			data-slot="table-head"
 			data-align={align}
 			data-sort={sort}
 			aria-sort={sort ?? (onSort === undefined ? undefined : 'none')}
 			className={cn(
 				tableCellVariants({ align }),
-				'text-xs font-medium text-muted-foreground',
-				'transition-colors duration-(--duration-state)',
-				'hover:bg-table-head-hover',
+				'font-medium transition-colors duration-(--duration-state)',
+				!rowHeader && 'text-xs text-muted-foreground [thead>tr>&]:hover:bg-table-head-hover',
 				'data-[sort=ascending]:text-foreground data-[sort=descending]:text-foreground',
 				className,
 			)}
@@ -278,7 +310,10 @@ export function Empty({ columns, icon, className, children, ...props }: EmptyPro
 				)}
 				{...props}
 			>
-				<div className="flex max-w-sm flex-col items-center gap-2">
+				<div
+					data-slot="table-empty-content"
+					className="mx-auto flex max-w-sm flex-col items-center gap-2"
+				>
 					{icon !== undefined && (
 						<span
 							data-slot="table-empty-icon"

@@ -53,7 +53,7 @@ export default function Selection() {
 									<Checkbox.Indicator />
 								</Checkbox.Root>
 							</Table.Cell>
-							<Table.Cell>{run.job}</Table.Cell>
+							<Table.Head scope="row">{run.job}</Table.Head>
 							<Table.Cell align="end">
 								{chosen.includes(run.id) ? 'kept 90 days' : 'kept 7 days'}
 							</Table.Cell>
