@@ -687,6 +687,34 @@
 			]
 		},
 		{
+			"name": "fieldset",
+			"type": "registry:ui",
+			"title": "Fieldset",
+			"description": "A heading over the fields it names, so a long form reads as several answers instead of one list. A native `<fieldset>` with its frame taken off — the legend is the group's accessible name, and a group that is disabled dims as one.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils"],
+			"files": [
+				{
+					"path": "src/components/ui/fieldset.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "form",
+			"type": "registry:ui",
+			"title": "Form",
+			"description": "The fields as one submission: it collects their values, checks them on submit, moves focus to the first one that failed, and files every verdict — a browser's, a validator's or a server's — back in the field it belongs to. Nothing is wired between the two by hand.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils"],
+			"files": [
+				{
+					"path": "src/components/ui/form.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
 			"name": "input",
 			"type": "registry:ui",
 			"title": "Input",

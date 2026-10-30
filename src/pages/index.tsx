@@ -13,6 +13,8 @@ import { ComboboxPage } from './Combobox';
 import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
 import { FieldPage } from './Field';
+import { FieldsetPage } from './Fieldset';
+import { FormPage } from './Form';
 import { InputPage } from './Input';
 import { InstallPage } from './Install';
 import { LayoutPage } from './Layout';
@@ -75,6 +77,8 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'dialog', label: 'Dialog', section: 'Components', element: <DialogPage /> },
 	{ path: 'drawer', label: 'Drawer', section: 'Components', element: <DrawerPage /> },
 	{ path: 'field', label: 'Field', section: 'Components', element: <FieldPage /> },
+	{ path: 'fieldset', label: 'Fieldset', section: 'Components', element: <FieldsetPage /> },
+	{ path: 'form', label: 'Form', section: 'Components', element: <FormPage /> },
 	{ path: 'input', label: 'Input', section: 'Components', element: <InputPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'nav', label: 'Nav', section: 'Components', element: <NavPage /> },

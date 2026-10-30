@@ -22,6 +22,8 @@ import ComboboxBasic from '@/pages/Combobox/demos/basic';
 import DialogBasic from '@/pages/Dialog/demos/basic';
 import DrawerBasic from '@/pages/Drawer/demos/basic';
 import FieldBasic from '@/pages/Field/demos/basic';
+import FieldsetBasic from '@/pages/Fieldset/demos/basic';
+import FormBasic from '@/pages/Form/demos/basic';
 import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
 import NavBasic from '@/pages/Nav/demos/basic';
@@ -92,6 +94,8 @@ const groups: PreviewGroup[] = [
 			{ path: 'checkbox', label: 'Checkbox', Demo: CheckboxBasic, room: 'compact' },
 			{ path: 'combobox', label: 'Combobox', Demo: ComboboxBasic, room: 'compact' },
 			{ path: 'field', label: 'Field', Demo: FieldBasic },
+			{ path: 'fieldset', label: 'Fieldset', Demo: FieldsetBasic },
+			{ path: 'form', label: 'Form', Demo: FormBasic },
 			{ path: 'input', label: 'Input', Demo: InputBasic, room: 'compact' },
 			{ path: 'radio-group', label: 'RadioGroup', Demo: RadioGroupBasic },
 			{ path: 'select', label: 'Select', Demo: SelectBasic, room: 'compact' },
