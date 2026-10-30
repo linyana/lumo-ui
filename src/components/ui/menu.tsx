@@ -1,6 +1,5 @@
 import { Menu as BaseMenu } from '@base-ui/react/menu';
 import type { ComponentProps } from 'react';
-import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { row, rowGroupLabel, rowSeparator } from '@/lib/control';
 import { popup, positioner, viewport } from '@/lib/surface';
@@ -82,25 +81,8 @@ export function Separator({ className, ...props }: SeparatorProps) {
 
 export type TriggerProps<Payload = unknown> = BaseMenu.Trigger.Props<Payload>;
 
-/**
- * The button that opens it: a Button's outlined, small shape, so a trigger in a row of controls is
- * the same height and the same weight as everything beside it. An open menu keeps the hover tint
- * rather than the press one, because it is held open rather than being pressed.
- */
-const triggerClass = cn(
-	buttonVariants({ variant: 'outline', size: 'sm' }),
-	'font-normal data-pressed:after:opacity-(--state-layer-hover-opacity)',
-);
-
-export function Trigger<Payload>({ className, ...props }: TriggerProps<Payload>) {
-	return (
-		<BaseMenu.Trigger
-			data-slot="menu-trigger"
-			className={cn(triggerClass, className)}
-			{...props}
-		/>
-	);
-}
+/** The button that opens it, appearance-free: compose a `Button` through `render`. */
+export const Trigger = BaseMenu.Trigger;
 
 export type ViewportProps = ComponentProps<typeof BaseMenu.Viewport>;
 
