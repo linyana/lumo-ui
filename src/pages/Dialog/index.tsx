@@ -44,12 +44,12 @@ const partRows = [
 	[
 		'Dialog.Viewport',
 		'the layer it is centred in',
-		'fixed inset-0, grid place-items-center, p-4.',
+		'fixed inset-0, grid place-items-center-safe and p-4; it scrolls when a popup that brought its own height still does not fit.',
 	],
 	[
 		'Dialog.Popup',
 		'the panel',
-		'max-w-md, rounded-xl, bordered and shadowed; scales from 95% as it arrives.',
+		'max-w-md, rounded-xl, bordered and shadowed; capped at the viewport and scrolling inside it, so a long form never runs off the top; scales from 95% as it arrives.',
 	],
 	['Dialog.Title', 'its name', 'required — Base UI labels the dialog with it.'],
 	['Dialog.Description', 'the sentence under it', 'muted, mt-1.5, and announced with the title.'],
