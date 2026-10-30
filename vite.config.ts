@@ -1,10 +1,33 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+// Deployment reads public/_headers; Vite needs the same charset declared by middleware.
+function docsCharset(): Plugin {
+	const configure = (server: ViteDevServer | PreviewServer) => {
+		server.middlewares.use((req, res, next) => {
+			const pathname = req.url?.split('?')[0];
+			if (
+				pathname === '/llms.txt' ||
+				pathname === '/llms-full.txt' ||
+				(pathname?.startsWith('/docs/') && pathname.endsWith('.md'))
+			) {
+				res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+			}
+			next();
+		});
+	};
+
+	return {
+		name: 'lumo-docs-charset',
+		configureServer: configure,
+		configurePreviewServer: configure,
+	};
+}
+
 export default defineConfig({
-	plugins: [react(), tailwindcss()],
+	plugins: [react(), tailwindcss(), docsCharset()],
 	resolve: {
 		alias: {
 			'@': fileURLToPath(new URL('./src', import.meta.url)),

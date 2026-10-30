@@ -199,7 +199,7 @@ export function InstallPage() {
 					see <DocLink to="/button">button</DocLink> for the shape of it, or{' '}
 					<DocLink to="/overview">the overview</DocLink> for what there is to install. to
 					hand the library to an assistant, start at{' '}
-					<DocLink to="/llms">use with ai</DocLink>.
+					<DocLink to="/llms">AI Guide</DocLink>.
 				</p>
 			</DocSection>
 		</DocPage>
