@@ -15,6 +15,7 @@ export const buttonVariants = tv({
 		'active:not-aria-[haspopup]:translate-y-(--press-offset)',
 		'active:not-aria-[haspopup]:duration-(--duration-press)',
 		stateLayer,
+		'data-pressed:after:opacity-(--state-layer-hover-opacity)',
 		'data-disabled:pointer-events-none',
 		'data-disabled:not-data-loading:opacity-50',
 		iconSlot,

@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { AccordionPage } from './Accordion';
 import { AvatarPage } from './Avatar';
 import { BadgePage } from './Badge';
 import { ButtonPage } from './Button';
@@ -15,6 +16,7 @@ import { FieldPage } from './Field';
 import { InputPage } from './Input';
 import { InstallPage } from './Install';
 import { LayoutPage } from './Layout';
+import { LlmsPage } from './Llms';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
 import { OverviewPage } from './Overview';
@@ -25,6 +27,7 @@ import { ScrollAreaPage } from './ScrollArea';
 import { SelectPage } from './Select';
 import { SeparatorPage } from './Separator';
 import { SkeletonPage } from './Skeleton';
+import { SliderPage } from './Slider';
 import { SpinnerPage } from './Spinner';
 import { StepsPage } from './Steps';
 import { SwitchPage } from './Switch';
@@ -32,6 +35,8 @@ import { TablePage } from './Table';
 import { TabsPage } from './Tabs';
 import { TextareaPage } from './Textarea';
 import { ToastPage } from './Toast';
+import { TogglePage } from './Toggle';
+import { ToggleGroupPage } from './ToggleGroup';
 import { TooltipPage } from './Tooltip';
 import { TransitionPage } from './Transition';
 
@@ -50,6 +55,8 @@ export type DocRoute = {
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
 	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
+	{ path: 'llms', label: 'AI Guide', section: 'Getting Started', element: <LlmsPage /> },
+	{ path: 'accordion', label: 'Accordion', section: 'Components', element: <AccordionPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },
@@ -88,6 +95,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'select', label: 'Select', section: 'Components', element: <SelectPage /> },
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'skeleton', label: 'Skeleton', section: 'Components', element: <SkeletonPage /> },
+	{ path: 'slider', label: 'Slider', section: 'Components', element: <SliderPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'steps', label: 'Steps', section: 'Components', element: <StepsPage /> },
 	{ path: 'switch', label: 'Switch', section: 'Components', element: <SwitchPage /> },
@@ -95,6 +103,13 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
 	{ path: 'textarea', label: 'Textarea', section: 'Components', element: <TextareaPage /> },
 	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },
+	{ path: 'toggle', label: 'Toggle', section: 'Components', element: <TogglePage /> },
+	{
+		path: 'toggle-group',
+		label: 'ToggleGroup',
+		section: 'Components',
+		element: <ToggleGroupPage />,
+	},
 	{ path: 'tooltip', label: 'Tooltip', section: 'Components', element: <TooltipPage /> },
 	{
 		path: 'transition',

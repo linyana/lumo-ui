@@ -438,7 +438,7 @@ export function Root({
 					)}
 					{...props}
 				>
-					{children}
+					<TrackContext.Provider value={false}>{children}</TrackContext.Provider>
 				</BaseTabs.Root>
 			</ActiveContext.Provider>
 		</TabsContext.Provider>

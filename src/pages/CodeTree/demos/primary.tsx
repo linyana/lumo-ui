@@ -17,6 +17,9 @@ const dependencies = [
 	'src/styles/lumo-tokens.css',
 ];
 
+/** The folders the dependencies sit in, shut on the first frame: the tree opens on the component. */
+const collapsed = ['src/components/ui', 'src/lib', 'src/styles'];
+
 export default function Primary() {
 	const [selected, setSelected] = useState(primary[0]!);
 
@@ -26,6 +29,7 @@ export default function Primary() {
 				<CodeTree
 					paths={[...primary, ...dependencies]}
 					primary={primary}
+					defaultCollapsed={collapsed}
 					selected={selected}
 					onSelect={setSelected}
 				/>

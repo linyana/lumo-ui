@@ -40,6 +40,7 @@ bun run build    # 生产构建
 | `bun run registry:build` | 生成 `public/r/*.json`（CLI 真正下载的东西，`bun run build` 会自动跑）|
 | `bun run registry:check` | 用 shadcn CLI 校验 `registry.json` 本身 |
 | `bun run registry:sync` | 按磁盘补齐 `registry.json`（加完组件后跑） |
+| `bun run llms:build` | 生成 `public/llms.txt`、`public/llms-full.txt` 和 `public/docs/*.md`（给 AI 的入口，`bun run build` / `bun run dev` 会自动跑） |
 
 ## 目录
 
@@ -63,6 +64,7 @@ src/
 └── App.tsx                       # 外壳：把路由接到 Layout 上
 scripts/check-registry.ts         # registry.json 与磁盘的同步检查（--fix 即 sync）
 scripts/theme.ts                  # 两份 CSS → theme / palette 两个 item
+scripts/llms.ts                   # 站点 → llms.txt / llms-full.txt / docs/*.md（给 AI 读的同一套）
 registry.json                     # 分发定义
 public/r/                         # 生成的 registry JSON，随站点部署（不入库）
 AGENTS.md                         # 给 AI 的项目规范
@@ -162,6 +164,22 @@ bun run registry:check  # 再用 shadcn CLI 校验 registry.json 本身
   它会写进项目的 `:root`/`.dark`/`@theme inline` 和 base 层；
 - `@lumo/palette` 只是**默认配色**，装它只会补项目里缺的变量，你已有的 `--primary`、`--radius`
   不会被改。
+
+## 给 AI 读的入口
+
+站点同时是给 agent 的文档源，和 ant.design 的 `llms.txt` 是一回事：
+
+| 地址 | 内容 |
+|---|---|
+| `/llms.txt` | 索引：这是什么、怎么装、写代码时的规矩，然后按层列出每个 item 并链到它的 markdown |
+| `/llms-full.txt` | 上面全部，加上每个 item 的源码和示例，一次取完 |
+| `/docs/<name>.md` | 单个 item：装法、它复制的源码、页面上那些示例 |
+| `/docs/agents.md` | 就是这份 `AGENTS.md` |
+
+三份都是 `scripts/llms.ts` 从 `registry.json` 和页面目录（`src/pages/Button/demos` 就是
+`@lumo/button`）生成的，写进 `public/` 随站点部署、不入库。所以**改内容改源头**：组件的
+`title` / `description`、它的源码、示例，以及 `AGENTS.md`——生成物不用手改。加一个组件时也
+什么都不用多做，索引和 markdown 会自动带上它。
 
 ## 改主题
 

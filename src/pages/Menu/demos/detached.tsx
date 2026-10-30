@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { Button } from '@/components/ui/button';
 import { Menu } from '@/components/ui/menu';
 
 const menus = {
@@ -26,7 +27,12 @@ export default function Detached() {
 		<>
 			<div className="flex flex-wrap justify-center gap-2">
 				{keys.map((key) => (
-					<Menu.Trigger key={key} handle={handle} payload={key}>
+					<Menu.Trigger
+						key={key}
+						handle={handle}
+						payload={key}
+						render={<Button variant="outline" size="sm" />}
+					>
 						{menus[key].heading}
 					</Menu.Trigger>
 				))}

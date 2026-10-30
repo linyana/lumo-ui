@@ -1,4 +1,6 @@
 import { Code } from '@/components/ui/code';
+import { useGlobal } from '@/hooks/useGlobal';
+import { packageCommand } from '@/pages/DocPage/commands';
 import {
 	Command,
 	DocLink,
@@ -16,6 +18,7 @@ import {
  * instead — a page under Components only has to name its own item.
  */
 export function InstallPage() {
+	const packageManager = useGlobal((state) => state.packageManager);
 	const namespace = `{
 	"registries": {
 		"@lumo": "${registryUrl()}"
@@ -166,7 +169,7 @@ export function InstallPage() {
 				}
 			>
 				<Code
-					code={`$ bunx shadcn@latest add @lumo/code-diff
+					code={`$ ${packageCommand('bunx shadcn@latest add @lumo/code-diff', packageManager)}
 ✔ Created 4 files:
   - src/lib/shiki.ts
   - src/lib/clipboard.ts
@@ -194,7 +197,9 @@ export function InstallPage() {
 			>
 				<p className="text-sm text-muted-foreground">
 					see <DocLink to="/button">button</DocLink> for the shape of it, or{' '}
-					<DocLink to="/overview">the overview</DocLink> for what there is to install.
+					<DocLink to="/overview">the overview</DocLink> for what there is to install. to
+					hand the library to an assistant, start at{' '}
+					<DocLink to="/llms">AI Guide</DocLink>.
 				</p>
 			</DocSection>
 		</DocPage>

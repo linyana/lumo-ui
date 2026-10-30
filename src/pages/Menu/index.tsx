@@ -44,7 +44,7 @@ const rootProps: Record<string, PropNode> = {
 
 const partRows = [
 	['Menu.Root', 'the state', 'one root per menu, or one for many triggers through handle.'],
-	['Menu.Trigger', 'the row you click', 'a button, h-8, with the state layer every control has.'],
+	['Menu.Trigger', 'the button that opens it', 'compose a Button through render.'],
 	['Menu.Portal', 'where it is mounted', 'the body, so nothing can clip the popup.'],
 	[
 		'Menu.Positioner',
@@ -68,14 +68,13 @@ const partRows = [
 ];
 
 const hookRows = [
-	['data-slot="menu-trigger"', 'the row you click', 'data-pressed while the menu is open.'],
 	[
 		'data-slot="menu-popup"',
 		'the panel',
 		'w-(--popup-width), so a wider panel is wider, not a wider box.',
 	],
 	['data-highlighted', 'on one item', 'written by Base UI as the keyboard or the pointer moves.'],
-	['data-pressed', 'on the trigger', 'the state layer’s hover weight, held while open.'],
+	['data-pressed', 'on the trigger', 'Base UI’s, so the composed Button holds its hover weight.'],
 	[
 		'data-starting-style · data-ending-style',
 		'entering / leaving',
@@ -93,9 +92,10 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Menu } from '@/components/ui/menu';";
+const usageImport = `import { Button } from '@/components/ui/button';
+import { Menu } from '@/components/ui/menu';`;
 const usageExample = `<Menu.Root>
-	<Menu.Trigger>share</Menu.Trigger>
+	<Menu.Trigger render={<Button variant="outline" size="sm">share</Button>} />
 	<Menu.Portal>
 		<Menu.Positioner sideOffset={8} align="start">
 			<Menu.Popup>
@@ -134,7 +134,7 @@ export function MenuPage() {
 
 			<DocSection
 				title="usage"
-				note="a trigger, a portal, a positioner, a popup. the positioner is what Base UI moves."
+				note="a trigger, a portal, a positioner, a popup. the trigger carries no appearance of its own, so a Button composes into it; the positioner is what Base UI moves."
 			>
 				<div className="space-y-3">
 					<Code code={usageImport} language="tsx" header={false} />
@@ -178,7 +178,7 @@ export function MenuPage() {
 
 			<DocSection
 				title="api reference"
-				note="the root takes Base UI’s props; every other part is a styled element."
+				note="the root takes Base UI’s props; the trigger is Base UI’s own, and every other part is a styled element."
 			>
 				<div className="space-y-6">
 					<div className="space-y-2">

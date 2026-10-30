@@ -6,11 +6,13 @@ import {
 	Copy as CopyIcon,
 	Download,
 	Info,
+	SquareTerminal,
 	X,
 } from 'lucide-react';
 import {
 	Children,
 	createContext,
+	Fragment,
 	isValidElement,
 	useContext,
 	useEffect,
@@ -25,6 +27,7 @@ import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Code, Copy } from '@/components/ui/code';
 import { CodeTree } from '@/components/blocks/code-tree';
+import { foldersOf } from '@/components/blocks/code-tree/tree';
 import { Dialog } from '@/components/ui/dialog';
 import { Nav } from '@/components/ui/nav';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -35,7 +38,9 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCopy } from '@/lib/clipboard';
 import { highlight } from '@/lib/shiki';
-import { filesOf, installFiles, itemOf, languageOf, packagesOf, readSource } from './sources';
+import { isPackageManager, packageManagers, useGlobal } from '@/hooks/useGlobal';
+import { packageCommand } from './commands';
+import { installFiles, itemOf, languageOf, packagesOf, readSource } from './sources';
 import { zipOf } from './zip';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
@@ -200,15 +205,72 @@ export function DocLink({ to, children }: { to: string; children: ReactNode }) {
 	);
 }
 
-/** One command, with the way to take it — no header, no language label. */
+/** One command, with a shared package-manager preference for installation commands. */
 export function Command({ children }: { children: string }) {
+	const packageManager = useGlobal((state) => state.packageManager);
+	const update = useGlobal((state) => state.update);
+	const formatted = packageCommand(children, packageManager);
+	const command = formatted ?? children;
+
+	if (formatted === null) {
+		return (
+			<div
+				data-slot="doc-command"
+				className="flex items-center justify-between gap-3 rounded-md bg-muted px-3 py-2"
+			>
+				<code
+					data-slot="doc-command-text"
+					className="min-w-0 overflow-x-auto whitespace-nowrap font-mono"
+				>
+					{children}
+				</code>
+				<Copy value={children} />
+			</div>
+		);
+	}
+
 	return (
-		<div
-			data-slot="doc-command"
-			className="flex items-center justify-between gap-3 rounded-md bg-muted px-3 py-2"
-		>
-			<code className="min-w-0 truncate font-mono">{children}</code>
-			<Copy value={children} />
+		<div data-slot="doc-command" className="overflow-hidden rounded-lg bg-muted">
+			<Tabs.Root
+				size="sm"
+				value={packageManager}
+				onValueChange={(value) => {
+					if (isPackageManager(value)) update({ packageManager: value });
+				}}
+			>
+				<div
+					data-slot="doc-command-header"
+					className="flex min-w-0 items-center gap-2 border-b px-3 py-1"
+				>
+					<SquareTerminal
+						data-slot="doc-command-icon"
+						aria-hidden="true"
+						className="size-4 shrink-0 text-muted-foreground"
+					/>
+					<div data-slot="doc-command-options" className="min-w-0 overflow-x-auto">
+						<Tabs.List aria-label="package manager">
+							{packageManagers.map((manager) => (
+								<Tabs.Tab key={manager} value={manager}>
+									{manager}
+								</Tabs.Tab>
+							))}
+							<Tabs.Indicator />
+						</Tabs.List>
+					</div>
+					<div data-slot="doc-command-actions" className="ml-auto shrink-0">
+						<Copy key={command} value={command} />
+					</div>
+				</div>
+				{packageManagers.map((manager) => (
+					<Tabs.Panel key={manager} value={manager}>
+						<div data-slot="doc-command-body" className="overflow-x-auto px-4 pb-4">
+							<code data-slot="doc-command-text" className="whitespace-nowrap font-mono">
+								{packageCommand(children, manager)}
+							</code>
+						</div>
+					</Tabs.Panel>
+				))}
+			</Tabs.Root>
 		</div>
 	);
 }
@@ -249,27 +311,6 @@ const NO_PATHS: string[] = [];
  */
 const TOKENS = 'src/styles/lumo-tokens.css';
 const PALETTE = 'src/styles/lumo-palette.css';
-
-/**
- * The files one step copies, named where they go. A step is a sentence and a list of destinations;
- * the text of every one of them is behind the single dialog at the end of the manual, so the page
- * carries no source and the reader has one place to read from.
- *
- * A file the reader may leave behind says so on its own row: the list is what the archive holds, and
- * a row that vanished would be a file the manual silently decided for them.
- */
-function ManualFiles({ paths, optional = NO_PATHS }: { paths: string[]; optional?: string[] }) {
-	return (
-		<ul data-slot="doc-manual-files" className="font-mono text-xs text-muted-foreground">
-			{paths.map((path) => (
-				<li key={path}>
-					{path}
-					{optional.includes(path) && ' (optional)'}
-				</li>
-			))}
-		</ul>
-	);
-}
 
 /**
  * The copy riding on a file's row in the dialog: one click takes that file, without selecting it
@@ -326,15 +367,17 @@ function DownloadFiles({ name, paths }: { name: string; paths: string[] }) {
 
 	return (
 		<Button
-			variant="secondary"
+			size="icon"
+			variant="ghost"
+			className="size-7"
 			icon={<Download />}
+			aria-label="download all"
+			title="download all"
 			loading={building}
 			onClick={() => {
 				take().catch(() => {});
 			}}
-		>
-			download all
-		</Button>
+		/>
 	);
 }
 
@@ -377,13 +420,11 @@ export function DocInstall({
 	// would copy by hand: the reached files and the stylesheets are named by the manual, not by the
 	// manifest, so they are handed over rather than looked up.
 	const lead = files[0];
-	// The palette is the one file a project may already have; the tokens are not, so both are listed
-	// and only the palette is marked.
+	// The stylesheets the manual names rather than looks up; the palette is the one a project may
+	// already have, which the step's own sentence says.
 	const beside = stylesheet ? [TOKENS, PALETTE] : [];
-	const optional = stylesheet ? [PALETTE] : NO_PATHS;
 	const about = [...reaches, ...beside];
-	// What the step lists and the archive holds: the item, what it installs, and the stylesheets no
-	// manifest names.
+	// What the archive holds: the item, what it installs, and the stylesheets no manifest names.
 	const copy = [...installFiles(name, reaches), ...beside];
 
 	const tabs: DocTabItem[] = [
@@ -448,11 +489,16 @@ export function DocInstall({
 									manifest names them, not this page: a package a copied file
 									added is already on the list.
 								</Steps.Description>
-								<Command>{`bun add ${packages.join(' ')}`}</Command>
+								<div data-slot="doc-install-packages" className="mt-2">
+									<Command>{`bun add ${packages.join(' ')}`}</Command>
+								</div>
 							</Steps.Item>
 						)}
 						<Steps.Item>
-							<Steps.Title>copy the code</Steps.Title>
+							<Steps.Title className="flex items-center justify-between gap-2">
+								copy the code
+								<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
+							</Steps.Title>
 							<Steps.Description>
 								{copyNote ?? (
 									<>
@@ -479,22 +525,17 @@ export function DocInstall({
 									</>
 								)}
 							</Steps.Description>
-							<div className="space-y-2">
-								<ManualFiles paths={copy} optional={optional} />
-								<div className="flex items-center gap-2">
-									{lead !== undefined && (
-										<SourceDialog path={lead} name={name} about={about}>
-											<Button
-												variant="outline"
-												icon={<CodeGlyph />}
-												className="flex-1 justify-start"
-											>
-												browse the files
-											</Button>
-										</SourceDialog>
-									)}
-									<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
-								</div>
+							<div className="mt-3 flex flex-wrap items-center gap-2">
+								{lead !== undefined && (
+									<SourceDialog path={lead} name={name} about={about}>
+										<Button icon={<CodeGlyph />}>
+											View Code
+											<span className="ms-2 font-normal text-primary-foreground/70">
+												{copy.length} {copy.length === 1 ? 'file' : 'files'}
+											</span>
+										</Button>
+									</SourceDialog>
+								)}
 							</div>
 						</Steps.Item>
 						{stylesheet && (
@@ -627,9 +668,9 @@ export type DocPreviewProps = {
 /**
  * The source of an example, and of the files the component it demonstrates installs: the tree on the
  * left is that registry item, drawn in the shape of the repository, and the pane on the right is
- * whichever file is selected. The demo and the component itself lead the tree, because that is what
- * was clicked, and so does anything the caller names beside them; the dependencies the registry
- * installs around them start shut and quiet.
+ * whichever file is selected. The file on screen leads the tree — its own row and the folders above
+ * it, at full strength — and everything else is drawn quiet, so the tree says where the reader is.
+ * Only the initial file's ancestor folders start open; the rest can be expanded as needed.
  *
  * The manifest is in the bundle, so the tree is there on the first frame; only the file's text is
  * fetched, and only for the one file on screen. Nothing outlives the open — the popup is mounted by
@@ -654,7 +695,7 @@ function SourceDialog({
 			<Dialog.Portal>
 				<Dialog.Backdrop />
 				<Dialog.Viewport>
-					<Dialog.Popup className="flex h-[80vh] max-h-176 w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
+					<Dialog.Popup className="flex h-[85vh] max-h-208 w-[92vw] max-w-6xl flex-col gap-0 overflow-hidden p-0">
 						<SourcePane path={path} name={name} about={about} />
 					</Dialog.Popup>
 				</Dialog.Viewport>
@@ -668,16 +709,19 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 	// A caller's array is a new one on every render; the paths are what the tree is built from.
 	const aboutKey = about?.join('\n') ?? '';
 	const named = useMemo(() => (aboutKey === '' ? [] : aboutKey.split('\n')), [aboutKey]);
-	const { own } = useMemo(() => filesOf(name), [name]);
-	// What the tree is about: the clicked file, the component it belongs to, and whatever the caller
-	// named beside them. Everything the registry installs around that is the context, and the tree
-	// starts it shut and quiet.
-	const primary = useMemo(() => [path, ...own, ...named], [path, own, named]);
 	const files = useMemo(
 		() => [...new Set([path, ...installFiles(name, named)])],
 		[path, name, named],
 	);
+	const defaultCollapsed = useMemo(() => {
+		const leading = foldersOf([path]);
+		return [...foldersOf(files)].filter((folder) => !leading.has(folder));
+	}, [files, path]);
 	const [selected, setSelected] = useState(path);
+	// What the tree is about, which is one file and not a set: the file on screen, and the folders
+	// above it. Everything else is the context the tree draws quiet — so selecting a dependency moves
+	// the highlight to its own chain instead of leaving it on the component.
+	const primary = useMemo(() => [selected], [selected]);
 	// What the pane is SHOWING, which trails the selection by one read. Keeping the file that is
 	// already there until the next one is ready is what stops the pane blanking between two clicks.
 	const [shown, setShown] = useState<{ path: string; text: string } | null>(null);
@@ -738,6 +782,7 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 					<CodeTree
 						paths={files}
 						primary={primary}
+						defaultCollapsed={defaultCollapsed}
 						selected={selected}
 						onSelect={setSelected}
 						action={rowCopy}
@@ -785,63 +830,29 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 
 	return (
 		<div data-slot="doc-preview" data-file={name} className="overflow-hidden rounded-lg border">
-			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
-				{children}
-			</div>
-			{/* The way in is the whole row, not a word at one end of it: a file name beside it made the
-			    name look like the thing to click. */}
-			<div data-slot="doc-preview-footer" className="border-t p-1">
+			<div data-slot="doc-preview-toolbar" className="flex justify-end border-b p-1">
 				<SourceDialog path={path} name={itemOf(path)}>
 					<ViewCode />
 				</SourceDialog>
+			</div>
+			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
+				{children}
 			</div>
 		</div>
 	);
 }
 
-/**
- * The label and the braces that open it: the glyph holds no room until the row is hovered or focused,
- * then rises into it out of the line below, and the centred pair slides right to make space. The
- * glyph goes through the `icon` slot rather than through `children`, because `children` is wrapped for
- * the loading spinner and the two would end up on two lines. The width is what moves the label, so
- * the icon and the word stay one block rather than two.
- *
- * It takes and forwards the button's props because `Dialog.Trigger` renders it: the click, the
- * `aria-haspopup` and the ref that anchors the popup are handed to whatever `render` names, and a
- * component that swallowed them would be a row that looks like a trigger and is not one.
- */
 function ViewCode({ className, ...props }: ComponentProps<typeof Button>) {
 	return (
 		<Button
-			size="sm"
+			size="icon"
 			variant="ghost"
+			aria-label="view code"
+			title="view code"
 			{...props}
-			className={cn(
-				'group/code w-full gap-0 text-muted-foreground hover:text-foreground',
-				className,
-			)}
-			icon={
-				<span
-					aria-hidden="true"
-					className={cn(
-						'flex h-[1em] w-0 shrink-0 items-center overflow-hidden',
-						'transition-[width] ease-(--ease-spring) duration-(--duration-state)',
-						'group-hover/code:w-5 group-focus-visible/code:w-5',
-					)}
-				>
-					<CodeGlyph
-						className={cn(
-							'translate-y-full opacity-0',
-							'transition-[translate,opacity] ease-(--ease-spring) duration-(--duration-state)',
-							'group-hover/code:translate-y-0 group-hover/code:opacity-100',
-							'group-focus-visible/code:translate-y-0 group-focus-visible/code:opacity-100',
-						)}
-					/>
-				</span>
-			}
-		>
-			view code
-		</Button>
+			className={cn('size-7 text-muted-foreground hover:text-foreground', className)}
+			icon={<CodeGlyph />}
+		/>
 	);
 }
 
@@ -1030,8 +1041,26 @@ export type DocTableProps = {
 	rows: ReactNode[][];
 };
 
+/* oxlint-disable react/no-array-index-key -- a row has no id of its own; its position is its identity, and so is a word's */
 /** What a component puts on the DOM: no props here, so no tooltips — one line per hook. */
-/* oxlint-disable react/no-array-index-key -- a row has no id of its own; its position is its identity */
+/**
+ * A cell of names, wrapped between them and never inside one. `white-space: normal` alone does not
+ * promise that: every browser breaks after a hyphen, so `"-label"` would end one line as `"-` and
+ * start the next as `label"` — two names where there was one. Each word becomes its own inline box,
+ * which leaves the spaces a person wrote as the only places a line can end.
+ */
+function Names({ children }: { children: ReactNode }) {
+	if (typeof children !== 'string') return <>{children}</>;
+
+	return children.split(' ').map((word, index) => (
+		<Fragment key={index}>
+			{index > 0 && ' '}
+			{/* `anywhere` is the escape hatch: a name wider than its column still lands inside it. */}
+			<span className="inline-block [overflow-wrap:anywhere]">{word}</span>
+		</Fragment>
+	));
+}
+
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
 		<Table.Root
@@ -1041,8 +1070,17 @@ export function DocTable({ head, mono, rows }: DocTableProps) {
 		>
 			<Table.Header>
 				<Table.Row>
-					{head.map((label) => (
-						<Table.Head key={label}>{label}</Table.Head>
+					{head.map((label, column) => (
+						<Table.Head
+							key={label}
+							// A name and a value are as wide as they are; the sentence beside them is what the
+							// reader came for, so it gets whatever is left. Left to itself, a table proportions
+							// its columns by how much text each holds, and one cell with six names in it would
+							// take a third of the line from the sentence.
+							className={cn(column === 0 && 'w-[24%]', column === 1 && 'w-[24%]')}
+						>
+							{label}
+						</Table.Head>
 					))}
 				</Table.Row>
 			</Table.Header>
@@ -1053,15 +1091,13 @@ export function DocTable({ head, mono, rows }: DocTableProps) {
 							<Table.Cell
 								key={cellIndex}
 								className={cn(
-									'align-top',
-									// A name and its value are identifiers and do not break mid-token; the
-									// sentence beside them does.
-									mono?.includes(cellIndex)
-										? 'font-mono whitespace-nowrap'
-										: 'whitespace-normal',
+									// The cell's own default is `nowrap`, which one long cell would then spend on the
+									// whole table: six names in one row makes every column beside it be read sideways.
+									'align-top whitespace-normal',
+									mono?.includes(cellIndex) && 'font-mono',
 								)}
 							>
-								{cell}
+								{mono?.includes(cellIndex) ? <Names>{cell}</Names> : cell}
 							</Table.Cell>
 						))}
 					</Table.Row>

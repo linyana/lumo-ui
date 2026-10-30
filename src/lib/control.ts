@@ -3,9 +3,10 @@
  *
  * Five idioms repeat across the library — the tint a control shows while it is hovered or pressed,
  * the way an icon is sized from the text around it, the shell of a text field, the box a tick or a
- * dot is drawn in, and the row a list of choices is made of. Each is written once here, so a
- * checkbox and a radio look like one family, a press feels the same wherever it happens, and a
- * menu's action and a select's option are the same line.
+ * dot is drawn in, and the row a list of choices is made of — plus the one glyph that is state rather
+ * than decoration: the caret of a row that folds. Each is written once here, so a checkbox and a radio
+ * look like one family, a press feels the same wherever it happens, and a menu's action and a select's
+ * option are the same line.
  */
 import { cn } from '@/lib/utils';
 
@@ -88,6 +89,18 @@ export const toggleBox = cn(
 export const toggleMark = cn(
 	'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-spring)',
 	'data-starting-style:opacity-0 data-ending-style:opacity-0',
+);
+
+/**
+ * The caret of a row that folds. It reads the open state off its own row rather than being told, so a
+ * caret and the panel under it cannot disagree about whether the panel is open: the row carries
+ * `group`, and Base UI writes `data-panel-open` on the trigger of both a collapsible and an accordion
+ * item — one attribute, one rule, one turn.
+ */
+export const caret = cn(
+	'size-[1em] shrink-0',
+	'transition-transform duration-(--duration-turn) ease-(--ease-overlay)',
+	'group-data-panel-open:rotate-90',
 );
 
 /**

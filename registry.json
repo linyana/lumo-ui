@@ -811,6 +811,62 @@
 					"type": "registry:ui"
 				}
 			]
+		},
+		{
+			"name": "slider",
+			"type": "registry:ui",
+			"title": "Slider",
+			"description": "A setting that is a number on a line: a groove, what is already taken of it, and the knob you drag. One thumb or two, horizontal or vertical, and a hidden input inside the thumb so a form and a screen reader both see a value.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils"],
+			"files": [
+				{
+					"path": "src/components/ui/slider.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "toggle",
+			"type": "registry:ui",
+			"title": "Toggle",
+			"description": "A control that stays where it was put: one setting spelled as a control rather than an action. Being on is the tint the pointer leaves, kept — the surface never changes colour between the two states, only the layer over it does.",
+			"dependencies": ["@base-ui/react", "tailwind-variants"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
+			"files": [
+				{
+					"path": "src/components/ui/toggle.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "toggle-group",
+			"type": "registry:ui",
+			"title": "ToggleGroup",
+			"description": "A set of toggles that are one control: one of them on at a time, or several, with the arrow keys moving between them and the whole row a single stop in the tab order. The row draws no skin — it owns the space between its items and the tier and scale they are drawn at, and they inherit both.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils", "@lumo/toggle"],
+			"files": [
+				{
+					"path": "src/components/ui/toggle-group.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "accordion",
+			"type": "registry:ui",
+			"title": "Accordion",
+			"description": "A list of folds that share one value: one answer open at a time, or several. Each row is exactly a collapsible — the same caret, the same fold, the same spring — with the open state moved up to the list, and a hairline drawn between two rows rather than around them.",
+			"dependencies": ["@base-ui/react", "lucide-react"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control", "@lumo/transition"],
+			"files": [
+				{
+					"path": "src/components/ui/accordion.tsx",
+					"type": "registry:ui"
+				}
+			]
 		}
 	]
 }

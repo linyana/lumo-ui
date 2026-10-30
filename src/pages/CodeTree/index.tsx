@@ -199,12 +199,12 @@ export function CodeTreePage() {
 				note={
 					<>
 						<Mono>primary</Mono> names the files the tree is about — the component
-						itself. the folders on the way to them open and stay at full strength; every
-						other folder starts shut and every other row is drawn quiet, so a tree of a
-						component and everything it installs reads as one thing and its context.
-						opening a quiet folder keeps it quiet, and selecting one of its files brings
-						that row back to full strength, because the file being read is never
-						context.
+						itself. they and the folders on the way to them keep the full strength;
+						every other row is drawn quiet, so a tree of a component and everything it
+						installs reads as one thing and its context. quiet is only the colour: what
+						starts shut is <Mono>defaultCollapsed</Mono>’s to say, which is why the demo
+						names its dependencies’ folders. selecting a quiet file brings that row back
+						to full strength, because the file being read is never context.
 					</>
 				}
 			>
@@ -266,9 +266,11 @@ export function CodeTreePage() {
 						tree is read from <Mono>registry.json</Mono> — the item's own files, then
 						everything its <Mono>registryDependencies</Mono> install — so what a reader
 						sees is exactly what <Mono>shadcn add</Mono> would copy, in the folders it
-						would copy it into. the demo and the component lead the tree, because that
-						is what was clicked; the files the manifest installs around them start shut
-						and quiet.
+						would copy it into. the file on screen is what that tree is about: its
+						folders and its row keep the full strength and every other row is quiet, so
+						the tree says where the reader is rather than what the item is made of. no
+						folder starts shut, because the dialog is where a reader goes to see the
+						whole install at once.
 					</>
 				}
 			>

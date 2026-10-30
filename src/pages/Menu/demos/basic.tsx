@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { Menu } from '@/components/ui/menu';
 
 const groups = [
@@ -8,7 +9,13 @@ const groups = [
 export default function Basic() {
 	return (
 		<Menu.Root>
-			<Menu.Trigger>share</Menu.Trigger>
+			<Menu.Trigger
+				render={
+					<Button variant="outline" size="sm">
+						share
+					</Button>
+				}
+			/>
 			<Menu.Portal>
 				<Menu.Positioner sideOffset={8} align="start">
 					<Menu.Popup>

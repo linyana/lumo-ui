@@ -8,6 +8,7 @@ import { Tabs } from '@/components/ui/tabs';
 import { Toast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import { DocPage } from '@/pages/DocPage';
+import AccordionBasic from '@/pages/Accordion/demos/basic';
 import AvatarBasic from '@/pages/Avatar/demos/basic';
 import BadgeBasic from '@/pages/Badge/demos/basic';
 import ButtonBasic from '@/pages/Button/demos/basic';
@@ -31,6 +32,7 @@ import ScrollAreaBasic from '@/pages/ScrollArea/demos/basic';
 import SelectBasic from '@/pages/Select/demos/basic';
 import SeparatorBasic from '@/pages/Separator/demos/basic';
 import SkeletonBasic from '@/pages/Skeleton/demos/basic';
+import SliderBasic from '@/pages/Slider/demos/basic';
 import SpinnerBasic from '@/pages/Spinner/demos/basic';
 import StepsVertical from '@/pages/Steps/demos/vertical';
 import SwitchBasic from '@/pages/Switch/demos/basic';
@@ -38,6 +40,8 @@ import TableBasic from '@/pages/Table/demos/basic';
 import TabsBasic from '@/pages/Tabs/demos/basic';
 import TextareaBasic from '@/pages/Textarea/demos/basic';
 import ToastKinds from '@/pages/Toast/demos/kinds';
+import ToggleBasic from '@/pages/Toggle/demos/basic';
+import ToggleGroupBasic from '@/pages/ToggleGroup/demos/basic';
 import TooltipBasic from '@/pages/Tooltip/demos/basic';
 import TransitionSize from '@/pages/Transition/demos/size';
 
@@ -91,13 +95,19 @@ const groups: PreviewGroup[] = [
 			{ path: 'input', label: 'Input', Demo: InputBasic, room: 'compact' },
 			{ path: 'radio-group', label: 'RadioGroup', Demo: RadioGroupBasic },
 			{ path: 'select', label: 'Select', Demo: SelectBasic, room: 'compact' },
+			{ path: 'slider', label: 'Slider', Demo: SliderBasic, room: 'compact' },
 			{ path: 'switch', label: 'Switch', Demo: SwitchBasic, room: 'compact' },
 			{ path: 'textarea', label: 'Textarea', Demo: TextareaBasic, room: 'tall' },
+			{ path: 'toggle', label: 'Toggle', Demo: ToggleBasic, room: 'compact' },
+			{ path: 'toggle-group', label: 'ToggleGroup', Demo: ToggleGroupBasic, room: 'compact' },
 		],
 	},
 	{
 		title: 'Data Display',
 		previews: [
+			// An answer is a paragraph, not a line: the compact tile would hold this demo and leave nothing
+			// around it.
+			{ path: 'accordion', label: 'Accordion', Demo: AccordionBasic },
 			{
 				path: 'avatar',
 				label: 'Avatar',
