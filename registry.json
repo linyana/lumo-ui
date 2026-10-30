@@ -853,6 +853,20 @@
 					"type": "registry:ui"
 				}
 			]
+		},
+		{
+			"name": "accordion",
+			"type": "registry:ui",
+			"title": "Accordion",
+			"description": "A list of folds that share one value: one answer open at a time, or several. Each row is exactly a collapsible — the same caret, the same fold, the same spring — with the open state moved up to the list, and a hairline drawn between two rows rather than around them.",
+			"dependencies": ["@base-ui/react", "lucide-react"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control", "@lumo/transition"],
+			"files": [
+				{
+					"path": "src/components/ui/accordion.tsx",
+					"type": "registry:ui"
+				}
+			]
 		}
 	]
 }

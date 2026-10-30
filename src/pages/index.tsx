@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { AccordionPage } from './Accordion';
 import { AvatarPage } from './Avatar';
 import { BadgePage } from './Badge';
 import { ButtonPage } from './Button';
@@ -53,6 +54,7 @@ export type DocRoute = {
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
 	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
+	{ path: 'accordion', label: 'Accordion', section: 'Components', element: <AccordionPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },

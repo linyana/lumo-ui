@@ -2,7 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { Collapsible as BaseCollapsible } from '@base-ui/react/collapsible';
 import { cn } from '@/lib/utils';
-import { iconSlot, stateLayer } from '@/lib/control';
+import { caret, iconSlot, stateLayer } from '@/lib/control';
 import { Transition } from './transition';
 
 export type IconProps = ComponentProps<typeof ChevronRight>;
@@ -13,12 +13,7 @@ export function Icon({ className, ...props }: IconProps) {
 		<ChevronRight
 			data-slot="collapsible-icon"
 			aria-hidden="true"
-			className={cn(
-				'size-[1em] shrink-0',
-				'transition-transform duration-(--duration-turn) ease-(--ease-overlay)',
-				'group-data-panel-open:rotate-90',
-				className,
-			)}
+			className={cn(caret, className)}
 			{...props}
 		/>
 	);

@@ -8,6 +8,7 @@ import { Tabs } from '@/components/ui/tabs';
 import { Toast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import { DocPage } from '@/pages/DocPage';
+import AccordionBasic from '@/pages/Accordion/demos/basic';
 import AvatarBasic from '@/pages/Avatar/demos/basic';
 import BadgeBasic from '@/pages/Badge/demos/basic';
 import ButtonBasic from '@/pages/Button/demos/basic';
@@ -104,6 +105,9 @@ const groups: PreviewGroup[] = [
 	{
 		title: 'Data Display',
 		previews: [
+			// An answer is a paragraph, not a line: the compact tile would hold this demo and leave nothing
+			// around it.
+			{ path: 'accordion', label: 'Accordion', Demo: AccordionBasic },
 			{
 				path: 'avatar',
 				label: 'Avatar',
