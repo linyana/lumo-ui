@@ -1,4 +1,6 @@
 import { Code } from '@/components/ui/code';
+import { useGlobal } from '@/hooks/useGlobal';
+import { packageCommand } from '@/pages/DocPage/commands';
 import {
 	Command,
 	DocLink,
@@ -16,6 +18,7 @@ import {
  * instead — a page under Components only has to name its own item.
  */
 export function InstallPage() {
+	const packageManager = useGlobal((state) => state.packageManager);
 	const namespace = `{
 	"registries": {
 		"@lumo": "${registryUrl()}"
@@ -166,7 +169,7 @@ export function InstallPage() {
 				}
 			>
 				<Code
-					code={`$ bunx shadcn@latest add @lumo/code-diff
+					code={`$ ${packageCommand('bunx shadcn@latest add @lumo/code-diff', packageManager)}
 ✔ Created 4 files:
   - src/lib/shiki.ts
   - src/lib/clipboard.ts

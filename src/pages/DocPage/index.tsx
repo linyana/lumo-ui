@@ -7,6 +7,7 @@ import {
 	Download,
 	FolderCode,
 	Info,
+	SquareTerminal,
 	X,
 } from 'lucide-react';
 import {
@@ -38,6 +39,8 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCopy } from '@/lib/clipboard';
 import { highlight } from '@/lib/shiki';
+import { isPackageManager, packageManagers, useGlobal } from '@/hooks/useGlobal';
+import { packageCommand } from './commands';
 import { installFiles, itemOf, languageOf, packagesOf, readSource } from './sources';
 import { zipOf } from './zip';
 
@@ -203,15 +206,72 @@ export function DocLink({ to, children }: { to: string; children: ReactNode }) {
 	);
 }
 
-/** One command, with the way to take it — no header, no language label. */
+/** One command, with a shared package-manager preference for installation commands. */
 export function Command({ children }: { children: string }) {
+	const packageManager = useGlobal((state) => state.packageManager);
+	const update = useGlobal((state) => state.update);
+	const formatted = packageCommand(children, packageManager);
+	const command = formatted ?? children;
+
+	if (formatted === null) {
+		return (
+			<div
+				data-slot="doc-command"
+				className="flex items-center justify-between gap-3 rounded-md bg-muted px-3 py-2"
+			>
+				<code
+					data-slot="doc-command-text"
+					className="min-w-0 overflow-x-auto whitespace-nowrap font-mono"
+				>
+					{children}
+				</code>
+				<Copy value={children} />
+			</div>
+		);
+	}
+
 	return (
-		<div
-			data-slot="doc-command"
-			className="flex items-center justify-between gap-3 rounded-md bg-muted px-3 py-2"
-		>
-			<code className="min-w-0 truncate font-mono">{children}</code>
-			<Copy value={children} />
+		<div data-slot="doc-command" className="overflow-hidden rounded-lg bg-muted">
+			<Tabs.Root
+				size="sm"
+				value={packageManager}
+				onValueChange={(value) => {
+					if (isPackageManager(value)) update({ packageManager: value });
+				}}
+			>
+				<div
+					data-slot="doc-command-header"
+					className="flex min-w-0 items-center gap-2 border-b px-3 py-1"
+				>
+					<SquareTerminal
+						data-slot="doc-command-icon"
+						aria-hidden="true"
+						className="size-4 shrink-0 text-muted-foreground"
+					/>
+					<div data-slot="doc-command-options" className="min-w-0 overflow-x-auto">
+						<Tabs.List aria-label="package manager">
+							{packageManagers.map((manager) => (
+								<Tabs.Tab key={manager} value={manager}>
+									{manager}
+								</Tabs.Tab>
+							))}
+							<Tabs.Indicator />
+						</Tabs.List>
+					</div>
+					<div data-slot="doc-command-actions" className="ml-auto shrink-0">
+						<Copy key={command} value={command} />
+					</div>
+				</div>
+				{packageManagers.map((manager) => (
+					<Tabs.Panel key={manager} value={manager}>
+						<div data-slot="doc-command-body" className="overflow-x-auto px-4 pb-4">
+							<code data-slot="doc-command-text" className="whitespace-nowrap font-mono">
+								{packageCommand(children, manager)}
+							</code>
+						</div>
+					</Tabs.Panel>
+				))}
+			</Tabs.Root>
 		</div>
 	);
 }
@@ -430,7 +490,9 @@ export function DocInstall({
 									manifest names them, not this page: a package a copied file
 									added is already on the list.
 								</Steps.Description>
-								<Command>{`bun add ${packages.join(' ')}`}</Command>
+								<div data-slot="doc-install-packages" className="mt-2">
+									<Command>{`bun add ${packages.join(' ')}`}</Command>
+								</div>
 							</Steps.Item>
 						)}
 						<Steps.Item>
@@ -634,7 +696,7 @@ function SourceDialog({
 			<Dialog.Portal>
 				<Dialog.Backdrop />
 				<Dialog.Viewport>
-					<Dialog.Popup className="flex h-[80vh] max-h-176 w-[92vw] max-w-5xl flex-col gap-0 overflow-hidden p-0">
+					<Dialog.Popup className="flex h-[85vh] max-h-208 w-[92vw] max-w-6xl flex-col gap-0 overflow-hidden p-0">
 						<SourcePane path={path} name={name} about={about} />
 					</Dialog.Popup>
 				</Dialog.Viewport>
