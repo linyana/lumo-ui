@@ -1,4 +1,6 @@
 import { Field as BaseField } from '@base-ui/react/field';
+import { useFieldRootContext } from '@base-ui/react/internals/field-root-context';
+import { useFormContext } from '@base-ui/react/internals/form-context';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -29,16 +31,42 @@ export type ErrorProps = Omit<ComponentProps<typeof BaseField.Error>, 'className
 };
 
 /**
+ * Whether the form around this field is holding a verdict for it. It is read off Base UI's own
+ * context rather than kept a second time in this library, so the entry a control drops as it is
+ * edited is dropped from here too — a copy of the `errors` prop would keep showing a sentence the
+ * form had already withdrawn.
+ */
+function useFormVerdict(name: string | undefined) {
+	const { errors } = useFormContext();
+	if (name === undefined || !Object.hasOwn(errors, name)) return false;
+	const verdict = errors[name];
+	return Array.isArray(verdict) ? verdict.length > 0 : Boolean(verdict);
+}
+
+/**
  * Renders nothing while the field is valid, and the field's own message — the browser's, or the
  * string `validate` returned — when it is not. Children replace that message.
+ *
+ * A verdict the form holds for this field wins the line, over `match` and over children alike: it is
+ * the newer of the two facts, being about the value that was actually submitted. Base UI gives a
+ * matched `Error` its own constraint and nothing else, which would bury a sentence a server sent
+ * about the same field — the one case where a written message and a server's have to be told apart.
  */
-export function Error({ className, ...props }: ErrorProps) {
+export function Error({ match, className, children, ...props }: ErrorProps) {
+	const { name } = useFieldRootContext(false);
+	const fromForm = useFormVerdict(name) && (typeof match === 'string' || children !== undefined);
+
 	return (
 		<BaseField.Error
 			data-slot="field-error"
 			className={cn('text-sm text-destructive', className)}
+			// `match` is what decides which line this is; `true` is Base UI's "show it, the reason is
+			// elsewhere" — here, the form's own sentence standing in for ours.
+			match={fromForm ? true : match}
 			{...props}
-		/>
+		>
+			{fromForm ? null : children}
+		</BaseField.Error>
 	);
 }
 

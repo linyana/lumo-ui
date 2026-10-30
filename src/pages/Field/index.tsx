@@ -226,6 +226,13 @@ export function FieldPage() {
 						<Mono>validationMode=&quot;onBlur&quot;</Mono> to be reported before a form
 						is submitted.
 					</p>
+					<p className="text-sm text-muted-foreground">
+						one verdict does not come from the browser at all — the <Mono>errors</Mono>{' '}
+						a <Mono>Form</Mono> is handed after a server answered. while the form holds
+						one for a field it wins that field’s line, over <Mono>match</Mono> and over
+						children alike: it is the newer of the two, and it is about the value that
+						was actually sent.
+					</p>
 				</div>
 			</DocSection>
 
