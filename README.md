@@ -6,6 +6,8 @@
 （`@/components/ui`、`@/lib`），主题由 CLI 合并进项目自己的 CSS，已经装过的文件内容相同就跳过，
 所以一个 Button 只存在一份，后面装的组件都用它。
 
+仓库：<https://github.com/linyana/lumo-ui>
+
 ## 技术栈
 
 | | |
