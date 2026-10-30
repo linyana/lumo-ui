@@ -264,7 +264,10 @@ export function Command({ children }: { children: string }) {
 				{packageManagers.map((manager) => (
 					<Tabs.Panel key={manager} value={manager}>
 						<div data-slot="doc-command-body" className="overflow-x-auto px-4 pb-4">
-							<code data-slot="doc-command-text" className="whitespace-nowrap font-mono">
+							<code
+								data-slot="doc-command-text"
+								className="whitespace-nowrap font-mono"
+							>
 								{packageCommand(children, manager)}
 							</code>
 						</div>
@@ -1056,7 +1059,7 @@ function Names({ children }: { children: ReactNode }) {
 		<Fragment key={index}>
 			{index > 0 && ' '}
 			{/* `anywhere` is the escape hatch: a name wider than its column still lands inside it. */}
-			<span className="inline-block [overflow-wrap:anywhere]">{word}</span>
+			<span className="inline-block wrap-anywhere">{word}</span>
 		</Fragment>
 	));
 }
