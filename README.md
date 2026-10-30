@@ -2,7 +2,9 @@
 
 个人组件库母版仓库。**Base UI 提供行为，Tailwind v4 提供样式，CSS 变量提供主题。**
 
-不发布 npm 包——组件通过 GitHub registry 一条命令复制进各个项目。
+不发布 npm 包——它就是一个 shadcn registry：组件由 shadcn CLI 装进项目自己的 aliases
+（`@/components/ui`、`@/lib`），主题由 CLI 合并进项目自己的 CSS，已经装过的文件内容相同就跳过，
+所以一个 Button 只存在一份，后面装的组件都用它。
 
 ## 技术栈
 
@@ -33,6 +35,7 @@ bun run build    # 生产构建
 | `bun run check:fix` | 同上，但自动修格式、lint 和 `registry.json` |
 | `bun run format` / `bun run lint` | 单独跑其中一个 |
 | `bun run typecheck` | 只跑类型 |
+| `bun run registry:build` | 生成 `public/r/*.json`（CLI 真正下载的东西，`bun run build` 会自动跑）|
 | `bun run registry:check` | 用 shadcn CLI 校验 `registry.json` 本身 |
 | `bun run registry:sync` | 按磁盘补齐 `registry.json`（加完组件后跑） |
 
@@ -40,25 +43,26 @@ bun run build    # 生产构建
 
 ```
 src/
-├── components/lumo/              # 库的本体：两层，ui 是原子，blocks 是组合
-│   ├── ui/                       # 一个组件一个文件
-│   │   ├── Button.tsx            # ★ 单部件就是这一个文件，加新组件前先读它
-│   │   ├── Dialog.tsx            # 多部件的全在一个文件里，末尾汇成 Dialog 命名空间
-│   │   └── …
-│   └── blocks/                   # 组合，一个组件一个目录
-│       └── Layout/               # 应用外壳：sidebar、header、content
-│           ├── index.tsx
-│           ├── types.ts
-│           ├── Sidebar/index.tsx
-│           └── …
-├── lib/cn.ts                     # clsx + tailwind-merge
+├── components/ui/                # 原子，一个组件一个文件，小写
+│   ├── button.tsx                # ★ 单部件就是这一个文件，加新组件前先读它
+│   ├── dialog.tsx                # 多部件的全在一个文件里，末尾汇成 Dialog 命名空间
+│   └── …
+├── components/blocks/            # 组合，一个组件一个目录，小写
+│   └── layout/                   # 应用外壳：sidebar、header、content
+│       ├── index.tsx
+│       ├── types.ts
+│       └── sidebar/index.tsx
+├── lib/utils.ts                  # cn()：clsx + tailwind-merge
 ├── styles/
-│   ├── lumo-tokens.css           # ★ 全部视觉常量都在这里（可独立分发）
+│   ├── lumo-tokens.css           # ★ 全部视觉常量都在这里，也是 @lumo/theme 的源
+│   ├── lumo-palette.css          # 默认配色，@lumo/palette 的源
 │   └── index.css                 # demo 入口，不分发
 ├── pages/                        # 文档页，一个组件一页
 └── App.tsx                       # 外壳：把路由接到 Layout 上
 scripts/check-registry.ts         # registry.json 与磁盘的同步检查（--fix 即 sync）
+scripts/theme.ts                  # 两份 CSS → theme / palette 两个 item
 registry.json                     # 分发定义
+public/r/                         # 生成的 registry JSON，随站点部署（不入库）
 AGENTS.md                         # 给 AI 的项目规范
 ```
 
@@ -69,45 +73,54 @@ AGENTS.md                         # 给 AI 的项目规范
 ## 怎么加一个组件
 
 1. 先定层：`ui/` 是能单独用的原子（一个文件），`blocks/` 是由原子拼出来的组合（一个目录）
-2. 先读 `src/components/lumo/ui/Button.tsx`
-3. ui 组件：建 `src/components/lumo/ui/<Name>.tsx`，多部件的都写在这一个文件里，末尾汇成
-   `export const Dialog = { Root, Trigger, Popup, … }`（part 依旧各自 `export`——别的组件可能来拿）
-4. blocks 组件：建 `src/components/lumo/blocks/<Name>/index.tsx`，按需要给 part 分目录
-   （`Layout/Sidebar/index.tsx`）
+2. 先读 `src/components/ui/button.tsx`
+3. ui 组件：建 `src/components/ui/<name>.tsx`（小写，与 item 同名），多部件的都写在这一个文件里，
+   末尾汇成 `export const Dialog = { Root, Trigger, Popup, … }`（part 依旧各自 `export`——别的组件可能来拿）
+4. blocks 组件：建 `src/components/blocks/<name>/index.tsx`，按需要给 part 分目录
+   （`layout/sidebar/index.tsx`）
 5. 所有颜色/圆角/间距用 token（`bg-primary`、`rounded-md`），**不许硬编码**
 6. 不要写 focus 样式——焦点样式只在 `lumo-tokens.css` 里定义一次
-7. 在 `registry.json` 里加一条 item（`type` 按层给 `registry:ui` 或 `registry:block`），`files` 里只写一个路径：ui 写那个文件本身，blocks 写目录里任意一个文件当锚点
-8. `bun run registry:sync`——blocks 目录下其余文件自动补进去，target 一并生成
+7. 在 `registry.json` 里按文件名/目录名加一条 item（`type` 按层给 `registry:ui` / `registry:block` / `registry:lib`），`files` 先写一个锚点即可
+8. `bun run registry:sync`——目录里其余文件自动补进去；ui 与 lib **不写 target**（落地位置由消费者的 alias 决定），block 的 target 自动生成为 `@components/…`
 9. 在 `src/pages/` 里加一页 demo，方便看效果
-10. `bun run check` 必须过（漏声明、target 不镜像、类型和层对不上、ui 不是一个文件都会报错）
+10. `bun run check` 必须过（漏声明、类型和层对不上、ui 不是一个文件、import 的包没声明都会报错）
 
 ## 分发到项目里
 
-推到 GitHub 后（`registry.json` 里的用户名已填成 `linyana`），在任何项目里：
+`bun run build` 会把 `registry.json` 编译成 `public/r/*.json` 随站点一起部署，站点本身就是 registry
+（`<站点>/r/button.json`）。项目里先声明一次命名空间：
 
-```bash
-# 装一个组件（依赖会自动连带装上）
-bunx shadcn@latest add linyana/lumo-ui/button
-
-# 装一个 block（连它依赖的 ui 组件一起装上）
-bunx shadcn@latest add linyana/lumo-ui/layout
-
-# 装主题变量（项目里已经有 shadcn 主题的话，跳过这步）
-bunx shadcn@latest add linyana/lumo-ui/theme
+```json
+// components.json（或 package.json，二者皆可）
+"registries": { "@lumo": "https://<你的站点>/r/{name}.json" }
 ```
 
-装完在项目里这样引入（路径带组件名，没有统一入口）：
+然后：
+
+```bash
+# 装一个组件（npm 依赖会自动装上）
+bunx shadcn@latest add @lumo/button
+
+# 装一个 block（连它依赖的 ui 组件一起装上）
+bunx shadcn@latest add @lumo/layout
+
+# 样式：theme 必需，palette 只在项目自己没有配色时装
+bunx shadcn@latest add @lumo/theme
+bunx shadcn@latest add @lumo/palette
+```
+
+装完在项目里这样引入（路径就是你的 `components.json` 里的 alias，没有统一入口）：
 
 ```ts
-import { Button } from '@/components/lumo/ui/Button';
-import { Dialog } from '@/components/lumo/ui/Dialog';
+import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
 ```
 
 装之前可以先看：
 
 ```bash
-bunx shadcn@latest view linyana/lumo-ui/button
-bunx shadcn@latest add linyana/lumo-ui/button --dry-run
+bunx shadcn@latest view @lumo/button
+bunx shadcn@latest add @lumo/button --dry-run
 ```
 
 改完 registry 记得验证：
@@ -117,21 +130,46 @@ bun run registry:sync   # 先把漏声明的文件补进 registry.json
 bun run registry:check  # 再用 shadcn CLI 校验 registry.json 本身
 ```
 
-### 装进「已经在用 shadcn」的项目
+### 复用是默认行为
 
-可以共存，`target` 全部落在 `src/components/lumo/`（`ui/` 与 `blocks/`），不碰 shadcn 的
-`src/components/ui/`。
-**注意**：如果那个项目已经有主题变量（`:root` 里定义了 `--primary`、`--radius` 等），
-**不要装 `theme`**，你的组件会直接吃他的配色。
+每个 item 的 `registryDependencies` 声明的就是它用到的组件（`@lumo/utils`、`@lumo/control`…），
+所以装第二个组件时，已经装过的文件会先比对内容：一样就 `Skipped`（不重写、不报错），不一样
+才会问你一句要不要覆盖。已经改过的 Button 不会被新组件偷偷改回去：
+
+```
+✔ Created 1 file:
+  - src/components/ui/table.tsx
+ℹ Skipped 2 files: (files might be identical, use --overwrite to overwrite)
+  - src/lib/utils.ts
+  - src/lib/control.ts
+```
+
+### 和已有 shadcn 项目共存
+
+落点就是 shadcn 自己的 `components/ui/`，两边可以混用。主题分得很清：
+
+- `@lumo/theme` 是组件**必需**的（映射、交互时长、焦点环、`--success` 这类 shadcn 不定义的变量），
+  它会写进项目的 `:root`/`.dark`/`@theme inline` 和 base 层；
+- `@lumo/palette` 只是**默认配色**，装它只会补项目里缺的变量，你已有的 `--primary`、`--radius`
+  不会被改。
 
 ## 改主题
 
-改 `src/styles/lumo-tokens.css` 一个值，所有组件跟着变：
+改 `src/styles/lumo-tokens.css` 一个值，所有组件跟着变；`bun run registry:sync` 会把它同步进
+`registry.json` 的 `theme` item，消费者装到的就是同一个值（手改 `registry.json` 里的
+`cssVars` 会被覆盖）。
 
 ```css
+/* src/styles/lumo-palette.css — 默认配色，@lumo/palette 的源 */
 :root {
   --radius: 0.625rem;   /* 改这里，整个圆角阶梯按 calc 比例缩放 */
   --primary: oklch(0.205 0 0);
+}
+
+/* src/styles/lumo-tokens.css — 组件读的常量，@lumo/theme 的源 */
+:root {
+  --duration-state: 150ms;
+  --press-offset: 1px;
 }
 ```
 

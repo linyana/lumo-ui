@@ -1,4 +1,4 @@
-import { Progress } from '@/components/lumo/ui/Progress';
+import { Progress } from '@/components/ui/progress';
 
 export default function Basic() {
 	return (

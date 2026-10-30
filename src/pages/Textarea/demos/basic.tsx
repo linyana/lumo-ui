@@ -1,4 +1,4 @@
-import { Textarea } from '@/components/lumo/ui/Textarea';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function Basic() {
 	return (

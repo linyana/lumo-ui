@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import BetweenRows from './demos/between-rows';
 
-const files = ['src/components/lumo/ui/Separator.tsx'];
+const files = ['src/components/ui/separator.tsx'];
 
 const separatorProps: Record<string, PropNode> = {
 	orientation: {
@@ -48,7 +48,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Separator } from '@/components/lumo/ui/Separator';";
+const usageImport = "import { Separator } from '@/components/ui/separator';";
 const usageExample = `<div>
 	project settings
 	<Separator className="my-3" />
@@ -76,12 +76,7 @@ export function SeparatorPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="separator"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="separator" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

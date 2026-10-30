@@ -1,4 +1,4 @@
-import { Separator } from '@/components/lumo/ui/Separator';
+import { Separator } from '@/components/ui/separator';
 
 const rows = [
 	{ label: 'name', value: 'lumo-ui' },

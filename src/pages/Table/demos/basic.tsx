@@ -1,5 +1,5 @@
-import { Badge } from '@/components/lumo/ui/Badge';
-import { Table } from '@/components/lumo/ui/Table';
+import { Badge } from '@/components/ui/badge';
+import { Table } from '@/components/ui/table';
 
 const runs = [
 	{ job: 'unit', branch: 'main', duration: '42s', note: 'passed', variant: 'success' as const },

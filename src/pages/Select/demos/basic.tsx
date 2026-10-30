@@ -1,4 +1,4 @@
-import { Select } from '@/components/lumo/ui/Select';
+import { Select } from '@/components/ui/select';
 
 const languages = ['typescript', 'rust', 'go', 'python', 'zig'];
 

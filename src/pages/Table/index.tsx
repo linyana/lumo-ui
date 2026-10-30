@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -15,7 +15,7 @@ import Selection from './demos/selection';
 import Sort from './demos/sort';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/Table.tsx'];
+const files = ['src/components/ui/table.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	size: {
@@ -141,7 +141,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Table } from '@/components/lumo/ui/Table';";
+const usageImport = "import { Table } from '@/components/ui/table';";
 const usageExample = `<Table.Root aria-label="recent runs">
 	<Table.Header>
 		<Table.Row>
@@ -177,9 +177,8 @@ export function TablePage() {
 			>
 				<DocInstall
 					name="table"
-					packages={['tailwind-variants']}
 					files={files}
-					reaches={['src/lib/cn.ts', 'src/lib/control.ts']}
+					reaches={['src/lib/utils.ts', 'src/lib/control.ts']}
 				/>
 			</DocSection>
 

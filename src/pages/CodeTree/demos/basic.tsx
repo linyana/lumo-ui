@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { CodeTree } from '@/components/lumo/blocks/CodeTree';
+import { CodeTree } from '@/components/blocks/code-tree';
 
 const paths = [
-	'src/components/lumo/ui/CodeTree.tsx',
-	'src/components/lumo/ui/Button.tsx',
-	'src/components/lumo/ui/Spinner.tsx',
-	'src/lib/cn.ts',
+	'src/components/ui/codeTree.tsx',
+	'src/components/ui/button.tsx',
+	'src/components/ui/spinner.tsx',
+	'src/lib/utils.ts',
 	'src/styles/lumo-tokens.css',
 ];
 

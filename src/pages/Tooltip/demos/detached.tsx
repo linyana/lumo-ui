@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/ui/Button';
-import { Tooltip } from '@/components/lumo/ui/Tooltip';
+import { Button } from '@/components/ui/button';
+import { Tooltip } from '@/components/ui/tooltip';
 
 const handle = Tooltip.createHandle<string>();
 

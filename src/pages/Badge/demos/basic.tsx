@@ -1,4 +1,4 @@
-import { Badge } from '@/components/lumo/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 
 export default function Basic() {
 	return (

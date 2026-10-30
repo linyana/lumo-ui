@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Table, type TableSort } from '@/components/lumo/ui/Table';
+import { Table, type TableSort } from '@/components/ui/table';
 
 type Column = 'name' | 'commits';
 

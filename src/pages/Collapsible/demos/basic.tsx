@@ -1,4 +1,4 @@
-import { Collapsible } from '@/components/lumo/ui/Collapsible';
+import { Collapsible } from '@/components/ui/collapsible';
 
 const keys = ['alien-bean-pasta', 'wild-irish-burrito', 'horse-battery-staple'];
 

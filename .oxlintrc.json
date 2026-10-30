@@ -15,19 +15,19 @@
 	"ignorePatterns": ["dist"],
 	"overrides": [
 		{
-			"files": ["src/components/lumo/ui/**/*.tsx"],
+			"files": ["src/components/ui/**/*.tsx"],
 			"rules": {
 				"no-restricted-imports": [
 					"error",
 					{
 						"patterns": [
 							{
-								"group": ["@/App", "@/main"],
-								"message": "components/lumo/ui is the primitive layer: it may not import app code. App code depends on the primitives, never the other way round — an import from here is what makes the directory impossible to copy into another project."
+								"group": ["@/App", "@/main", "@/pages/**"],
+								"message": "components/ui is the primitive layer: it may not import app code. App code depends on the primitives, never the other way round — an import from here is what makes the directory impossible to install into another project."
 							},
 							{
 								"group": ["../**"],
-								"message": "Import through the @/ alias (e.g. @/lib/cn), not by relative path. A copied component must not depend on where it happens to sit."
+								"message": "Import through the @/ alias (e.g. @/lib/utils), not by relative path. The CLI rewrites that alias to the consumer's own; a relative path it cannot rewrite."
 							}
 						]
 					}

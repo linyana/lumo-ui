@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -14,7 +14,7 @@ import Basic from './demos/basic';
 import Native from './demos/native';
 import Validation from './demos/validation';
 
-const files = ['src/components/lumo/ui/Field.tsx'];
+const files = ['src/components/ui/field.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	name: {
@@ -125,8 +125,8 @@ const hookRows = [
 	],
 ];
 
-const usageImport = `import { Field } from '@/components/lumo/ui/Field';
-import { Input } from '@/components/lumo/ui/Input';`;
+const usageImport = `import { Field } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';`;
 const usageExample = `<Field.Root validationMode="onBlur">
 	<Field.Label>email</Field.Label>
 	<Input type="email" placeholder="you@example.com" />
@@ -154,12 +154,7 @@ export function FieldPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="field"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="field" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

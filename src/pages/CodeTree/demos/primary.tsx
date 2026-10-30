@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { CodeTree } from '@/components/lumo/blocks/CodeTree';
+import { CodeTree } from '@/components/blocks/code-tree';
 
 /** The demo, and the component it shows: what the reader opened the tree for. */
 const primary = [
 	'src/pages/CodeTree/demos/primary.tsx',
-	'src/components/lumo/blocks/CodeTree/index.tsx',
-	'src/components/lumo/blocks/CodeTree/tree.ts',
-	'src/components/lumo/blocks/CodeTree/glyph.tsx',
+	'src/components/blocks/code-tree/index.tsx',
+	'src/components/blocks/code-tree/tree.ts',
+	'src/components/blocks/code-tree/glyph.tsx',
 ];
 
 /** What that component installs around itself. */
 const dependencies = [
-	'src/components/lumo/ui/Nav.tsx',
-	'src/components/lumo/ui/Collapsible.tsx',
-	'src/lib/cn.ts',
+	'src/components/ui/nav.tsx',
+	'src/components/ui/collapsible.tsx',
+	'src/lib/utils.ts',
 	'src/styles/lumo-tokens.css',
 ];
 

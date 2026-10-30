@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 
 const source = [
 	'export function clamp(value: number, min: number, max: number) {',

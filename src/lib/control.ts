@@ -7,7 +7,7 @@
  * checkbox and a radio look like one family, a press feels the same wherever it happens, and a
  * menu's action and a select's option are the same line.
  */
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils';
 
 /**
  * Hover and press, drawn as a tint on top of the control's own fill rather than as a second

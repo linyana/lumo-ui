@@ -1,4 +1,4 @@
-import { Combobox } from '@/components/lumo/ui/Combobox';
+import { Combobox } from '@/components/ui/combobox';
 
 const groups = [
 	{ value: 'compiled', items: ['c', 'cpp', 'go', 'rust', 'swift', 'zig'] },

@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Swipe from './demos/swipe';
 
-const files = ['src/components/lumo/ui/Drawer.tsx'];
+const files = ['src/components/ui/drawer.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	swipeDirection: {
@@ -109,7 +109,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Drawer } from '@/components/lumo/ui/Drawer';";
+const usageImport = "import { Drawer } from '@/components/ui/drawer';";
 const usageExample = `<Drawer.Root swipeDirection="right">
 	<Drawer.Trigger render={<Button>filters</Button>} />
 	<Drawer.Portal>
@@ -143,12 +143,7 @@ export function DrawerPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="drawer"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="drawer" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

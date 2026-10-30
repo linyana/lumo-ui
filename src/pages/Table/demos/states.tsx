@@ -1,6 +1,6 @@
 import { Inbox } from 'lucide-react';
-import { Skeleton } from '@/components/lumo/ui/Skeleton';
-import { Table } from '@/components/lumo/ui/Table';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table } from '@/components/ui/table';
 
 export default function States() {
 	return (

@@ -13,6 +13,7 @@ import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
 import { FieldPage } from './Field';
 import { InputPage } from './Input';
+import { InstallPage } from './Install';
 import { LayoutPage } from './Layout';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
@@ -47,6 +48,7 @@ export type DocRoute = {
 
 /** One page per component, in the order the rail lists them: a section, then alphabetical. */
 export const docRoutes: DocRoute[] = [
+	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },

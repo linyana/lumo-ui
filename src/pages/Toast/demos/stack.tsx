@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/ui/Button';
-import { Toast } from '@/components/lumo/ui/Toast';
+import { Button } from '@/components/ui/button';
+import { Toast } from '@/components/ui/toast';
 
 export default function Stack() {
 	const toast = Toast.useToastManager();

@@ -1,5 +1,5 @@
-import { Field } from '@/components/lumo/ui/Field';
-import { RadioGroup } from '@/components/lumo/ui/RadioGroup';
+import { Field } from '@/components/ui/field';
+import { RadioGroup } from '@/components/ui/radio-group';
 
 /** The group is a grid by default; a single row is a call site's `grid-flow-col`. */
 export default function States() {

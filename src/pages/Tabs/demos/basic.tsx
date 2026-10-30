@@ -1,4 +1,4 @@
-import { Tabs } from '@/components/lumo/ui/Tabs';
+import { Tabs } from '@/components/ui/tabs';
 
 const items = [
 	{ value: 'overview', label: 'overview', content: 'workspace stats and activity.' },

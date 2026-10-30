@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Tabs } from '@/components/lumo/ui/Tabs';
+import { Tabs } from '@/components/ui/tabs';
 
 const notes = [
 	{ value: 'overview', body: 'nine members, three of them invited this week.' },

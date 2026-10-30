@@ -1,4 +1,4 @@
-import { Card } from '@/components/lumo/ui/Card';
+import { Card } from '@/components/ui/card';
 
 const tiles = [
 	{ title: 'usage', note: 'this month', value: '1,284' },

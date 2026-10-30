@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Checkbox } from '@/components/lumo/ui/Checkbox';
-import { Table } from '@/components/lumo/ui/Table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Table } from '@/components/ui/table';
 
 const runs = [
 	{ id: 'run-1041', job: 'unit' },

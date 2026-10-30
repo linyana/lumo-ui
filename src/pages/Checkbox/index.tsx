@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -14,7 +14,7 @@ import Basic from './demos/basic';
 import InField from './demos/field';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/Checkbox.tsx'];
+const files = ['src/components/ui/checkbox.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	checked: {
@@ -108,7 +108,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Checkbox } from '@/components/lumo/ui/Checkbox';";
+const usageImport = "import { Checkbox } from '@/components/ui/checkbox';";
 const usageExample = `<Checkbox.Root name="readme" defaultChecked>
 	<Checkbox.Indicator />
 </Checkbox.Root>`;
@@ -129,12 +129,7 @@ export function CheckboxPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="checkbox"
-					packages={['@base-ui/react', 'lucide-react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="checkbox" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

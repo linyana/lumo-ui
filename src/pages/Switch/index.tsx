@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/Switch.tsx'];
+const files = ['src/components/ui/switch.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	checked: {
@@ -98,7 +98,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Switch } from '@/components/lumo/ui/Switch';";
+const usageImport = "import { Switch } from '@/components/ui/switch';";
 const usageExample = `<Switch.Root name="preview" defaultChecked>
 	<Switch.Thumb />
 </Switch.Root>`;
@@ -120,12 +120,7 @@ export function SwitchPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="switch"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="switch" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

@@ -21,12 +21,13 @@ type Item = {
 	name: string;
 	files?: Array<{ path: string }>;
 	registryDependencies?: string[];
+	dependencies?: string[];
 };
 
 const items = new Map((registry.items as Item[]).map((item) => [item.name, item]));
 
-/** A dependency is written the way the CLI takes it: `linyana/lumo-ui/<name>`. */
-const DEPENDENCY_PREFIX = 'linyana/lumo-ui/';
+/** A dependency is written the way the CLI takes it: `@lumo/<name>`, its own namespace. */
+const DEPENDENCY_PREFIX = '@lumo/';
 
 /** `CodeTree` → `code-tree`: a page and an item are spelled the same way, by the same rule. */
 function kebab(name: string) {
@@ -34,11 +35,36 @@ function kebab(name: string) {
 }
 
 /**
- * The files an item installs: its own, then everything its dependencies bring, breadth-first — the
- * order the CLI copies in. The two are kept apart because a dialog draws the item and then the
- * context around it: the component the reader asked for, and what it needs. Nothing here needs a
- * depth limit, because the manifest is the whole graph; a dependency cycle would be a broken
- * manifest and is reported by the check.
+ * Every item an install touches — the one asked for, then everything its `registryDependencies`
+ * copy — breadth-first, the order the CLI works in. Nothing here needs a depth limit, because the
+ * manifest is the whole graph; a dependency cycle would be a broken manifest and is reported by the
+ * check.
+ */
+function reach(name: string): string[] {
+	const seen = new Set<string>();
+	const order: string[] = [];
+	const queue = [name];
+
+	while (queue.length > 0) {
+		const current = queue.shift()!;
+		if (seen.has(current)) continue;
+		seen.add(current);
+
+		const item = items.get(current);
+		if (item === undefined) continue;
+		order.push(current);
+		for (const dependency of item.registryDependencies ?? []) {
+			queue.push(dependency.slice(DEPENDENCY_PREFIX.length));
+		}
+	}
+
+	return order;
+}
+
+/**
+ * The files an item installs: its own, then everything its dependencies bring, in the order the CLI
+ * copies them. The two are kept apart because a dialog draws the item and then the context around
+ * it: the component the reader asked for, and what it needs.
  */
 export type ItemFiles = {
 	/** The item's own files. */
@@ -51,17 +77,10 @@ export function filesOf(name: string | undefined): ItemFiles {
 	const files: ItemFiles = { own: [], dependencies: [] };
 	if (name === undefined) return files;
 
-	const seen = new Set<string>();
 	const copied = new Set<string>();
-	const queue = [name];
 
-	while (queue.length > 0) {
-		const current = queue.shift()!;
-		if (seen.has(current)) continue;
-		seen.add(current);
-
-		const item = items.get(current);
-		if (item === undefined) continue;
+	for (const current of reach(name)) {
+		const item = items.get(current)!;
 		// A file two items share is copied once: it belongs to the item that names it first.
 		const into = current === name ? files.own : files.dependencies;
 		for (const file of item.files ?? []) {
@@ -69,18 +88,30 @@ export function filesOf(name: string | undefined): ItemFiles {
 			copied.add(file.path);
 			into.push(file.path);
 		}
-		for (const dependency of item.registryDependencies ?? []) {
-			queue.push(dependency.slice(DEPENDENCY_PREFIX.length));
-		}
 	}
 
 	return files;
 }
 
 /**
+ * The npm packages an install needs: every `dependencies` entry of every item it reaches, in the
+ * order the graph reaches them. Read off the manifest rather than written into a page, so a page
+ * cannot name a package the copied files do not import, nor forget one they do.
+ */
+export function packagesOf(name: string | undefined): string[] {
+	if (name === undefined) return [];
+
+	const packages = new Set<string>();
+	for (const current of reach(name)) {
+		for (const dependency of items.get(current)?.dependencies ?? []) packages.add(dependency);
+	}
+	return [...packages];
+}
+
+/**
  * Everything an item installs, in the order the CLI copies it, plus any file named beside the
- * manifest — the tokens, which no item carries. This is the list a manual works from, whether the
- * reader takes it one file at a time or as one archive.
+ * manifest — the stylesheets, which no component's `registryDependencies` reach for. This is the
+ * list a manual works from, whether the reader takes it one file at a time or as one archive.
  */
 export function installFiles(name: string | undefined, beside: string[] = []): string[] {
 	const { own, dependencies } = filesOf(name);

@@ -1,5 +1,5 @@
 import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
-import { Button } from '@/components/lumo/ui/Button';
+import { Button } from '@/components/ui/button';
 
 export default function Icon() {
 	return (

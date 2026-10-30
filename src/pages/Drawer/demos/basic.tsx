@@ -1,6 +1,6 @@
-import { Button } from '@/components/lumo/ui/Button';
-import { Drawer } from '@/components/lumo/ui/Drawer';
-import { Separator } from '@/components/lumo/ui/Separator';
+import { Button } from '@/components/ui/button';
+import { Drawer } from '@/components/ui/drawer';
+import { Separator } from '@/components/ui/separator';
 
 const keys = ['alien-bean-pasta', 'wild-irish-burrito'];
 

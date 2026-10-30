@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Menu } from '@/components/ui/menu';
 
 const menus = {
 	library: {

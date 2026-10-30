@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/lumo/ui/Avatar';
+import { Avatar } from '@/components/ui/avatar';
 
 // A stock portrait, cut to a square on the face by the CDN on the way out — so the picture arrives
 // in the shape the circle wants and needs no crop of its own. A project brings its own.

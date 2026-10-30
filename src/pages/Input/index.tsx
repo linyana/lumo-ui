@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -16,7 +16,7 @@ import Icon from './demos/icon';
 import Sizes from './demos/sizes';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/Input.tsx'];
+const files = ['src/components/ui/input.tsx'];
 
 const inputProps: Record<string, PropNode> = {
 	size: {
@@ -79,7 +79,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Input } from '@/components/lumo/ui/Input';";
+const usageImport = "import { Input } from '@/components/ui/input';";
 const usageExample = `<Input
 	size="md"
 	type="email"
@@ -103,12 +103,7 @@ export function InputPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="input"
-					packages={['@base-ui/react', 'tailwind-variants']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="input" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

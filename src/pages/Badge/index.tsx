@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Rows from './demos/rows';
 
-const files = ['src/components/lumo/ui/Badge.tsx'];
+const files = ['src/components/ui/badge.tsx'];
 
 const badgeProps: Record<string, PropNode> = {
 	variant: {
@@ -52,7 +52,7 @@ const hookRows = [
 	['align-middle', 'its seat', 'so it sits on a line of text instead of lifting off it.'],
 ];
 
-const usageImport = "import { Badge } from '@/components/lumo/ui/Badge';";
+const usageImport = "import { Badge } from '@/components/ui/badge';";
 const usageExample = `<div className="flex items-center gap-2">
 	<span>deploy</span>
 	<Badge variant="success">passed</Badge>
@@ -78,9 +78,8 @@ export function BadgePage() {
 			>
 				<DocInstall
 					name="badge"
-					packages={['tailwind-variants']}
 					files={files}
-					reaches={['src/lib/cn.ts', 'src/lib/control.ts']}
+					reaches={['src/lib/utils.ts', 'src/lib/control.ts']}
 				/>
 			</DocSection>
 

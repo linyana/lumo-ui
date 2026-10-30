@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
-import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/lumo/blocks/Layout';
-import { Button } from '@/components/lumo/ui/Button';
+import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/blocks/layout';
+import { Button } from '@/components/ui/button';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
 import { ThemeProvider } from '@/pages/theme';

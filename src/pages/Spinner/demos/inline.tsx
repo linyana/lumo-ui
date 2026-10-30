@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/lumo/ui/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 
 /** The same spinner in the type size of the control it sits in: it is one em across. */
 export default function Inline() {

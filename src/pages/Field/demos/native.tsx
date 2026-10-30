@@ -1,4 +1,4 @@
-import { Field } from '@/components/lumo/ui/Field';
+import { Field } from '@/components/ui/field';
 
 /**
  * `Control` takes whatever element it is given and puts the wiring on it — id, describedby,

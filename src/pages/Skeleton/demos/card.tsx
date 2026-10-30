@@ -1,5 +1,5 @@
-import { Card } from '@/components/lumo/ui/Card';
-import { Skeleton } from '@/components/lumo/ui/Skeleton';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /** The same card twice: what arrives, and what stands in for it while it does. */
 export default function CardPlaceholder() {

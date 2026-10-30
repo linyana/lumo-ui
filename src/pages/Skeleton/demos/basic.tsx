@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/lumo/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Basic() {
 	return (

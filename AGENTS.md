@@ -1,8 +1,10 @@
 # lumo-ui — agent guide
 
 Personal React component library: **Base UI** (behaviour) + **Tailwind v4** (styling) +
-**CSS variables** (theme). Distributed by copying source into projects through a GitHub
-registry. No npm package.
+**CSS variables** (theme). Distributed as a shadcn registry — no npm package. The CLI is what
+installs it: it copies each file into the *consumer's* aliases (`@/components/ui`, `@/lib`),
+rewrites the imports to match them, merges the theme into the consumer's CSS, and skips a file that
+is already there with the same content, so one Button serves every install.
 
 ## Rules
 
@@ -16,8 +18,8 @@ registry. No npm package.
 4. Base UI supplies behaviour, we supply appearance. Never reimplement focus trapping,
    escape handling, scroll lock, positioning or ARIA.
 5. Merge the consumer's `className` last, with `cn()`.
-6. When adding a component, only touch `src/components/lumo/` (`ui/` or `blocks/`), `src/lib/`,
-   `src/styles/`.
+6. When adding a component, only touch `src/components/ui/`, `src/components/blocks/`,
+   `src/lib/`, `src/styles/`.
 7. Don't add comments that restate the code.
 
 ## Toolchain
@@ -26,29 +28,34 @@ registry. No npm package.
 - `bun run check` = oxfmt + oxlint + tsc + the registry sync check, and `bun run check:fix`
   repairs all of it. Never commit a failing check.
 - Style is enforced by `.oxfmtrc.jsonc`: tabs, single quotes, 100 columns, LF.
-- `bun run build` is only `vite build`, because Cloudflare deploy runs it as the build step
-  and a gate there fails a deploy over formatting. `bun run build:check` is the local build
-  and is the one that has to pass.
+- `bun run build` is `bun run registry:build && vite build`: the registry's JSON is generated into
+  `public/r/` and then shipped with the site, because the site *is* the registry
+  (`https://<host>/r/button.json`). Cloudflare deploy runs it as the build step, so it stays a
+  generation step and never a gate. `bun run build:check` is the local build and is the one that
+  has to pass.
+- `bun run registry:check` is shadcn's own validator; `bun run registry:sync` is
+  `scripts/check-registry.ts --fix`.
 
 ## Adding a component
 
-1. Read `src/components/lumo/ui/Button.tsx` first.
+1. Read `src/components/ui/button.tsx` first.
 2. Pick the layer: `ui/` is a primitive that stands on its own, `blocks/` is a composition of
    primitives (the shell). The layer decides the shape and the registry type, so the check
    refuses a mismatch.
-3. A `ui/` component is **one file**: `src/components/lumo/ui/<Name>.tsx`, PascalCase. Its
-   parts are functions in that file, assembled at the end into one namespace object —
-   `Dialog.tsx` holds Root, Trigger, Popup and the rest. Never `ui/Button/index.tsx`.
-4. A `blocks/` component is **a directory**: `src/components/lumo/blocks/<Name>/index.tsx`,
-   with a directory per part where that helps (`Layout/Sidebar/index.tsx`).
+3. A `ui/` component is **one file**: `src/components/ui/<name>.tsx` — kebab-case, the same
+   spelling as its registry item — and its parts are functions in that file, assembled at the end
+   into one namespace object: `dialog.tsx` holds Root, Trigger, Popup and the rest. Never
+   `ui/button/index.tsx`.
+4. A `blocks/` component is **a directory**: `src/components/blocks/<name>/index.tsx`, lower-case
+   throughout, with a directory per part where that helps (`layout/sidebar/index.tsx`).
 5. Export one namespace object: `export const Dialog = { Root, Trigger, Popup, ... }`, used
    as `<Dialog.Popup>`. A single-part component exports the function directly (`Button`).
    Keep every part exported: another component may reach for one (`CodeDiff` takes `Copy`
    from `Code`).
 6. `data-slot="<name>-<part>"` on every rendered element.
-7. Add a `registry.json` item whose `files` name one path — the file for a ui component, any
-   file in the directory for a block — then run `bun run registry:sync` to fill in the rest.
-   Use it in `src/pages/` so the docs show it.
+7. Add a `registry.json` item named after the file or directory (`code-diff`,
+   `layout`) with its `type`, and run `bun run registry:sync` to fill in every file. Use it in
+   `src/pages/` so the docs show it.
 
 ## Icons
 
@@ -111,15 +118,38 @@ Don't rename Base UI's state attributes: `data-open`, `data-closed`,
 
 ## Registry
 
-- `type: "registry:ui"` for a component under `ui/`, `"registry:block"` for one under `blocks/`;
-  `scripts/check-registry.ts` fails on a mismatch, on a ui component that is not a single
-  file, and on a component no item claims. Every item carries an explicit `target` per file,
-  and each file stays `registry:file` — the type the CLI copies verbatim.
-- Targets stay under `~/src/components/lumo/`, never `~/src/components/ui/` (shadcn's).
-- **Declare every file in the component directory.** An undeclared file is silently left out
-  of the consuming project and only breaks there, at build time.
-- `registryDependencies` for lumo-ui items, `dependencies` for npm packages.
-- `target` mirrors `path` exactly (`~/` + path), so a typo cannot silently land a file
-  somewhere else; `scripts/check-registry.ts` enforces it.
-- `bun run check` runs `scripts/check-registry.ts`, which fails on a file that exists but is
-  not declared; `bun run registry:sync` writes it in instead.
+The manifest mirrors the tree, because the tree *is* the install: `files[].path` is where the file
+lives here and `files[].type` is the layer it belongs to. Where it lands in a project is the CLI's
+decision, from that type and the consumer's `components.json`.
+
+- `registry:ui` for a file under `src/components/ui/`, `registry:block` for a directory under
+  `src/components/blocks/`, `registry:lib` for a file under `src/lib/`. The item is named after
+  the file or directory (kebab-case); `scripts/check-registry.ts` fails on a mismatch, on a ui
+  component that is not a single file, and on a component no item claims.
+- **No `target`** on those files. A ui component lands on `aliases.ui`, a lib helper on
+  `aliases.lib`; naming a path here is how you end up with a second copy beside the one the
+  consumer already has, instead of sharing it. The one exception is a block, whose parts share a
+  directory the CLI would otherwise strip: it carries `target: "@components/<path>"`.
+- **Declare every file in the component directory.** An undeclared file is silently left out of the
+  consuming project and only breaks there, at build time.
+- `registryDependencies` spell the namespace, `@lumo/<name>`; `dependencies` carry npm packages.
+  Everything a copied file imports has to be on one of the two lists — the check reads the code and
+  fails otherwise.
+- The theme is not a file. `scripts/theme.ts` reads `src/styles/lumo-tokens.css` and
+  `lumo-palette.css` and writes them into two items as `cssVars` + `css`, which the CLI merges
+  into the consumer's stylesheet: `theme` (`registry:style`, written over whatever is there) and
+  `palette` (`registry:item`, added only where the consumer has no colours). Edit the CSS, never
+  `registry.json`; `bun run registry:sync` rewrites the items from it.
+- `bun run check` runs `scripts/check-registry.ts`, which fails on any of the drift above;
+  `bun run registry:sync` writes it in instead.
+
+## Consuming
+
+```json
+"registries": { "@lumo": "https://<host>/r/{name}.json" }
+```
+
+`bunx shadcn@latest add @lumo/button`, then `@lumo/theme` once (required) and `@lumo/palette` if
+the project has no colours of its own. The namespace is declared in the consumer's
+`components.json` (or `package.json`), which is also where its aliases come from — a file already
+installed with the same content is skipped, so adding a second component shares the first.

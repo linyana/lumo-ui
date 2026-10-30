@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -14,7 +14,7 @@ import Basic from './demos/basic';
 import Controlled from './demos/controlled';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/RadioGroup.tsx'];
+const files = ['src/components/ui/radio-group.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	value: {
@@ -130,7 +130,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { RadioGroup } from '@/components/lumo/ui/RadioGroup';";
+const usageImport = "import { RadioGroup } from '@/components/ui/radio-group';";
 const usageExample = `<Field.Root>
 	<Field.Label>plan</Field.Label>
 	<RadioGroup.Root defaultValue="team">
@@ -159,12 +159,7 @@ export function RadioGroupPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="radio-group"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="radio-group" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

@@ -1,5 +1,5 @@
-import { Field } from '@/components/lumo/ui/Field';
-import { Input } from '@/components/lumo/ui/Input';
+import { Field } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 export default function Basic() {
 	return (

@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Groups from './demos/groups';
 
-const files = ['src/components/lumo/ui/Combobox.tsx'];
+const files = ['src/components/ui/combobox.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	items: {
@@ -186,7 +186,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Combobox } from '@/components/lumo/ui/Combobox';";
+const usageImport = "import { Combobox } from '@/components/ui/combobox';";
 const usageExample = `<Combobox.Root items={languages}>
 	<Combobox.InputGroup className="w-56">
 		<Combobox.Input placeholder="search a language" aria-label="language" />
@@ -231,9 +231,8 @@ export function ComboboxPage() {
 			>
 				<DocInstall
 					name="combobox"
-					packages={['@base-ui/react', 'lucide-react', 'tailwind-variants']}
 					files={files}
-					reaches={['src/lib/cn.ts', 'src/lib/control.ts', 'src/lib/surface.ts']}
+					reaches={['src/lib/utils.ts', 'src/lib/control.ts', 'src/lib/surface.ts']}
 				/>
 			</DocSection>
 

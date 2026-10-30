@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -16,7 +16,7 @@ import Surfaces from './demos/surfaces';
 import Unknown from './demos/unknown';
 import Wrap from './demos/wrap';
 
-const files = ['src/components/lumo/ui/Code.tsx'];
+const files = ['src/components/ui/code.tsx'];
 
 const codeProps: Record<string, PropNode> = {
 	code: {
@@ -140,7 +140,7 @@ const languages = [
 	'yaml',
 ];
 
-const usageImport = "import { Code } from '@/components/lumo/ui/Code';";
+const usageImport = "import { Code } from '@/components/ui/code';";
 const usageExample = `<Code
 	code={source}
 	language="ts"
@@ -167,13 +167,12 @@ export function CodePage() {
 			>
 				<DocInstall
 					name="code"
-					packages={['shiki', 'lucide-react', 'tailwind-variants']}
 					files={files}
 					reaches={[
 						'src/lib/shiki.ts',
-						'src/components/lumo/ui/Button.tsx',
-						'src/components/lumo/ui/Spinner.tsx',
-						'src/lib/cn.ts',
+						'src/components/ui/button.tsx',
+						'src/components/ui/spinner.tsx',
+						'src/lib/utils.ts',
 					]}
 				/>
 			</DocSection>

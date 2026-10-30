@@ -1,5 +1,5 @@
-import { Field } from '@/components/lumo/ui/Field';
-import { Textarea } from '@/components/lumo/ui/Textarea';
+import { Field } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function InField() {
 	return (

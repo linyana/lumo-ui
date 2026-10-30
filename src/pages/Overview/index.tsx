@@ -1,12 +1,12 @@
 import { ArrowUpRight, Search } from 'lucide-react';
 import { useRef, useState, type ComponentType } from 'react';
 import { Link } from 'react-router';
-import { Button } from '@/components/lumo/ui/Button';
-import { Card } from '@/components/lumo/ui/Card';
-import { Input } from '@/components/lumo/ui/Input';
-import { Tabs } from '@/components/lumo/ui/Tabs';
-import { Toast } from '@/components/lumo/ui/Toast';
-import { cn } from '@/lib/cn';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Tabs } from '@/components/ui/tabs';
+import { Toast } from '@/components/ui/toast';
+import { cn } from '@/lib/utils';
 import { DocPage } from '@/pages/DocPage';
 import AvatarBasic from '@/pages/Avatar/demos/basic';
 import BadgeBasic from '@/pages/Badge/demos/basic';

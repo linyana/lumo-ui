@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/lumo/ui/Button';
-import { Collapsible } from '@/components/lumo/ui/Collapsible';
+import { Button } from '@/components/ui/button';
+import { Collapsible } from '@/components/ui/collapsible';
 
 const bodies = {
 	short: { label: 'one key', lines: ['alien-bean-pasta'] },

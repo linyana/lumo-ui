@@ -1,6 +1,13 @@
-/* lumo-ui theme tokens — every visual constant lives here.
-   Names follow the shadcn/ui convention, so community themes drop in as-is.
-   Consume with: @import 'tailwindcss'; @import './lumo-tokens.css'; */
+/* lumo-ui — everything a component needs from the stylesheet, whatever the project already has.
+   Names follow the shadcn/ui convention, so a community theme drops in as-is; what this file adds
+   is what such a theme does not define: the `dark` variant, the `@theme` mappings, the interaction
+   and motion tokens, the radius scale, the focus ring and the base layer.
+
+   This file is both the docs site's stylesheet and the source of the `@lumo/theme` item, which the
+   CLI merges into a project's own CSS instead of copying a file — see scripts/theme.ts. The
+   colours are the separate `lumo-palette.css`, and the only part a project may skip.
+   The site consumes it with: @import 'tailwindcss'; @import './lumo-palette.css';
+   @import './lumo-tokens.css'; */
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -95,9 +102,13 @@
 	}
 }
 
+/* The values this file names that a shadcn/ui theme does not: the three outcomes beside
+   `--destructive`, the second step of a field's edge, the scrim, and the shadows a surface is
+   lifted with. They live here rather than in the palette because no other theme defines them —
+   skipping the palette must not take them away. The page colours they are read against
+   (--background, --foreground, --primary, --ring, --border) are the palette's, or the
+   consumer's own. */
 :root {
-	--radius: 0.625rem;
-
 	/* Interaction feedback — shared by every pressable control.
 	   Filled buttons tint themselves with their light foreground colour, which reads
 	   weaker than the dark tint the surface variants get, so they carry their own pair.
@@ -136,22 +147,6 @@
 	--ease-overlay: cubic-bezier(0.22, 1, 0.36, 1);
 	--duration-overlay: 350ms;
 
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
-	--destructive: oklch(0.577 0.245 27.325);
-	--destructive-foreground: oklch(0.985 0 0);
 	/* Additions in a diff. The pair to `--destructive`, at the same weight, because the two are
 	   always read together and must not differ in loudness. */
 	--success: oklch(0.627 0.194 149.214);
@@ -161,14 +156,11 @@
 	/* The outcome with no direction: a fact to be read. Blue is what that reads as, and it is the
 	   only hue left that means neither "worse" nor "better". */
 	--info: oklch(0.546 0.245 262.881);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
 	/* The second step a field's border has: the one it wears while a pointer is over it or a
 	   keyboard has arrived in it. Both states are this colour and not two colours, because a field
 	   is saying the same thing either way — this is the box you are working in — and a border that
 	   moved twice for the same meaning would read as two different states. */
 	--input-strong: oklch(0.78 0 0);
-	--ring: oklch(0.708 0 0);
 	/* The scrim behind a modal surface. A colour of its own rather than `foreground` at an opacity:
 	   a scrim is dark in both themes — it is the page being pushed back, not the text on it — and
 	   in the dark one it has to be deeper still, because the popup above it is only a little
@@ -193,30 +185,11 @@
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.205 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.269 0 0);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.704 0.191 22.216);
-	--destructive-foreground: oklch(0.205 0 0);
 	--success: oklch(0.723 0.219 149.579);
 	--warning: oklch(0.769 0.188 70.08);
 	--info: oklch(0.623 0.214 259.815);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
 	/* A step lighter rather than darker: on a dark page an edge is found by adding light. */
 	--input-strong: oklch(1 0 0 / 30%);
-	--ring: oklch(0.556 0 0);
 	--overlay: oklch(0 0 0 / 65%);
 	/* Darker, not lighter: black over a dark page needs more of itself to be seen at all, which is
 	   the opposite of the border, where an edge is found by adding light. */

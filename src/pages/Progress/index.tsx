@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/Progress.tsx'];
+const files = ['src/components/ui/progress.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	value: {
@@ -119,7 +119,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Progress } from '@/components/lumo/ui/Progress';";
+const usageImport = "import { Progress } from '@/components/ui/progress';";
 const usageExample = `<Progress.Root value={uploaded} max={total} format={{ style: 'percent' }}>
 	<Progress.Label>uploading</Progress.Label>
 	<Progress.Value />
@@ -148,12 +148,7 @@ export function ProgressPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="progress"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="progress" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

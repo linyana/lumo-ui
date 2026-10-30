@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/ui/Button';
-import { Dialog } from '@/components/lumo/ui/Dialog';
+import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
 
 export default function Confirm() {
 	return (

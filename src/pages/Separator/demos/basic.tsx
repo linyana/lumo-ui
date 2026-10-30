@@ -1,4 +1,4 @@
-import { Separator } from '@/components/lumo/ui/Separator';
+import { Separator } from '@/components/ui/separator';
 
 export default function Basic() {
 	return (

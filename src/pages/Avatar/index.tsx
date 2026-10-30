@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Group from './demos/group';
 
-const files = ['src/components/lumo/ui/Avatar.tsx'];
+const files = ['src/components/ui/avatar.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	size: {
@@ -124,7 +124,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Avatar } from '@/components/lumo/ui/Avatar';";
+const usageImport = "import { Avatar } from '@/components/ui/avatar';";
 const usageExample = `<Avatar.Root>
 	<Avatar.Image src={user.avatar} alt="" />
 	<Avatar.Fallback delay={600}>{initialsOf(user.name)}</Avatar.Fallback>
@@ -149,9 +149,8 @@ export function AvatarPage() {
 			>
 				<DocInstall
 					name="avatar"
-					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
-					reaches={['src/lib/cn.ts', 'src/lib/control.ts']}
+					reaches={['src/lib/utils.ts', 'src/lib/control.ts']}
 				/>
 			</DocSection>
 

@@ -1,4 +1,4 @@
-import { Tabs } from '@/components/lumo/ui/Tabs';
+import { Tabs } from '@/components/ui/tabs';
 
 const sizes = ['sm', 'md', 'lg'] as const;
 const items = ['overview', 'activity', 'settings'];

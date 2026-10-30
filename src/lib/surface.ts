@@ -18,7 +18,7 @@
  *   60 — a tooltip, which explains something inside one of those
  *   70 — a toast, which is true whatever else is open
  */
-import { cn } from '@/lib/cn';
+import { cn } from '@/lib/utils';
 
 /** The scrim behind a modal surface. */
 export const backdrop = cn(

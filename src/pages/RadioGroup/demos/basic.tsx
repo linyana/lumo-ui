@@ -1,5 +1,5 @@
-import { Field } from '@/components/lumo/ui/Field';
-import { RadioGroup } from '@/components/lumo/ui/RadioGroup';
+import { Field } from '@/components/ui/field';
+import { RadioGroup } from '@/components/ui/radio-group';
 
 const plans = [
 	{ value: 'solo', label: 'solo', description: 'one seat, one workspace.' },

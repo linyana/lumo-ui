@@ -1,6 +1,6 @@
 import { CalendarClock, Plus } from 'lucide-react';
-import { Button } from '@/components/lumo/ui/Button';
-import { Card } from '@/components/lumo/ui/Card';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export default function Basic() {
 	return (

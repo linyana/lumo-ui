@@ -1,4 +1,4 @@
-import { CodeDiff } from '@/components/lumo/ui/CodeDiff';
+import { CodeDiff } from '@/components/ui/code-diff';
 
 const before = ['const retries = 1;', 'export { retries };'].join('\n');
 const after = ['const retries = 3;', 'export { retries };'].join('\n');

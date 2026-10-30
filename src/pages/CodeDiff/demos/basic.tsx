@@ -1,4 +1,4 @@
-import { CodeDiff } from '@/components/lumo/ui/CodeDiff';
+import { CodeDiff } from '@/components/ui/code-diff';
 
 const before = [
 	'export function greet(name: string) {',

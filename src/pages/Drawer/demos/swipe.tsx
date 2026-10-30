@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/lumo/ui/Button';
-import { Drawer } from '@/components/lumo/ui/Drawer';
+import { Button } from '@/components/ui/button';
+import { Drawer } from '@/components/ui/drawer';
 
 /**
  * The portal is confined to this box, which is why the sheet stays inside it — in a real app it

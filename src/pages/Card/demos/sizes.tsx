@@ -1,4 +1,4 @@
-import { Card } from '@/components/lumo/ui/Card';
+import { Card } from '@/components/ui/card';
 
 const stats = [
 	{ title: 'drafts', note: 'unsent replies', value: '12' },

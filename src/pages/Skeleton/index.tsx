@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -14,7 +14,7 @@ import Basic from './demos/basic';
 import CardPlaceholder from './demos/card';
 import Swap from './demos/swap';
 
-const files = ['src/components/lumo/ui/Skeleton.tsx'];
+const files = ['src/components/ui/skeleton.tsx'];
 
 const skeletonProps: Record<string, PropNode> = {
 	className: {
@@ -48,7 +48,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Skeleton } from '@/components/lumo/ui/Skeleton';";
+const usageImport = "import { Skeleton } from '@/components/ui/skeleton';";
 const usageExample = `<div className="flex flex-col gap-2">
 	<Skeleton className="h-4 w-2/3" />
 	<Skeleton className="h-4 w-full" />
@@ -71,12 +71,7 @@ export function SkeletonPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="skeleton"
-					packages={[]}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="skeleton" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection title="usage" note="a div with a size on it. nothing else to configure.">
