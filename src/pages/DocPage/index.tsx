@@ -2,10 +2,10 @@ import {
 	ArrowLeft,
 	ArrowRight,
 	Check,
-	ChevronRight,
 	CodeXml as CodeGlyph,
 	Copy as CopyIcon,
 	Download,
+	FolderCode,
 	Info,
 	X,
 } from 'lucide-react';
@@ -27,6 +27,7 @@ import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Code, Copy } from '@/components/ui/code';
 import { CodeTree } from '@/components/blocks/code-tree';
+import { foldersOf } from '@/components/blocks/code-tree/tree';
 import { Dialog } from '@/components/ui/dialog';
 import { Nav } from '@/components/ui/nav';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -307,15 +308,17 @@ function DownloadFiles({ name, paths }: { name: string; paths: string[] }) {
 
 	return (
 		<Button
-			variant="secondary"
+			size="icon"
+			variant="ghost"
+			className="size-7"
 			icon={<Download />}
+			aria-label="download all"
+			title="download all"
 			loading={building}
 			onClick={() => {
 				take().catch(() => {});
 			}}
-		>
-			download all
-		</Button>
+		/>
 	);
 }
 
@@ -431,7 +434,10 @@ export function DocInstall({
 							</Steps.Item>
 						)}
 						<Steps.Item>
-							<Steps.Title>copy the code</Steps.Title>
+							<Steps.Title className="flex items-center justify-between gap-2">
+								copy the code
+								<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
+							</Steps.Title>
 							<Steps.Description>
 								{copyNote ?? (
 									<>
@@ -458,23 +464,17 @@ export function DocInstall({
 									</>
 								)}
 							</Steps.Description>
-							<div className="flex items-center gap-2">
+							<div className="mt-3 flex flex-wrap items-center gap-2">
 								{lead !== undefined && (
 									<SourceDialog path={lead} name={name} about={about}>
-										<Button
-											variant="secondary"
-											icon={<CodeGlyph />}
-											className="flex-1 justify-start"
-										>
-											browse the files
-											<span className="ml-auto flex items-center gap-1 text-muted-foreground">
+										<Button icon={<FolderCode />}>
+											browse files
+											<span className="font-normal text-primary-foreground/70">
 												{copy.length} {copy.length === 1 ? 'file' : 'files'}
-												<ChevronRight aria-hidden="true" />
 											</span>
 										</Button>
 									</SourceDialog>
 								)}
-								<DownloadFiles name={`lumo-ui-${name}.zip`} paths={copy} />
 							</div>
 						</Steps.Item>
 						{stylesheet && (
@@ -609,7 +609,7 @@ export type DocPreviewProps = {
  * left is that registry item, drawn in the shape of the repository, and the pane on the right is
  * whichever file is selected. The file on screen leads the tree — its own row and the folders above
  * it, at full strength — and everything else is drawn quiet, so the tree says where the reader is.
- * No folder starts shut: the dialog is where a reader goes to see the whole install at once.
+ * Only the initial file's ancestor folders start open; the rest can be expanded as needed.
  *
  * The manifest is in the bundle, so the tree is there on the first frame; only the file's text is
  * fetched, and only for the one file on screen. Nothing outlives the open — the popup is mounted by
@@ -652,6 +652,10 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 		() => [...new Set([path, ...installFiles(name, named)])],
 		[path, name, named],
 	);
+	const defaultCollapsed = useMemo(() => {
+		const leading = foldersOf([path]);
+		return [...foldersOf(files)].filter((folder) => !leading.has(folder));
+	}, [files, path]);
 	const [selected, setSelected] = useState(path);
 	// What the tree is about, which is one file and not a set: the file on screen, and the folders
 	// above it. Everything else is the context the tree draws quiet — so selecting a dependency moves
@@ -717,6 +721,7 @@ function SourcePane({ path, name, about }: { path: string; name?: string; about?
 					<CodeTree
 						paths={files}
 						primary={primary}
+						defaultCollapsed={defaultCollapsed}
 						selected={selected}
 						onSelect={setSelected}
 						action={rowCopy}
