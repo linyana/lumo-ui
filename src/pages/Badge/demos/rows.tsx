@@ -1,5 +1,5 @@
-import { Badge } from '@/components/lumo/ui/Badge';
-import { Separator } from '@/components/lumo/ui/Separator';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const runs = [
 	{ name: 'unit tests', outcome: 'passed', variant: 'success' as const, note: '1m 04s' },

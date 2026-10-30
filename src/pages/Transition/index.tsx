@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Size from './demos/size';
 import Width from './demos/width';
 
-const files = ['src/components/lumo/ui/Transition.tsx'];
+const files = ['src/components/ui/transition.tsx'];
 
 const transitionProps: Record<string, PropNode> = {
 	children: {
@@ -57,7 +57,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Transition } from '@/components/lumo/ui/Transition';";
+const usageImport = "import { Transition } from '@/components/ui/transition';";
 const usageExample = `<div className="rounded-md border p-3">
 	<Transition>
 		<p className="text-sm">{body}</p>
@@ -87,9 +87,8 @@ export function TransitionPage() {
 			>
 				<DocInstall
 					name="transition"
-					packages={['motion']}
 					files={files}
-					reaches={['src/lib/motion.ts', 'src/lib/measure.ts', 'src/lib/cn.ts']}
+					reaches={['src/lib/motion.ts', 'src/lib/measure.ts', 'src/lib/utils.ts']}
 				/>
 			</DocSection>
 

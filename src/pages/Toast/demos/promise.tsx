@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/ui/Button';
-import { Toast } from '@/components/lumo/ui/Toast';
+import { Button } from '@/components/ui/button';
+import { Toast } from '@/components/ui/toast';
 
 /** One toast, updated in place: loading, then whatever the promise settles as. */
 export default function Saving() {

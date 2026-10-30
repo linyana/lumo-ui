@@ -1,4 +1,4 @@
-import { Card } from '@/components/lumo/ui/Card';
+import { Card } from '@/components/ui/card';
 
 export default function Flush() {
 	return (

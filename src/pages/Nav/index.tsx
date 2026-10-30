@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -14,7 +14,7 @@ import Basic from './demos/basic';
 import Compact from './demos/compact';
 import Loading from './demos/loading';
 
-const files = ['src/components/lumo/ui/Nav.tsx'];
+const files = ['src/components/ui/nav.tsx'];
 
 const buttonProps: Record<string, PropNode> = {
 	icon: {
@@ -223,7 +223,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Nav } from '@/components/lumo/ui/Nav';";
+const usageImport = "import { Nav } from '@/components/ui/nav';";
 const usageExample = `<Nav.Root compact={folded}>
 	<Nav.Group>
 		<Nav.GroupLabel>workspace</Nav.GroupLabel>
@@ -255,18 +255,17 @@ export function NavPage() {
 			>
 				<DocInstall
 					name="nav"
-					packages={['@base-ui/react', 'lucide-react', 'tailwind-variants']}
 					files={files}
 					reaches={[
-						'src/components/lumo/ui/Collapsible.tsx',
-						'src/components/lumo/ui/Popover.tsx',
-						'src/components/lumo/ui/Tooltip.tsx',
-						'src/components/lumo/ui/Separator.tsx',
-						'src/components/lumo/ui/Skeleton.tsx',
-						'src/components/lumo/ui/Transition.tsx',
+						'src/components/ui/collapsible.tsx',
+						'src/components/ui/popover.tsx',
+						'src/components/ui/tooltip.tsx',
+						'src/components/ui/separator.tsx',
+						'src/components/ui/skeleton.tsx',
+						'src/components/ui/transition.tsx',
 						'src/lib/motion.ts',
 						'src/lib/measure.ts',
-						'src/lib/cn.ts',
+						'src/lib/utils.ts',
 					]}
 				/>
 			</DocSection>

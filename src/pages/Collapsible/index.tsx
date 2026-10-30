@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Swapped from './demos/swapped';
 
-const files = ['src/components/lumo/ui/Collapsible.tsx'];
+const files = ['src/components/ui/collapsible.tsx'];
 
 const panelProps: Record<string, PropNode> = {
 	peek: {
@@ -76,7 +76,7 @@ const hookRows = [
 	['aria-controls · aria-expanded', '—', 'on the trigger, from Base UI; the id is its own.'],
 ];
 
-const usageImport = "import { Collapsible } from '@/components/lumo/ui/Collapsible';";
+const usageImport = "import { Collapsible } from '@/components/ui/collapsible';";
 const usageExample = `<Collapsible.Root>
 	<Collapsible.Trigger>
 		recovery keys
@@ -107,13 +107,12 @@ export function CollapsiblePage() {
 			>
 				<DocInstall
 					name="collapsible"
-					packages={['@base-ui/react', 'lucide-react']}
 					files={files}
 					reaches={[
-						'src/components/lumo/ui/Transition.tsx',
+						'src/components/ui/transition.tsx',
 						'src/lib/motion.ts',
 						'src/lib/measure.ts',
-						'src/lib/cn.ts',
+						'src/lib/utils.ts',
 					]}
 				/>
 			</DocSection>

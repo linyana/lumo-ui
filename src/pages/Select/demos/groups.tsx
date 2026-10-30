@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Select } from '@/components/lumo/ui/Select';
+import { Select } from '@/components/ui/select';
 
 type Option = { value: string; disabled?: boolean };
 

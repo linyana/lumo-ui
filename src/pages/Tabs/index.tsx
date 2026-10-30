@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -18,7 +18,7 @@ import Tracked from './demos/tracked';
 import Variants from './demos/variants';
 import Vertical from './demos/vertical';
 
-const files = ['src/components/lumo/ui/Tabs.tsx'];
+const files = ['src/components/ui/tabs.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	variant: {
@@ -128,7 +128,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Tabs } from '@/components/lumo/ui/Tabs';";
+const usageImport = "import { Tabs } from '@/components/ui/tabs';";
 const usageExample = `<Tabs.Root defaultValue="overview">
 	<Tabs.List>
 		<Tabs.Tab value="overview">overview</Tabs.Tab>
@@ -159,13 +159,12 @@ export function TabsPage() {
 			>
 				<DocInstall
 					name="tabs"
-					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
 					reaches={[
-						'src/components/lumo/ui/Transition.tsx',
+						'src/components/ui/transition.tsx',
 						'src/lib/motion.ts',
 						'src/lib/measure.ts',
-						'src/lib/cn.ts',
+						'src/lib/utils.ts',
 					]}
 				/>
 			</DocSection>

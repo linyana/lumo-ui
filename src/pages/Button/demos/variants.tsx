@@ -1,4 +1,4 @@
-import { Button } from '@/components/lumo/ui/Button';
+import { Button } from '@/components/ui/button';
 
 const variants = ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const;
 

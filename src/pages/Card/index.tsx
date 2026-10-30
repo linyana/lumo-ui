@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -16,7 +16,7 @@ import Hoverable from './demos/hoverable';
 import Sizes from './demos/sizes';
 import Stretch from './demos/stretch';
 
-const files = ['src/components/lumo/ui/Card.tsx'];
+const files = ['src/components/ui/card.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	size: {
@@ -90,7 +90,7 @@ const hookRows = [
 	['data-slot="card-footer"', 'the bottom row', 'flex items-center gap-2.'],
 ];
 
-const usageImport = "import { Card } from '@/components/lumo/ui/Card';";
+const usageImport = "import { Card } from '@/components/ui/card';";
 const usageExample = `<Card.Root>
 	<Card.Header>
 		<Card.Title>scheduled reports</Card.Title>
@@ -124,12 +124,7 @@ export function CardPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="card"
-					packages={['tailwind-variants']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="card" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

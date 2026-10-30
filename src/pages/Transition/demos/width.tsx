@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/lumo/ui/Button';
-import { Transition } from '@/components/lumo/ui/Transition';
+import { Button } from '@/components/ui/button';
+import { Transition } from '@/components/ui/transition';
 
 const notes = [
 	{

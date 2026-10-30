@@ -1,4 +1,4 @@
-import { Combobox } from '@/components/lumo/ui/Combobox';
+import { Combobox } from '@/components/ui/combobox';
 
 const languages = [
 	'c',

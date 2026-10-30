@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/lumo/ui/Skeleton';
-import { Tabs } from '@/components/lumo/ui/Tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs } from '@/components/ui/tabs';
 
 /** What each tab asks for, and how much comes back: the length of the answer is the point here. */
 const routes = [

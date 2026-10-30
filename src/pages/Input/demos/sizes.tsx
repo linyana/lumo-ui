@@ -1,4 +1,4 @@
-import { Input } from '@/components/lumo/ui/Input';
+import { Input } from '@/components/ui/input';
 
 export default function Sizes() {
 	return (

@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Detached from './demos/detached';
 
-const files = ['src/components/lumo/ui/Popover.tsx'];
+const files = ['src/components/ui/popover.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	open: {
@@ -99,7 +99,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Popover } from '@/components/lumo/ui/Popover';";
+const usageImport = "import { Popover } from '@/components/ui/popover';";
 const usageExample = `<Popover.Root>
 	<Popover.Trigger render={<Button>open</Button>} />
 	<Popover.Portal>
@@ -131,12 +131,7 @@ export function PopoverPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="popover"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="popover" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

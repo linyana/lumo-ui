@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/lumo/ui/Spinner';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function Sizes() {
 	return (

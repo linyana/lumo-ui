@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -17,7 +17,7 @@ import Sizes from './demos/sizes';
 import States from './demos/states';
 import Variants from './demos/variants';
 
-const files = ['src/components/lumo/ui/Button.tsx'];
+const files = ['src/components/ui/button.tsx'];
 
 const buttonProps: Record<string, PropNode> = {
 	variant: {
@@ -77,7 +77,7 @@ const hookRows = [
 	[':focus-visible', '—', 'the ring, declared once in lumo-tokens.css.'],
 ];
 
-const usageImport = "import { Button } from '@/components/lumo/ui/Button';";
+const usageImport = "import { Button } from '@/components/ui/button';";
 const usageExample = `<Button variant="outline" icon={<Plus />}>
 	add
 </Button>`;
@@ -97,16 +97,15 @@ export function ButtonPage() {
 				note={
 					<>
 						one component, one file, no barrel: the import carries the path. there is no{' '}
-						<Mono>Button.Root</Mono> — a button has no parts, so it is the function.
-						without the theme yet, take <Mono>lumo-tokens.css</Mono> as well.
+						<Mono>Button.Root</Mono> — a button has no parts, so it is the function. the
+						stylesheet comes with it, and its palette only if the project has none.
 					</>
 				}
 			>
 				<DocInstall
 					name="button"
-					packages={['@base-ui/react', 'tailwind-variants']}
 					files={files}
-					reaches={['src/components/lumo/ui/Spinner.tsx', 'src/lib/cn.ts']}
+					reaches={['src/components/ui/spinner.tsx', 'src/lib/utils.ts']}
 				/>
 			</DocSection>
 

@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -15,7 +15,7 @@ import Dots from './demos/dots';
 import Failed from './demos/failed';
 import Vertical from './demos/vertical';
 
-const files = ['src/components/lumo/ui/Steps.tsx'];
+const files = ['src/components/ui/steps.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	current: {
@@ -85,7 +85,7 @@ const hookRows = [
 	['data-slot="steps-description"', 'the detail under it', 'always muted.'],
 ];
 
-const usageImport = "import { Steps } from '@/components/lumo/ui/Steps';";
+const usageImport = "import { Steps } from '@/components/ui/steps';";
 const usageExample = `<Steps.Root current={1}>
 	<Steps.Item>
 		<Steps.Title>account</Steps.Title>
@@ -113,12 +113,7 @@ export function StepsPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="steps"
-					packages={['lucide-react', 'tailwind-variants']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="steps" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

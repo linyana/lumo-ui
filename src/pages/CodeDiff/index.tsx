@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -15,7 +15,7 @@ import Basic from './demos/basic';
 import Surfaces from './demos/surfaces';
 import Unified from './demos/unified';
 
-const files = ['src/components/lumo/ui/CodeDiff.tsx'];
+const files = ['src/components/ui/code-diff.tsx'];
 
 const diffProps: Record<string, PropNode> = {
 	oldContent: {
@@ -82,7 +82,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { CodeDiff } from '@/components/lumo/ui/CodeDiff';";
+const usageImport = "import { CodeDiff } from '@/components/ui/code-diff';";
 const usageExample = `<CodeDiff
 	oldContent={before}
 	newContent={after}
@@ -109,14 +109,13 @@ export function CodeDiffPage() {
 			>
 				<DocInstall
 					name="code-diff"
-					packages={['diff']}
 					files={files}
 					reaches={[
-						'src/components/lumo/ui/Code.tsx',
+						'src/components/ui/code.tsx',
 						'src/lib/shiki.ts',
-						'src/components/lumo/ui/Button.tsx',
-						'src/components/lumo/ui/Spinner.tsx',
-						'src/lib/cn.ts',
+						'src/components/ui/button.tsx',
+						'src/components/ui/spinner.tsx',
+						'src/lib/utils.ts',
 					]}
 				/>
 			</DocSection>

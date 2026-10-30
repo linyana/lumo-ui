@@ -22,19 +22,20 @@ import {
 	type ReactNode,
 } from 'react';
 import { Link } from 'react-router';
-import { Button } from '@/components/lumo/ui/Button';
-import { Code, Copy } from '@/components/lumo/ui/Code';
-import { CodeTree } from '@/components/lumo/blocks/CodeTree';
-import { Dialog } from '@/components/lumo/ui/Dialog';
-import { Nav } from '@/components/lumo/ui/Nav';
-import { Skeleton } from '@/components/lumo/ui/Skeleton';
-import { Steps } from '@/components/lumo/ui/Steps';
-import { Tabs } from '@/components/lumo/ui/Tabs';
-import { Tooltip } from '@/components/lumo/ui/Tooltip';
-import { cn } from '@/lib/cn';
+import { Button } from '@/components/ui/button';
+import { Code, Copy } from '@/components/ui/code';
+import { CodeTree } from '@/components/blocks/code-tree';
+import { Dialog } from '@/components/ui/dialog';
+import { Nav } from '@/components/ui/nav';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Steps } from '@/components/ui/steps';
+import { Table } from '@/components/ui/table';
+import { Tabs } from '@/components/ui/tabs';
+import { Tooltip } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import { useCopy } from '@/lib/clipboard';
 import { highlight } from '@/lib/shiki';
-import { filesOf, installFiles, itemOf, languageOf, readSource } from './sources';
+import { filesOf, installFiles, itemOf, languageOf, packagesOf, readSource } from './sources';
 import { zipOf } from './zip';
 
 /** The anchor a section's title becomes, and the id its `h2` carries. */
@@ -187,6 +188,18 @@ export function Mono({ children }: { children: ReactNode }) {
 	return <code className="rounded-sm bg-muted px-1 py-0.5 font-mono">{children}</code>;
 }
 
+/**
+ * A page pointing at another page, inside a sentence. Underlined rather than coloured: the prose is
+ * already muted, and a link that took the accent would read as the loudest thing in the paragraph.
+ */
+export function DocLink({ to, children }: { to: string; children: ReactNode }) {
+	return (
+		<Link to={to} className="underline underline-offset-2 hover:text-foreground">
+			{children}
+		</Link>
+	);
+}
+
 /** One command, with the way to take it — no header, no language label. */
 export function Command({ children }: { children: string }) {
 	return (
@@ -200,7 +213,16 @@ export function Command({ children }: { children: string }) {
 	);
 }
 
-/** The file's own name, which is what a reader recognises it by: `Button.tsx`, not its path. */
+/**
+ * The address a project declares once. Read off the page it is rendered on, because this site *is*
+ * the registry: `shadcn build` puts each item at `/r/<name>.json`, and the host serving this page
+ * is the host serving those files.
+ */
+export function registryUrl() {
+	return `${window.location.origin}/r/{name}.json`;
+}
+
+/** The file's own name, which is what a reader recognises it by: `button.tsx`, not its path. */
 function fileName(path: string) {
 	return path.split('/').pop() ?? path;
 }
@@ -220,19 +242,30 @@ function reachName(path: string) {
 /** A stable empty list, so the default prop does not make a new array on every render. */
 const NO_PATHS: string[] = [];
 
-/** The theme, which no registry item carries: the manual names it the way it names a copied file. */
+/**
+ * The stylesheet, which no registry item in this install reaches for: the manual names it the way it
+ * names a copied file. Two of them, because they answer two different questions — the tokens are the
+ * styles a component cannot draw without, the palette is only where the default colours come from.
+ */
 const TOKENS = 'src/styles/lumo-tokens.css';
+const PALETTE = 'src/styles/lumo-palette.css';
 
 /**
  * The files one step copies, named where they go. A step is a sentence and a list of destinations;
  * the text of every one of them is behind the single dialog at the end of the manual, so the page
  * carries no source and the reader has one place to read from.
+ *
+ * A file the reader may leave behind says so on its own row: the list is what the archive holds, and
+ * a row that vanished would be a file the manual silently decided for them.
  */
-function ManualFiles({ paths }: { paths: string[] }) {
+function ManualFiles({ paths, optional = NO_PATHS }: { paths: string[]; optional?: string[] }) {
 	return (
 		<ul data-slot="doc-manual-files" className="font-mono text-xs text-muted-foreground">
 			{paths.map((path) => (
-				<li key={path}>{path}</li>
+				<li key={path}>
+					{path}
+					{optional.includes(path) && ' (optional)'}
+				</li>
 			))}
 		</ul>
 	);
@@ -306,11 +339,9 @@ function DownloadFiles({ name, paths }: { name: string; paths: string[] }) {
 }
 
 export type DocInstallProps = {
-	/** The registry item the CLI takes, as `linyana/lumo-ui/<name>`. */
+	/** The registry item the CLI takes, as `@lumo/<name>`. */
 	name: string;
-	/** npm packages the copied files import. */
-	packages: string[];
-	/** The component's own files, in the order the CLI copies them. */
+	/** The component's own files, in the order the CLI copies it. */
 	files: string[];
 	/** What those files reach for, when it is more than `cn()`. */
 	reaches?: string[];
@@ -318,8 +349,8 @@ export type DocInstallProps = {
 	note?: ReactNode;
 	/** The sentence over the copy step, for a chain longer than the list can say. */
 	copyNote?: ReactNode;
-	/** Whether the manual ends on the tokens. A helper that only merges classes does not need them. */
-	tokens?: boolean;
+	/** Whether the manual ends on the stylesheet. A helper that only merges classes does not need it. */
+	stylesheet?: boolean;
 };
 
 /**
@@ -329,25 +360,31 @@ export type DocInstallProps = {
  */
 export function DocInstall({
 	name,
-	packages,
 	files,
 	reaches = NO_PATHS,
 	note,
 	copyNote,
-	tokens = true,
+	stylesheet = true,
 }: DocInstallProps) {
 	const own = files.map(fileName);
 	const reached = reaches.map(reachName);
-	const steps = [packages.length > 0, true].filter(Boolean).length;
-	const counted = ['no', 'one', 'two'][steps] ?? 'a few';
+	// Read off the manifest, not written here: the packages an install pulls are exactly what the
+	// items it reaches declare, so no page can name one the copied files do not import.
+	const packages = packagesOf(name);
+	const steps = [packages.length > 0, true, stylesheet].filter(Boolean).length;
+	const counted = ['no', 'one', 'two', 'three'][steps] ?? 'a few';
 	// The dialog opens on the first file the command copies, and is about everything the reader
-	// would copy by hand: the reached files and the tokens are named by the manual, not by the
+	// would copy by hand: the reached files and the stylesheets are named by the manual, not by the
 	// manifest, so they are handed over rather than looked up.
 	const lead = files[0];
-	const about = tokens ? [...reaches, TOKENS] : reaches;
-	// What the step lists and the archive holds: the item, what it installs, and the tokens no
-	// manifest names — the tokens last, because they are the one file a project may already have.
-	const copy = [...installFiles(name, reaches), ...(tokens ? [TOKENS] : [])];
+	// The palette is the one file a project may already have; the tokens are not, so both are listed
+	// and only the palette is marked.
+	const beside = stylesheet ? [TOKENS, PALETTE] : [];
+	const optional = stylesheet ? [PALETTE] : NO_PATHS;
+	const about = [...reaches, ...beside];
+	// What the step lists and the archive holds: the item, what it installs, and the stylesheets no
+	// manifest names.
+	const copy = [...installFiles(name, reaches), ...beside];
 
 	const tabs: DocTabItem[] = [
 		{
@@ -355,7 +392,7 @@ export function DocInstall({
 			label: 'Command',
 			content: (
 				<div className="space-y-3">
-					<Command>{`bunx shadcn@latest add linyana/lumo-ui/${name}`}</Command>
+					<Command>{`bunx shadcn@latest add @lumo/${name}`}</Command>
 					<p className="text-muted-foreground">
 						{note ?? (
 							<>
@@ -373,6 +410,18 @@ export function DocInstall({
 										package manager.
 									</>
 								)}
+							</>
+						)}
+					</p>
+					<p className="text-muted-foreground">
+						the namespace and the theme are set up once — see{' '}
+						<DocLink to="/install">install</DocLink>.
+						{stylesheet && (
+							<>
+								{' '}
+								every component reads <Mono>@lumo/theme</Mono>;
+								<Mono>@lumo/palette</Mono> only where the project has no colours of
+								its own.
 							</>
 						)}
 					</p>
@@ -395,7 +444,9 @@ export function DocInstall({
 							<Steps.Item>
 								<Steps.Title>install the packages</Steps.Title>
 								<Steps.Description>
-									what the files below import, from the package manager.
+									what the files below import, from the package manager. the
+									manifest names them, not this page: a package a copied file
+									added is already on the list.
 								</Steps.Description>
 								<Command>{`bun add ${packages.join(' ')}`}</Command>
 							</Steps.Item>
@@ -413,17 +464,23 @@ export function DocInstall({
 										goes where they point.
 									</>
 								)}
-								{tokens && (
+								{stylesheet && (
 									<>
 										{' '}
-										skip <Mono>lumo-tokens.css</Mono> if the project already
-										defines <Mono>--primary</Mono>, <Mono>--radius</Mono> and
-										the rest.
+										the command merges the theme into the project's stylesheet
+										rather than copying a file, so by hand it is these two and
+										an <Mono>@import</Mono>. <Mono>lumo-tokens.css</Mono> comes
+										with it either way: it carries the token mappings, the
+										interaction timing and the focus ring, none of which a
+										shadcn theme defines. <Mono>lumo-palette.css</Mono> is only
+										the default colours — skip it if the project already defines{' '}
+										<Mono>--primary</Mono>, <Mono>--radius</Mono> and the rest,
+										and keep its own <Mono>:root</Mono>/<Mono>.dark</Mono>.
 									</>
 								)}
 							</Steps.Description>
 							<div className="space-y-2">
-								<ManualFiles paths={copy} />
+								<ManualFiles paths={copy} optional={optional} />
 								<div className="flex items-center gap-2">
 									{lead !== undefined && (
 										<SourceDialog path={lead} name={name} about={about}>
@@ -440,6 +497,19 @@ export function DocInstall({
 								</div>
 							</div>
 						</Steps.Item>
+						{stylesheet && (
+							<Steps.Item>
+								<Steps.Title>import the stylesheet</Steps.Title>
+								<Steps.Description>
+									once, in the global stylesheet, after <Mono>tailwindcss</Mono> —
+									Tailwind resolves the <Mono>@theme</Mono> mappings the
+									components are drawn with. the path is relative to that
+									stylesheet, and the palette, if it was copied at all, goes in
+									the line before this one so the mappings read it.
+								</Steps.Description>
+								<Command>{`@import './lumo-tokens.css';`}</Command>
+							</Steps.Item>
+						)}
 					</Steps.Root>
 				</div>
 			),
@@ -910,42 +980,43 @@ function PropHint({ name, description }: { name: string; description: string }) 
 export function PropTable({ props }: PropTableProps) {
 	return (
 		<Tooltip.Provider delay={150}>
-			<div data-slot="prop-table" className="overflow-x-auto rounded-lg border">
-				<table className="w-full border-collapse text-left text-xs">
-					<thead>
-						<tr className="border-b bg-muted">
-							{['prop', 'type', 'default'].map((label) => (
-								<th
-									key={label}
-									scope="col"
-									className="px-3 py-2 font-medium text-muted-foreground"
-								>
-									{label}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{Object.entries(props).map(([name, node]) => (
-							<tr key={name} className="border-b last:border-b-0">
-								<td className="px-3 py-2 align-top whitespace-nowrap">
-									<span className="inline-flex items-center gap-1.5 font-mono">
-										{name}
-										{!node.required && '?'}
-										{node.description !== undefined && (
-											<PropHint name={name} description={node.description} />
-										)}
-									</span>
-								</td>
-								<td className="px-3 py-2 align-top font-mono">{node.type}</td>
-								<td className="px-3 py-2 align-top font-mono text-muted-foreground">
-									{node.default ?? '—'}
-								</td>
-							</tr>
+			<Table.Root
+				size="sm"
+				// The panel is the docs’ own, so it also drops the last row’s rule: the row’s line and
+				// the panel’s edge would otherwise sit on top of each other as one 2px line.
+				className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
+				aria-label="props"
+			>
+				<Table.Header>
+					<Table.Row>
+						{['prop', 'type', 'default'].map((label) => (
+							<Table.Head key={label}>{label}</Table.Head>
 						))}
-					</tbody>
-				</table>
-			</div>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{Object.entries(props).map(([name, node]) => (
+						<Table.Row key={name}>
+							{/* Top-aligned, because a prop and its sentence are never the same height. */}
+							<Table.Cell className="align-top">
+								<span className="inline-flex items-center gap-1.5 font-mono">
+									{name}
+									{!node.required && '?'}
+									{node.description !== undefined && (
+										<PropHint name={name} description={node.description} />
+									)}
+								</span>
+							</Table.Cell>
+							<Table.Cell className="align-top whitespace-normal font-mono">
+								{node.type}
+							</Table.Cell>
+							<Table.Cell className="align-top font-mono text-muted-foreground">
+								{node.default ?? '—'}
+							</Table.Cell>
+						</Table.Row>
+					))}
+				</Table.Body>
+			</Table.Root>
 		</Tooltip.Provider>
 	);
 }
@@ -963,39 +1034,39 @@ export type DocTableProps = {
 /* oxlint-disable react/no-array-index-key -- a row has no id of its own; its position is its identity */
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
-		<div data-slot="doc-table" className="overflow-x-auto rounded-lg border">
-			<table className="w-full border-collapse text-left text-xs">
-				<thead>
-					<tr className="border-b bg-muted">
-						{head.map((label) => (
-							<th
-								key={label}
-								scope="col"
-								className="px-3 py-2 font-medium text-muted-foreground"
-							>
-								{label}
-							</th>
-						))}
-					</tr>
-				</thead>
-				<tbody>
-					{rows.map((row, rowIndex) => (
-						<tr key={rowIndex} className="border-b last:border-b-0">
-							{row.map((cell, cellIndex) => (
-								<td
-									key={cellIndex}
-									className={cn(
-										'px-3 py-2 align-top',
-										mono?.includes(cellIndex) && 'font-mono',
-									)}
-								>
-									{cell}
-								</td>
-							))}
-						</tr>
+		<Table.Root
+			size="sm"
+			// See `PropTable`: the panel closes the table, so the last row does not.
+			className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
+		>
+			<Table.Header>
+				<Table.Row>
+					{head.map((label) => (
+						<Table.Head key={label}>{label}</Table.Head>
 					))}
-				</tbody>
-			</table>
-		</div>
+				</Table.Row>
+			</Table.Header>
+			<Table.Body>
+				{rows.map((row, rowIndex) => (
+					<Table.Row key={rowIndex}>
+						{row.map((cell, cellIndex) => (
+							<Table.Cell
+								key={cellIndex}
+								className={cn(
+									'align-top',
+									// A name and its value are identifiers and do not break mid-token; the
+									// sentence beside them does.
+									mono?.includes(cellIndex)
+										? 'font-mono whitespace-nowrap'
+										: 'whitespace-normal',
+								)}
+							>
+								{cell}
+							</Table.Cell>
+						))}
+					</Table.Row>
+				))}
+			</Table.Body>
+		</Table.Root>
 	);
 }

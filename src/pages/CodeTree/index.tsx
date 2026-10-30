@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -15,9 +15,9 @@ import Collapsed from './demos/collapsed';
 import Primary from './demos/primary';
 
 const files = [
-	'src/components/lumo/blocks/CodeTree/index.tsx',
-	'src/components/lumo/blocks/CodeTree/tree.ts',
-	'src/components/lumo/blocks/CodeTree/glyph.tsx',
+	'src/components/blocks/code-tree/index.tsx',
+	'src/components/blocks/code-tree/tree.ts',
+	'src/components/blocks/code-tree/glyph.tsx',
 ];
 
 const codeTreeProps: Record<string, PropNode> = {
@@ -25,7 +25,7 @@ const codeTreeProps: Record<string, PropNode> = {
 		required: true,
 		type: 'string[]',
 		description:
-			'The files to draw, as full paths — src/lib/cn.ts. Folders are made from the paths: two paths that share a prefix share the folders on the way.',
+			'The files to draw, as full paths — src/lib/utils.ts. Folders are made from the paths: two paths that share a prefix share the folders on the way.',
 	},
 	selected: {
 		type: 'string',
@@ -108,9 +108,9 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { CodeTree } from '@/components/lumo/blocks/CodeTree';";
+const usageImport = "import { CodeTree } from '@/components/blocks/code-tree';";
 const usageExample = `<CodeTree
-	paths={['src/components/lumo/ui/Code.tsx', 'src/lib/cn.ts']}
+	paths={['src/components/ui/code.tsx', 'src/lib/utils.ts']}
 	selected={showing}
 	onSelect={setShowing}
 />`;
@@ -137,7 +137,6 @@ export function CodeTreePage() {
 			>
 				<DocInstall
 					name="code-tree"
-					packages={['lucide-react']}
 					files={files}
 					copyNote={
 						<>
@@ -147,7 +146,7 @@ export function CodeTreePage() {
 							list below is that whole chain, the component last to first.
 						</>
 					}
-					reaches={['src/components/lumo/ui/Nav.tsx', 'src/lib/cn.ts']}
+					reaches={['src/components/ui/nav.tsx', 'src/lib/utils.ts']}
 				/>
 			</DocSection>
 

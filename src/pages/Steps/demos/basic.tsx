@@ -1,4 +1,4 @@
-import { Steps } from '@/components/lumo/ui/Steps';
+import { Steps } from '@/components/ui/steps';
 
 export default function Basic() {
 	return (

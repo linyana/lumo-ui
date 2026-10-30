@@ -1,4 +1,4 @@
-import { ScrollArea } from '@/components/lumo/ui/ScrollArea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const paragraphs = [
 	'A pane is scrollable only once it has a height to run out of: the root takes it from its parent, and the viewport fills the root.',

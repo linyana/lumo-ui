@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Groups from './demos/groups';
 
-const files = ['src/components/lumo/ui/Select.tsx'];
+const files = ['src/components/ui/select.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	value: {
@@ -207,7 +207,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Select } from '@/components/lumo/ui/Select';";
+const usageImport = "import { Select } from '@/components/ui/select';";
 const usageExample = `<Select.Root defaultValue="rust">
 	<Select.Trigger className="w-56">
 		<Select.Value placeholder="choose a language" />
@@ -247,9 +247,8 @@ export function SelectPage() {
 			>
 				<DocInstall
 					name="select"
-					packages={['@base-ui/react', 'lucide-react', 'tailwind-variants']}
 					files={files}
-					reaches={['src/lib/cn.ts', 'src/lib/control.ts', 'src/lib/surface.ts']}
+					reaches={['src/lib/utils.ts', 'src/lib/control.ts', 'src/lib/surface.ts']}
 				/>
 			</DocSection>
 

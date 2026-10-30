@@ -4,111 +4,295 @@
 	"homepage": "https://github.com/linyana/lumo-ui",
 	"items": [
 		{
-			"name": "cn",
-			"type": "registry:file",
+			"name": "utils",
+			"type": "registry:lib",
 			"title": "cn() class merge helper",
 			"description": "clsx + tailwind-merge. Required by every component; installed automatically as a dependency.",
 			"dependencies": ["clsx", "tailwind-merge"],
 			"files": [
 				{
-					"path": "src/lib/cn.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/cn.ts"
+					"path": "src/lib/utils.ts",
+					"type": "registry:lib"
 				}
 			]
 		},
 		{
 			"name": "motion",
-			"type": "registry:file",
+			"type": "registry:lib",
 			"title": "motion presets",
 			"description": "The springs the library moves with, in one place; a hook that drops them when the reader asked for less motion; and the timing helpers that sample a spring into a `linear()` curve, so a glide runs in the browser instead of in a callback. Required by Tabs, Collapsible and Transition; installed automatically as a dependency.",
 			"dependencies": ["motion"],
 			"files": [
 				{
 					"path": "src/lib/motion.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/motion.ts"
+					"type": "registry:lib"
 				}
 			]
 		},
 		{
 			"name": "measure",
-			"type": "registry:file",
+			"type": "registry:lib",
 			"title": "measure helpers",
 			"description": "Two numbers a glide cannot be written without: the box's padding and borders, and the screen-per-CSS-pixel scale an ancestor transform or a CSS zoom puts on a measurement. Required by Transition and Tabs; installed automatically as a dependency.",
 			"files": [
 				{
 					"path": "src/lib/measure.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/measure.ts"
+					"type": "registry:lib"
 				}
 			]
 		},
 		{
 			"name": "control",
-			"type": "registry:file",
+			"type": "registry:lib",
 			"title": "control idioms",
 			"description": "The five things every control in the library looks the same way: the tint a hover or a press leaves, the size an icon slot takes from the text around it, the shell of a text field, the box a tick or a dot is drawn in, and the row a list of choices is made of. Required by Button, Input, Textarea, Checkbox, RadioGroup, Collapsible, Menu, Select, Nav and Steps; installed automatically as a dependency.",
 			"files": [
 				{
 					"path": "src/lib/control.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/control.ts"
+					"type": "registry:lib"
 				}
 			],
-			"registryDependencies": ["linyana/lumo-ui/cn"]
+			"registryDependencies": ["@lumo/utils"]
 		},
 		{
 			"name": "surface",
-			"type": "registry:file",
+			"type": "registry:lib",
 			"title": "overlay surfaces",
 			"description": "What every floating surface shares: the layer ladder (a backdrop, a popup, a tooltip, a toast), the scrim, the way a popup arrives, the box its positioner is measured in, the viewport that slides one panel to the next, and the arrow that points back at its trigger. Required by Dialog, Drawer, Popover, Tooltip and Menu; installed automatically as a dependency.",
 			"files": [
 				{
 					"path": "src/lib/surface.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/surface.ts"
+					"type": "registry:lib"
 				}
 			],
-			"registryDependencies": ["linyana/lumo-ui/cn"]
+			"registryDependencies": ["@lumo/utils"]
 		},
 		{
 			"name": "clipboard",
-			"type": "registry:file",
+			"type": "registry:lib",
 			"title": "useCopy",
 			"description": "A copy button's two halves — the write, and the moment of 'copied' that says it landed — so every copy in the library forgets at the same speed and none of them claims a copy the clipboard refused.",
 			"files": [
 				{
 					"path": "src/lib/clipboard.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/clipboard.ts"
+					"type": "registry:lib"
 				}
 			]
 		},
 		{
 			"name": "theme",
-			"type": "registry:file",
+			"type": "registry:style",
 			"title": "lumo-ui theme tokens",
-			"description": "Semantic CSS variables (shadcn-compatible names), the derived radius scale, dark mode variant and base layer. Skip this if the target project already defines these variables.",
-			"files": [
-				{
-					"path": "src/styles/lumo-tokens.css",
-					"type": "registry:file",
-					"target": "~/src/styles/lumo-tokens.css"
+			"description": "The stylesheet every component reads: the `dark` variant, the `@theme` mappings, the interaction and motion tokens, the radius scale, the outcome colours a shadcn theme does not define, the focus ring and the base layer. Required — a project that keeps its own palette still needs this file, which is why the colours are a separate item.",
+			"cssVars": {
+				"theme": {
+					"font-sans": "'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+					"font-mono": "'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace",
+					"color-background": "var(--background)",
+					"color-foreground": "var(--foreground)",
+					"color-card": "var(--card)",
+					"color-card-foreground": "var(--card-foreground)",
+					"color-popover": "var(--popover)",
+					"color-popover-foreground": "var(--popover-foreground)",
+					"color-primary": "var(--primary)",
+					"color-primary-foreground": "var(--primary-foreground)",
+					"color-secondary": "var(--secondary)",
+					"color-secondary-foreground": "var(--secondary-foreground)",
+					"color-muted": "var(--muted)",
+					"color-muted-foreground": "var(--muted-foreground)",
+					"color-accent": "var(--accent)",
+					"color-accent-foreground": "var(--accent-foreground)",
+					"color-destructive": "var(--destructive)",
+					"color-destructive-foreground": "var(--destructive-foreground)",
+					"color-success": "var(--success)",
+					"color-warning": "var(--warning)",
+					"color-info": "var(--info)",
+					"color-border": "var(--border)",
+					"color-input": "var(--input)",
+					"shadow-surface": "var(--shadow-surface)",
+					"shadow-lifted": "var(--shadow-lifted)",
+					"shadow-overlay": "var(--shadow-overlay)",
+					"color-input-strong": "var(--input-strong)",
+					"color-ring": "var(--ring)",
+					"color-table-head": "color-mix(in oklch, var(--foreground) 2%, var(--background))",
+					"color-table-head-hover": "color-mix(in oklch, var(--foreground) 8%, var(--background))",
+					"color-row-hover": "color-mix(in oklch, var(--foreground) 5%, transparent)",
+					"color-row-selected": "color-mix(in oklch, var(--primary) 8%, transparent)",
+					"color-row-selected-hover": "color-mix(in oklch, var(--primary) 12%, transparent)",
+					"radius-sm": "calc(var(--radius) * 0.6)",
+					"radius-md": "calc(var(--radius) * 0.8)",
+					"radius-lg": "var(--radius)",
+					"radius-xl": "calc(var(--radius) * 1.4)",
+					"radius-2xl": "calc(var(--radius) * 1.8)",
+					"animate-progress-sweep": "lumo-progress-sweep 1.2s ease-in-out infinite"
+				},
+				"light": {
+					"state-layer-hover-opacity": "0.06",
+					"state-layer-pressed-opacity": "0.14",
+					"state-layer-fill-hover-opacity": "0.16",
+					"state-layer-fill-pressed-opacity": "0.26",
+					"state-layer-selected-hover-opacity": "0.1",
+					"press-offset": "1px",
+					"shift-content": "8px",
+					"blur-inactive": "4px",
+					"ease-spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+					"duration-state": "150ms",
+					"duration-turn": "200ms",
+					"duration-press": "80ms",
+					"ease-overlay": "cubic-bezier(0.22, 1, 0.36, 1)",
+					"duration-overlay": "350ms",
+					"success": "oklch(0.627 0.194 149.214)",
+					"warning": "oklch(0.666 0.179 58.318)",
+					"info": "oklch(0.546 0.245 262.881)",
+					"input-strong": "oklch(0.78 0 0)",
+					"overlay": "oklch(0 0 0 / 50%)",
+					"shadow-surface": "0 1px 2px rgb(0 0 0 / 4%), 0 2px 4px rgb(0 0 0 / 2%)",
+					"shadow-lifted": "0 17.5px 23.4px rgb(0 0 0 / 4%), 0 9.4px 12.5px rgb(0 0 0 / 3%), 0 5.25px 7px rgb(0 0 0 / 2%), 0 2.8px 3.7px -2px rgb(0 0 0 / 1%), 0 1.2px 1.5px rgb(0 0 0 / 1%)",
+					"shadow-overlay": "0 40px 80px rgb(0 0 0 / 6%), 0 20px 40px rgb(0 0 0 / 5%), 0 10px 20px rgb(0 0 0 / 4%), 0 5px 10px rgb(0 0 0 / 3%), 0 2px 4px rgb(0 0 0 / 2%)"
+				},
+				"dark": {
+					"success": "oklch(0.723 0.219 149.579)",
+					"warning": "oklch(0.769 0.188 70.08)",
+					"info": "oklch(0.623 0.214 259.815)",
+					"input-strong": "oklch(1 0 0 / 30%)",
+					"overlay": "oklch(0 0 0 / 65%)",
+					"shadow-surface": "0 1px 2px rgb(0 0 0 / 6%), 0 2px 4px rgb(0 0 0 / 3%)",
+					"shadow-lifted": "0 17.5px 23.4px rgb(0 0 0 / 6%), 0 9.4px 12.5px rgb(0 0 0 / 5%), 0 5.25px 7px rgb(0 0 0 / 3%), 0 2.8px 3.7px -2px rgb(0 0 0 / 2%), 0 1.2px 1.5px rgb(0 0 0 / 2%)",
+					"shadow-overlay": "0 40px 80px rgb(0 0 0 / 9%), 0 20px 40px rgb(0 0 0 / 8%), 0 10px 20px rgb(0 0 0 / 6%), 0 5px 10px rgb(0 0 0 / 5%), 0 2px 4px rgb(0 0 0 / 3%)"
 				}
-			]
+			},
+			"css": {
+				"@custom-variant dark (&:where(.dark, .dark *))": {},
+				"@layer base": {
+					"*": {
+						"border-color": "var(--border)"
+					},
+					"body": {
+						"background-color": "var(--background)",
+						"color": "var(--foreground)",
+						"-webkit-font-smoothing": "antialiased"
+					},
+					"::selection": {
+						"background-color": "var(--primary)",
+						"color": "var(--primary-foreground)"
+					},
+					":focus-visible": {
+						"outline": "2px solid var(--ring)",
+						"outline-offset": "2px",
+						"animation": "focus-ring var(--duration-state) var(--ease-spring)"
+					},
+					"@supports not selector(::-webkit-scrollbar)": {
+						"*": {
+							"scrollbar-width": "thin",
+							"scrollbar-color": "var(--ring) transparent"
+						}
+					},
+					"*::-webkit-scrollbar": {
+						"width": "10px",
+						"height": "10px"
+					},
+					"*::-webkit-scrollbar-track, *::-webkit-scrollbar-corner": {
+						"background-color": "transparent"
+					},
+					"*::-webkit-scrollbar-thumb": {
+						"background-color": "var(--ring)",
+						"background-clip": "content-box",
+						"border": "2px solid transparent",
+						"border-radius": "9999px"
+					},
+					"*::-webkit-scrollbar-thumb:hover": {
+						"background-color": "var(--muted-foreground)"
+					}
+				},
+				"@media (prefers-reduced-motion: reduce)": {
+					":root": {
+						"--press-offset": "0",
+						"--shift-content": "0px",
+						"--blur-inactive": "0px",
+						"--ease-spring": "linear",
+						"--duration-state": "1ms",
+						"--duration-turn": "1ms",
+						"--duration-press": "1ms",
+						"--ease-overlay": "linear",
+						"--duration-overlay": "1ms"
+					}
+				},
+				"@keyframes lumo-progress-sweep": {
+					"from": {
+						"translate": "-100% 0"
+					},
+					"to": {
+						"translate": "250% 0"
+					}
+				},
+				"@keyframes focus-ring": {
+					"from": {
+						"outline-color": "transparent"
+					}
+				}
+			}
+		},
+		{
+			"name": "palette",
+			"type": "registry:item",
+			"title": "lumo-ui default palette",
+			"description": "The default light and dark page colours, under the shadcn/ui names, and the `--radius` the radius scale derives from. Skip this one if the target project already defines them; lumo-tokens.css is needed either way.",
+			"cssVars": {
+				"light": {
+					"radius": "0.625rem",
+					"background": "oklch(1 0 0)",
+					"foreground": "oklch(0.145 0 0)",
+					"card": "oklch(1 0 0)",
+					"card-foreground": "oklch(0.145 0 0)",
+					"popover": "oklch(1 0 0)",
+					"popover-foreground": "oklch(0.145 0 0)",
+					"primary": "oklch(0.205 0 0)",
+					"primary-foreground": "oklch(0.985 0 0)",
+					"secondary": "oklch(0.97 0 0)",
+					"secondary-foreground": "oklch(0.205 0 0)",
+					"muted": "oklch(0.97 0 0)",
+					"muted-foreground": "oklch(0.556 0 0)",
+					"accent": "oklch(0.97 0 0)",
+					"accent-foreground": "oklch(0.205 0 0)",
+					"destructive": "oklch(0.577 0.245 27.325)",
+					"destructive-foreground": "oklch(0.985 0 0)",
+					"border": "oklch(0.922 0 0)",
+					"input": "oklch(0.922 0 0)",
+					"ring": "oklch(0.708 0 0)"
+				},
+				"dark": {
+					"background": "oklch(0.145 0 0)",
+					"foreground": "oklch(0.985 0 0)",
+					"card": "oklch(0.205 0 0)",
+					"card-foreground": "oklch(0.985 0 0)",
+					"popover": "oklch(0.205 0 0)",
+					"popover-foreground": "oklch(0.985 0 0)",
+					"primary": "oklch(0.922 0 0)",
+					"primary-foreground": "oklch(0.205 0 0)",
+					"secondary": "oklch(0.269 0 0)",
+					"secondary-foreground": "oklch(0.985 0 0)",
+					"muted": "oklch(0.269 0 0)",
+					"muted-foreground": "oklch(0.708 0 0)",
+					"accent": "oklch(0.269 0 0)",
+					"accent-foreground": "oklch(0.985 0 0)",
+					"destructive": "oklch(0.704 0.191 22.216)",
+					"destructive-foreground": "oklch(0.205 0 0)",
+					"border": "oklch(1 0 0 / 10%)",
+					"input": "oklch(1 0 0 / 15%)",
+					"ring": "oklch(0.556 0 0)"
+				}
+			}
 		},
 		{
 			"name": "shiki",
-			"type": "registry:file",
+			"type": "registry:lib",
 			"title": "shiki highlighter",
 			"description": "The highlighter behind Code and CodeDiff: one shared core, a grammar per file fetched on demand, a light/dark colour pair per token so the theme can flip without re-tokenising, and a cache so the same snippet is tokenised once however many blocks show it.",
 			"dependencies": ["shiki"],
 			"files": [
 				{
 					"path": "src/lib/shiki.ts",
-					"type": "registry:file",
-					"target": "~/src/lib/shiki.ts"
+					"type": "registry:lib"
 				}
 			]
 		},
@@ -117,12 +301,11 @@
 			"type": "registry:ui",
 			"title": "Spinner",
 			"description": "Default loading indicator: a container-query sized ring of pulsing dots, one em across so it matches the icon it replaces. Cancel the status role where the surrounding control already announces its own state.",
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Spinner.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Spinner.tsx"
+					"path": "src/components/ui/spinner.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -132,16 +315,11 @@
 			"title": "Button",
 			"description": "The reference component: tailwind-variants API, token-driven appearance, data-slot / data-variant hooks.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/spinner",
-				"linyana/lumo-ui/control"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/spinner", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Button.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Button.tsx"
+					"path": "src/components/ui/button.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -151,12 +329,11 @@
 			"title": "Card",
 			"description": "One surface for one subject: a header with its title, description and action, a body that takes the slack, and a footer. Two sizes, set once on the root and read by every part, and a `hoverable` root for a card that is a target.",
 			"dependencies": ["tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Card.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Card.tsx"
+					"path": "src/components/ui/card.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -166,12 +343,11 @@
 			"title": "Tooltip",
 			"description": "Hover and focus hint anchored to its trigger. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Tooltip.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tooltip.tsx"
+					"path": "src/components/ui/tooltip.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -181,16 +357,11 @@
 			"title": "Combobox",
 			"description": "A select whose options are found by typing: the field is the control, so the chosen label stays in it and the query narrows the list under it. A caret opens the list without typing, a clear button appears only while there is something to clear, and the rows are the same rows Menu and Select draw. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/control",
-				"linyana/lumo-ui/surface"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/control", "@lumo/surface"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Combobox.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Combobox.tsx"
+					"path": "src/components/ui/combobox.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -200,12 +371,11 @@
 			"title": "Dialog",
 			"description": "Modal dialog. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Dialog.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Dialog.tsx"
+					"path": "src/components/ui/dialog.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -215,16 +385,11 @@
 			"title": "Collapsible",
 			"description": "Disclosure region that expands and collapses one panel. Its height belongs to Transition, so a fold is one box on the one size spring rather than two animations of the same edge. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/transition",
-				"linyana/lumo-ui/control"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/transition", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Collapsible.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Collapsible.tsx"
+					"path": "src/components/ui/collapsible.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -234,12 +399,11 @@
 			"title": "Popover",
 			"description": "Anchored panel that holds rich content. One popup can be shared by several detached triggers, each with its own payload. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Popover.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Popover.tsx"
+					"path": "src/components/ui/popover.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -249,16 +413,11 @@
 			"title": "Menu",
 			"description": "A menu of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/surface",
-				"linyana/lumo-ui/button"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface", "@lumo/button"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Menu.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Menu.tsx"
+					"path": "src/components/ui/menu.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -268,12 +427,11 @@
 			"title": "Separator",
 			"description": "A line between two regions, horizontal or vertical, announced as a separator. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Separator.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Separator.tsx"
+					"path": "src/components/ui/separator.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -283,12 +441,11 @@
 			"title": "Steps",
 			"description": "A sequence of steps as an ordered list: one current index makes the items before it finish and the ones after wait, and the connector is drawn by the item so the spacing is never placed by hand.",
 			"dependencies": ["lucide-react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Steps.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Steps.tsx"
+					"path": "src/components/ui/steps.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -299,17 +456,16 @@
 			"description": "One panel at a time, chosen from a row of tabs, with a highlight that travels between them — stacked and cross-fading, or all of them side by side on a track that is slid to the selected one. The track and the box under it move on springs, written to the DOM rather than to state, so a tab change does not re-render the panels it is switching between. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/motion",
-				"linyana/lumo-ui/measure",
-				"linyana/lumo-ui/transition",
-				"linyana/lumo-ui/control"
+				"@lumo/utils",
+				"@lumo/motion",
+				"@lumo/measure",
+				"@lumo/transition",
+				"@lumo/control"
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Tabs.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Tabs.tsx"
+					"path": "src/components/ui/tabs.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -319,12 +475,11 @@
 			"title": "Drawer",
 			"description": "A panel that slides in from an edge and can be swiped away. Each of the four edges is one swipe direction. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/surface"],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Drawer.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Drawer.tsx"
+					"path": "src/components/ui/drawer.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -333,12 +488,11 @@
 			"type": "registry:ui",
 			"title": "Skeleton",
 			"description": "Placeholder for content that has not arrived. Give it the size the real content will be.",
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Skeleton.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Skeleton.tsx"
+					"path": "src/components/ui/skeleton.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -349,19 +503,18 @@
 			"description": "A list of navigation rows: groups, icons, active state, badges, inline sub rows, and a compact rail where a row with children opens them in a popover. The nav knows nothing about the shell it sits in — width, position and scrolling are the caller’s.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
 			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/collapsible",
-				"linyana/lumo-ui/popover",
-				"linyana/lumo-ui/separator",
-				"linyana/lumo-ui/skeleton",
-				"linyana/lumo-ui/tooltip",
-				"linyana/lumo-ui/control"
+				"@lumo/utils",
+				"@lumo/collapsible",
+				"@lumo/popover",
+				"@lumo/separator",
+				"@lumo/skeleton",
+				"@lumo/tooltip",
+				"@lumo/control"
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Nav.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Nav.tsx"
+					"path": "src/components/ui/nav.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -371,12 +524,11 @@
 			"title": "ScrollArea",
 			"description": "A pane that scrolls under the platform's overlay bar: instead of the box's own, a track drawn over the content that stays out of sight until the pane is scrolled or pointed at. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/ScrollArea.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/ScrollArea.tsx"
+					"path": "src/components/ui/scroll-area.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -386,16 +538,11 @@
 			"title": "Select",
 			"description": "One value out of many, in a list laid under the control that opened it: an Input's shell as a trigger with a caret that turns itself, a row shared with Menu whose chosen line is filled rather than checked, and scroll arrows at the ends of a long list. The popup opens under the trigger rather than over it. Behaviour from Base UI, appearance from tokens.",
 			"dependencies": ["@base-ui/react", "lucide-react", "tailwind-variants"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/control",
-				"linyana/lumo-ui/surface"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/control", "@lumo/surface"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Select.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Select.tsx"
+					"path": "src/components/ui/select.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -406,36 +553,36 @@
 			"description": "The app shell: a rail drawn from a nav array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
 			"dependencies": ["lucide-react", "tailwind-variants"],
 			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/button",
-				"linyana/lumo-ui/nav",
-				"linyana/lumo-ui/scroll-area"
+				"@lumo/utils",
+				"@lumo/button",
+				"@lumo/nav",
+				"@lumo/scroll-area"
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/blocks/Layout/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/Layout/index.tsx"
+					"path": "src/components/blocks/layout/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/blocks/Layout/types.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/Layout/types.ts"
+					"path": "src/components/blocks/layout/types.ts",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/types.ts"
 				},
 				{
-					"path": "src/components/lumo/blocks/Layout/Header/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/Layout/Header/index.tsx"
+					"path": "src/components/blocks/layout/header/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/header/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/blocks/Layout/Content/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/Layout/Content/index.tsx"
+					"path": "src/components/blocks/layout/content/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/content/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/blocks/Layout/Sidebar/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/Layout/Sidebar/index.tsx"
+					"path": "src/components/blocks/layout/sidebar/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/sidebar/index.tsx"
 				}
 			]
 		},
@@ -446,16 +593,15 @@
 			"description": "A block of source: a header naming the file or language, a copy button, optional line numbers, and shiki highlighting whose grammars load only when a block needs them. An unknown language falls back to plain text instead of failing.",
 			"dependencies": ["shiki", "lucide-react", "tailwind-variants"],
 			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/button",
-				"linyana/lumo-ui/shiki",
-				"linyana/lumo-ui/clipboard"
+				"@lumo/utils",
+				"@lumo/button",
+				"@lumo/shiki",
+				"@lumo/clipboard"
 			],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Code.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Code.tsx"
+					"path": "src/components/ui/code.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -465,12 +611,11 @@
 			"title": "CodeDiff",
 			"description": "Two revisions of one file, side by side or stacked, with both line numberings, a per-side change stripe and the additions and deletions counted in the header. Shares Code's header, copy button and highlighting.",
 			"dependencies": ["diff", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/code"],
+			"registryDependencies": ["@lumo/utils", "@lumo/code"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/CodeDiff.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/CodeDiff.tsx"
+					"path": "src/components/ui/code-diff.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -480,26 +625,22 @@
 			"title": "CodeTree",
 			"description": "A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active. The rows are Nav — hover, active fill, caret and focus come from there — so the tree only supplies the shape and the glyph each file is drawn with.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": [
-				"linyana/lumo-ui/nav",
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/collapsible"
-			],
+			"registryDependencies": ["@lumo/nav", "@lumo/utils", "@lumo/collapsible"],
 			"files": [
 				{
-					"path": "src/components/lumo/blocks/CodeTree/index.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/CodeTree/index.tsx"
+					"path": "src/components/blocks/code-tree/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/code-tree/index.tsx"
 				},
 				{
-					"path": "src/components/lumo/blocks/CodeTree/tree.ts",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/CodeTree/tree.ts"
+					"path": "src/components/blocks/code-tree/tree.ts",
+					"type": "registry:component",
+					"target": "@components/blocks/code-tree/tree.ts"
 				},
 				{
-					"path": "src/components/lumo/blocks/CodeTree/glyph.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/blocks/CodeTree/glyph.tsx"
+					"path": "src/components/blocks/code-tree/glyph.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/code-tree/glyph.tsx"
 				}
 			]
 		},
@@ -509,16 +650,11 @@
 			"title": "Toast",
 			"description": "Transient messages in a corner stack: behaviour from Base UI, appearance from tokens, and a Toaster that maps the queue to parts so a caller only ever queues a toast.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/spinner",
-				"linyana/lumo-ui/button"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/spinner", "@lumo/button"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Toast.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Toast.tsx"
+					"path": "src/components/ui/toast.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -528,16 +664,11 @@
 			"title": "Transition",
 			"description": "A box that keeps its size to what is inside it and glides to each new one — continuously, so a reflow, a late font or a swap does not move the page beneath it. The glide is a spring handed to the browser, and an interruption carries the speed it already had. Give it a `height` and it holds that instead, which is how a fold stays closed. Measured: no fade, no travel, no second copy of the text.",
 			"dependencies": ["motion"],
-			"registryDependencies": [
-				"linyana/lumo-ui/cn",
-				"linyana/lumo-ui/motion",
-				"linyana/lumo-ui/measure"
-			],
+			"registryDependencies": ["@lumo/utils", "@lumo/motion", "@lumo/measure"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Transition.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Transition.tsx"
+					"path": "src/components/ui/transition.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -547,12 +678,11 @@
 			"title": "Field",
 			"description": "One control, its name, and the line beneath it: label, description and error joined to whatever control is inside, by Base UI's own wiring. Pairs with Input, and every later control slots into it.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Field.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Field.tsx"
+					"path": "src/components/ui/field.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -562,12 +692,11 @@
 			"title": "Input",
 			"description": "A single line of text in the same 32 / 36 / 40 tiers a Button takes, so the two line up. Registers itself with a surrounding Field and reads the invalid border off it.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Input.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Input.tsx"
+					"path": "src/components/ui/input.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -577,12 +706,11 @@
 			"title": "Checkbox",
 			"description": "One of several, any number of them: a 16px box, the tick inside it, and a real hidden input so a form and a label both see a checkbox. Indeterminate draws a dash in place of the tick.",
 			"dependencies": ["@base-ui/react", "lucide-react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Checkbox.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Checkbox.tsx"
+					"path": "src/components/ui/checkbox.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -592,12 +720,11 @@
 			"title": "RadioGroup",
 			"description": "Exactly one of these, and never none: Base UI's group and its radio as one namespace, so the value, the arrow keys and the dot between them arrive together.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/RadioGroup.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/RadioGroup.tsx"
+					"path": "src/components/ui/radio-group.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -607,12 +734,11 @@
 			"title": "Switch",
 			"description": "A track and a knob, on or off, in the space of one line of text. Two spans, no glyph, and a flag Base UI writes on both of them.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Switch.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Switch.tsx"
+					"path": "src/components/ui/switch.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -622,12 +748,11 @@
 			"title": "Textarea",
 			"description": "Several lines of text in the same box as an Input. The element is the browser's, mounted through Field.Control, which is what gives it a name, a describedby and the invalid border inside a field.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Textarea.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Textarea.tsx"
+					"path": "src/components/ui/textarea.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -637,12 +762,11 @@
 			"title": "Avatar",
 			"description": "A face, or the initials standing in for one, and the row a set of them is stacked in. Base UI waits for the picture to decode and swaps it for the fallback, so neither child is conditional at the call site.",
 			"dependencies": ["@base-ui/react", "tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Avatar.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Avatar.tsx"
+					"path": "src/components/ui/avatar.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -652,12 +776,11 @@
 			"title": "Badge",
 			"description": "A word that labels the thing beside it. Three surface fills taken from Button, and four outcomes drawn as a tint of their own colour rather than as a solid block, because an outcome is a fact to be read.",
 			"dependencies": ["tailwind-variants"],
-			"registryDependencies": ["linyana/lumo-ui/cn", "linyana/lumo-ui/control"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Badge.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Badge.tsx"
+					"path": "src/components/ui/badge.tsx",
+					"type": "registry:ui"
 				}
 			]
 		},
@@ -667,12 +790,25 @@
 			"title": "Progress",
 			"description": "How far a task has come: a groove, the fill inside it, and the number that names it, all read from one value. A null value is a third state — the fill sweeps instead of filling, because a bar that sat at zero while it worked would be lying.",
 			"dependencies": ["@base-ui/react"],
-			"registryDependencies": ["linyana/lumo-ui/cn"],
+			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{
-					"path": "src/components/lumo/ui/Progress.tsx",
-					"type": "registry:file",
-					"target": "~/src/components/lumo/ui/Progress.tsx"
+					"path": "src/components/ui/progress.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "table",
+			"type": "registry:ui",
+			"title": "Table",
+			"description": "Records in columns: a frame that scrolls, the header that names them — sticky when the rows have somewhere to go — rows that answer the pointer with the tint a nav row takes, an empty row that keeps the columns, and an arrow that says which way a column runs without ever reordering anything.",
+			"dependencies": ["tailwind-variants", "lucide-react"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
+			"files": [
+				{
+					"path": "src/components/ui/table.tsx",
+					"type": "registry:ui"
 				}
 			]
 		}

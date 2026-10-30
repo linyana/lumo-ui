@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Detached from './demos/detached';
 
-const files = ['src/components/lumo/ui/Tooltip.tsx'];
+const files = ['src/components/ui/tooltip.tsx'];
 
 const providerProps: Record<string, PropNode> = {
 	delay: {
@@ -91,7 +91,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Tooltip } from '@/components/lumo/ui/Tooltip';";
+const usageImport = "import { Tooltip } from '@/components/ui/tooltip';";
 const usageExample = `<Tooltip.Provider delay={300}>
 	<Tooltip.Root>
 		<Tooltip.Trigger render={<Button variant="outline">hover me</Button>} />
@@ -123,12 +123,7 @@ export function TooltipPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="tooltip"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="tooltip" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

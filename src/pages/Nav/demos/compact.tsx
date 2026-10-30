@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CreditCard, Folder, Home, Settings } from 'lucide-react';
-import { Nav } from '@/components/lumo/ui/Nav';
+import { Nav } from '@/components/ui/nav';
 
 /** The rail: one glyph per row, and a row with children opens them in a popover instead. */
 export default function Compact() {

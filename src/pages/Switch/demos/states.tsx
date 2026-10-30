@@ -1,5 +1,5 @@
-import { Field } from '@/components/lumo/ui/Field';
-import { Switch } from '@/components/lumo/ui/Switch';
+import { Field } from '@/components/ui/field';
+import { Switch } from '@/components/ui/switch';
 
 export default function States() {
 	return (

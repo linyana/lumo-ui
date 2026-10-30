@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/lumo/ui/Checkbox';
-import { Field } from '@/components/lumo/ui/Field';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field } from '@/components/ui/field';
 
 /** `required` on the checkbox is a native constraint, so a field above it reports it and the box
  *  carries the same destructive border an invalid input does. */

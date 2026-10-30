@@ -13,6 +13,7 @@ import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
 import { FieldPage } from './Field';
 import { InputPage } from './Input';
+import { InstallPage } from './Install';
 import { LayoutPage } from './Layout';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
@@ -27,6 +28,7 @@ import { SkeletonPage } from './Skeleton';
 import { SpinnerPage } from './Spinner';
 import { StepsPage } from './Steps';
 import { SwitchPage } from './Switch';
+import { TablePage } from './Table';
 import { TabsPage } from './Tabs';
 import { TextareaPage } from './Textarea';
 import { ToastPage } from './Toast';
@@ -47,6 +49,7 @@ export type DocRoute = {
 /** One page per component, in the order the rail lists them: a section, then alphabetical. */
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
+	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },
@@ -88,6 +91,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'steps', label: 'Steps', section: 'Components', element: <StepsPage /> },
 	{ path: 'switch', label: 'Switch', section: 'Components', element: <SwitchPage /> },
+	{ path: 'table', label: 'Table', section: 'Components', element: <TablePage /> },
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
 	{ path: 'textarea', label: 'Textarea', section: 'Components', element: <TextareaPage /> },
 	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },

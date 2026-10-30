@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -14,7 +14,7 @@ import Basic from './demos/basic';
 import InField from './demos/field';
 import States from './demos/states';
 
-const files = ['src/components/lumo/ui/Textarea.tsx'];
+const files = ['src/components/ui/textarea.tsx'];
 
 const textareaProps: Record<string, PropNode> = {
 	size: {
@@ -75,7 +75,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Textarea } from '@/components/lumo/ui/Textarea';";
+const usageImport = "import { Textarea } from '@/components/ui/textarea';";
 const usageExample = `<Textarea
 	size="md"
 	rows={4}
@@ -101,12 +101,7 @@ export function TextareaPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="textarea"
-					packages={['@base-ui/react', 'tailwind-variants']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="textarea" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

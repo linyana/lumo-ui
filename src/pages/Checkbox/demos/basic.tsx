@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/lumo/ui/Checkbox';
-import { Field } from '@/components/lumo/ui/Field';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Field } from '@/components/ui/field';
 
 export default function Basic() {
 	return (

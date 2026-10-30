@@ -1,5 +1,5 @@
-import { Button } from '@/components/lumo/ui/Button';
-import { Code } from '@/components/lumo/ui/Code';
+import { Button } from '@/components/ui/button';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -15,7 +15,7 @@ import Basic from './demos/basic';
 import Inline from './demos/inline';
 import Sizes from './demos/sizes';
 
-const files = ['src/components/lumo/ui/Spinner.tsx'];
+const files = ['src/components/ui/spinner.tsx'];
 
 const spinnerProps: Record<string, PropNode> = {
 	dots: {
@@ -70,7 +70,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Spinner } from '@/components/lumo/ui/Spinner';";
+const usageImport = "import { Spinner } from '@/components/ui/spinner';";
 const usageExample = `<p className="flex items-center gap-2 text-sm">
 	<Spinner label={null} />
 	saving
@@ -92,12 +92,7 @@ export function SpinnerPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="spinner"
-					packages={[]}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="spinner" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

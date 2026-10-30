@@ -1,13 +1,16 @@
-import { Avatar } from '@/components/lumo/ui/Avatar';
+import { Avatar } from '@/components/ui/avatar';
 
-const portrait = 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=96&h=96&q=80';
+// A stock portrait, cut to a square on the face by the CDN on the way out — so the picture arrives
+// in the shape the circle wants and needs no crop of its own. A project brings its own.
+const picture =
+	'https://ix-marketing.imgix.net/img-smart-crop_before.png?fit=facearea&facepad=3&w=128&h=128&auto=format,compress&q=80';
 
 export default function Group() {
 	return (
 		<div className="flex flex-col items-center gap-4">
 			<Avatar.Group>
 				<Avatar.Root>
-					<Avatar.Image src={portrait} alt="" />
+					<Avatar.Image src={picture} alt="" />
 					<Avatar.Fallback>LT</Avatar.Fallback>
 				</Avatar.Root>
 				<Avatar.Root>

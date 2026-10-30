@@ -1,5 +1,5 @@
 import { KeyRound, Truck, Users } from 'lucide-react';
-import { Steps } from '@/components/lumo/ui/Steps';
+import { Steps } from '@/components/ui/steps';
 
 export default function Dots() {
 	return (

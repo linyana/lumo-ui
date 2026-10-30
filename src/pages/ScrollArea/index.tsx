@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Both from './demos/both';
 
-const files = ['src/components/lumo/ui/ScrollArea.tsx'];
+const files = ['src/components/ui/scroll-area.tsx'];
 
 const scrollbarProps: Record<string, PropNode> = {
 	orientation: {
@@ -84,7 +84,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { ScrollArea } from '@/components/lumo/ui/ScrollArea';";
+const usageImport = "import { ScrollArea } from '@/components/ui/scroll-area';";
 const usageExample = `<ScrollArea.Root className="h-56">
 	<ScrollArea.Viewport>
 		<ScrollArea.Content>{paragraphs}</ScrollArea.Content>
@@ -112,12 +112,7 @@ export function ScrollAreaPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="scroll-area"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="scroll-area" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

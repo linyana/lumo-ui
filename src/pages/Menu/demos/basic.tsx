@@ -1,4 +1,4 @@
-import { Menu } from '@/components/lumo/ui/Menu';
+import { Menu } from '@/components/ui/menu';
 
 const groups = [
 	['copy link', 'copy embed code'],

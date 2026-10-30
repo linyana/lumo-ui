@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -11,11 +11,11 @@ import {
 } from '@/pages/DocPage';
 
 const files = [
-	'src/components/lumo/blocks/Layout/index.tsx',
-	'src/components/lumo/blocks/Layout/types.ts',
-	'src/components/lumo/blocks/Layout/Header/index.tsx',
-	'src/components/lumo/blocks/Layout/Content/index.tsx',
-	'src/components/lumo/blocks/Layout/Sidebar/index.tsx',
+	'src/components/blocks/layout/index.tsx',
+	'src/components/blocks/layout/types.ts',
+	'src/components/blocks/layout/header/index.tsx',
+	'src/components/blocks/layout/content/index.tsx',
+	'src/components/blocks/layout/sidebar/index.tsx',
 ];
 
 const layoutProps: Record<string, PropNode> = {
@@ -143,7 +143,7 @@ const hookRows = [
 	['data-collapsed', 'present while narrow', 'on the shell, and read by the rail’s own parts.'],
 ];
 
-const usageImport = "import { Layout } from '@/components/lumo/blocks/Layout';";
+const usageImport = "import { Layout } from '@/components/blocks/layout';";
 const usageExample = `<Layout nav={nav} selectedKey={key} onSelect={setKey} logo={<Logo />} title="lumo">
 	<Layout.Header title="projects" description="4 of them" actions={<Button size="sm">new</Button>} />
 	<Layout.Content>{page}</Layout.Content>
@@ -164,7 +164,6 @@ export function LayoutPage() {
 			>
 				<DocInstall
 					name="layout"
-					packages={['tailwind-variants']}
 					files={files}
 					copyNote={
 						<>
@@ -174,10 +173,10 @@ export function LayoutPage() {
 						</>
 					}
 					reaches={[
-						'src/components/lumo/ui/Button.tsx',
-						'src/components/lumo/ui/Nav.tsx',
-						'src/components/lumo/ui/ScrollArea.tsx',
-						'src/lib/cn.ts',
+						'src/components/ui/button.tsx',
+						'src/components/ui/nav.tsx',
+						'src/components/ui/scroll-area.tsx',
+						'src/lib/utils.ts',
 					]}
 				/>
 			</DocSection>

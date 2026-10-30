@@ -1,4 +1,4 @@
-import { Code } from '@/components/lumo/ui/Code';
+import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -13,7 +13,7 @@ import {
 import Basic from './demos/basic';
 import Confirm from './demos/confirm';
 
-const files = ['src/components/lumo/ui/Dialog.tsx'];
+const files = ['src/components/ui/dialog.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	open: {
@@ -90,7 +90,7 @@ const hookRows = [
 	],
 ];
 
-const usageImport = "import { Dialog } from '@/components/lumo/ui/Dialog';";
+const usageImport = "import { Dialog } from '@/components/ui/dialog';";
 const usageExample = `<Dialog.Root>
 	<Dialog.Trigger render={<Button>open</Button>} />
 	<Dialog.Portal>
@@ -122,12 +122,7 @@ export function DialogPage() {
 					</>
 				}
 			>
-				<DocInstall
-					name="dialog"
-					packages={['@base-ui/react']}
-					files={files}
-					reaches={['src/lib/cn.ts']}
-				/>
+				<DocInstall name="dialog" files={files} reaches={['src/lib/utils.ts']} />
 			</DocSection>
 
 			<DocSection

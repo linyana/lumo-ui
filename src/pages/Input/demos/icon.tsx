@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react';
-import { Input } from '@/components/lumo/ui/Input';
+import { Input } from '@/components/ui/input';
 
 /**
  * An icon in a field is a composition, not a slot: the input keeps its own box, the glyph is

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Bell, CreditCard, FileText, Folder, Search, Settings } from 'lucide-react';
-import { Nav } from '@/components/lumo/ui/Nav';
+import { Nav } from '@/components/ui/nav';
 
 /** The nav only reports a selection; what it means is the page's business. */
 export default function Basic() {

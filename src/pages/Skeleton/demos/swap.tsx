@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/lumo/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const rows = ['alien-bean-pasta.md', 'wild-irish-burrito.md', 'horse-battery-staple.md'];
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Field } from '@/components/lumo/ui/Field';
-import { RadioGroup } from '@/components/lumo/ui/RadioGroup';
+import { Field } from '@/components/ui/field';
+import { RadioGroup } from '@/components/ui/radio-group';
 
 const densities = ['comfortable', 'compact'];
 

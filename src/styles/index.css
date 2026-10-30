@@ -1,10 +1,12 @@
 /*
  * Demo entry stylesheet. Not distributed — consuming projects import
- * `lumo-tokens.css` into their own global stylesheet instead.
+ * `lumo-tokens.css` (always) and, unless they keep their own colours, `lumo-palette.css`
+ * into their global stylesheet instead.
  */
 @import 'tailwindcss';
 /* The theme names Inter and Geist Mono in its stacks; these are what actually deliver the
    files to the demo. */
 @import '@fontsource-variable/inter';
 @import '@fontsource-variable/geist-mono';
+@import './lumo-palette.css';
 @import './lumo-tokens.css';

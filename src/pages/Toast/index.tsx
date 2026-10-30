@@ -1,5 +1,5 @@
-import { Code } from '@/components/lumo/ui/Code';
-import { Toast } from '@/components/lumo/ui/Toast';
+import { Code } from '@/components/ui/code';
+import { Toast } from '@/components/ui/toast';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -15,7 +15,7 @@ import Kinds from './demos/kinds';
 import Saving from './demos/promise';
 import Stack from './demos/stack';
 
-const files = ['src/components/lumo/ui/Toast.tsx'];
+const files = ['src/components/ui/toast.tsx'];
 
 const toastProps: Record<string, PropNode> = {
 	title: {
@@ -155,9 +155,8 @@ export function ToastPage() {
 				>
 					<DocInstall
 						name="toast"
-						packages={['@base-ui/react', 'lucide-react']}
 						files={files}
-						reaches={['src/components/lumo/ui/Spinner.tsx', 'src/lib/cn.ts']}
+						reaches={['src/components/ui/spinner.tsx', 'src/lib/utils.ts']}
 					/>
 				</DocSection>
 
