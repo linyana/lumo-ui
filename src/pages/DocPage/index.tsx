@@ -831,63 +831,29 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 
 	return (
 		<div data-slot="doc-preview" data-file={name} className="overflow-hidden rounded-lg border">
-			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
-				{children}
-			</div>
-			{/* The way in is the whole row, not a word at one end of it: a file name beside it made the
-			    name look like the thing to click. */}
-			<div data-slot="doc-preview-footer" className="border-t p-1">
+			<div data-slot="doc-preview-toolbar" className="flex justify-end border-b p-1">
 				<SourceDialog path={path} name={itemOf(path)}>
 					<ViewCode />
 				</SourceDialog>
+			</div>
+			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
+				{children}
 			</div>
 		</div>
 	);
 }
 
-/**
- * The label and the braces that open it: the glyph holds no room until the row is hovered or focused,
- * then rises into it out of the line below, and the centred pair slides right to make space. The
- * glyph goes through the `icon` slot rather than through `children`, because `children` is wrapped for
- * the loading spinner and the two would end up on two lines. The width is what moves the label, so
- * the icon and the word stay one block rather than two.
- *
- * It takes and forwards the button's props because `Dialog.Trigger` renders it: the click, the
- * `aria-haspopup` and the ref that anchors the popup are handed to whatever `render` names, and a
- * component that swallowed them would be a row that looks like a trigger and is not one.
- */
 function ViewCode({ className, ...props }: ComponentProps<typeof Button>) {
 	return (
 		<Button
-			size="sm"
+			size="icon"
 			variant="ghost"
+			aria-label="view code"
+			title="view code"
 			{...props}
-			className={cn(
-				'group/code w-full gap-0 text-muted-foreground hover:text-foreground',
-				className,
-			)}
-			icon={
-				<span
-					aria-hidden="true"
-					className={cn(
-						'flex h-[1em] w-0 shrink-0 items-center overflow-hidden',
-						'transition-[width] ease-(--ease-spring) duration-(--duration-state)',
-						'group-hover/code:w-5 group-focus-visible/code:w-5',
-					)}
-				>
-					<CodeGlyph
-						className={cn(
-							'translate-y-full opacity-0',
-							'transition-[translate,opacity] ease-(--ease-spring) duration-(--duration-state)',
-							'group-hover/code:translate-y-0 group-hover/code:opacity-100',
-							'group-focus-visible/code:translate-y-0 group-focus-visible/code:opacity-100',
-						)}
-					/>
-				</span>
-			}
-		>
-			view code
-		</Button>
+			className={cn('size-7 text-muted-foreground hover:text-foreground', className)}
+			icon={<CodeGlyph />}
+		/>
 	);
 }
 
