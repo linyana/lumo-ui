@@ -25,6 +25,7 @@ import { ScrollAreaPage } from './ScrollArea';
 import { SelectPage } from './Select';
 import { SeparatorPage } from './Separator';
 import { SkeletonPage } from './Skeleton';
+import { SliderPage } from './Slider';
 import { SpinnerPage } from './Spinner';
 import { StepsPage } from './Steps';
 import { SwitchPage } from './Switch';
@@ -32,6 +33,8 @@ import { TablePage } from './Table';
 import { TabsPage } from './Tabs';
 import { TextareaPage } from './Textarea';
 import { ToastPage } from './Toast';
+import { TogglePage } from './Toggle';
+import { ToggleGroupPage } from './ToggleGroup';
 import { TooltipPage } from './Tooltip';
 import { TransitionPage } from './Transition';
 
@@ -88,6 +91,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'select', label: 'Select', section: 'Components', element: <SelectPage /> },
 	{ path: 'separator', label: 'Separator', section: 'Components', element: <SeparatorPage /> },
 	{ path: 'skeleton', label: 'Skeleton', section: 'Components', element: <SkeletonPage /> },
+	{ path: 'slider', label: 'Slider', section: 'Components', element: <SliderPage /> },
 	{ path: 'spinner', label: 'Spinner', section: 'Components', element: <SpinnerPage /> },
 	{ path: 'steps', label: 'Steps', section: 'Components', element: <StepsPage /> },
 	{ path: 'switch', label: 'Switch', section: 'Components', element: <SwitchPage /> },
@@ -95,6 +99,13 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'tabs', label: 'Tabs', section: 'Components', element: <TabsPage /> },
 	{ path: 'textarea', label: 'Textarea', section: 'Components', element: <TextareaPage /> },
 	{ path: 'toast', label: 'Toast', section: 'Components', element: <ToastPage /> },
+	{ path: 'toggle', label: 'Toggle', section: 'Components', element: <TogglePage /> },
+	{
+		path: 'toggle-group',
+		label: 'ToggleGroup',
+		section: 'Components',
+		element: <ToggleGroupPage />,
+	},
 	{ path: 'tooltip', label: 'Tooltip', section: 'Components', element: <TooltipPage /> },
 	{
 		path: 'transition',
