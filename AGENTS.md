@@ -92,11 +92,12 @@ Use `tailwind-variants` and export the variants object. Mirror the variant onto 
 
 ## Wrapping Base UI
 
-Base UI is already namespaced — keep that shape, never flatten it into `DialogPopup`. Each
-part is one directory exporting one name; the parent `index.tsx` assembles them.
+Base UI is already namespaced — keep that shape, never flatten it into `DialogPopup`. A part is
+never its own module: a `ui/` component holds every part in its one file, a block holds each part
+in the directory its layer already gives it, and the namespace object is what ties them together.
 
 ```tsx
-// ui/Dialog.tsx — one file, every part a function in it
+// ui/dialog.tsx — one file, every part a function in it
 export function Popup({ className, ...props }: PopupProps) {
 	return (
 		<BaseDialog.Popup data-slot="dialog-popup" className={cn('...', className)} {...props} />
