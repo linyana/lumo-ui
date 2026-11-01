@@ -19,11 +19,7 @@ export default function Scroll() {
 				<p className="text-sm text-muted-foreground">
 					Scroll in either direction. Branch names keep their width; notes can wrap.
 				</p>
-				<Table.Root
-					variant="outlined"
-					className="max-h-72"
-					aria-label="deployment history"
-				>
+				<Table.Root variant="outlined" className="max-h-72" aria-label="deployment history">
 					<colgroup>
 						<col className="w-32" />
 						<col className="w-44" />

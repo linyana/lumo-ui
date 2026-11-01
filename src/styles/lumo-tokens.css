@@ -69,8 +69,16 @@
 	   supplies its surface; a frameless table can name its host through --table-surface. Row states
 	   stay transparent so the same washes work on either surface. Keep these mixes inline: a value
 	   resolved in :root would freeze the light theme before a dark scope can change its colours. */
-	--color-table-head: color-mix(in oklch, var(--foreground) 2%, var(--table-surface, var(--background)));
-	--color-table-head-hover: color-mix(in oklch, var(--foreground) 8%, var(--table-surface, var(--background)));
+	--color-table-head: color-mix(
+		in oklch,
+		var(--foreground) 2%,
+		var(--table-surface, var(--background))
+	);
+	--color-table-head-hover: color-mix(
+		in oklch,
+		var(--foreground) 8%,
+		var(--table-surface, var(--background))
+	);
 	--color-row-hover: color-mix(in oklch, var(--foreground) 5%, transparent);
 	--color-row-selected: color-mix(in oklch, var(--primary) 8%, transparent);
 	--color-row-selected-hover: color-mix(in oklch, var(--primary) 12%, transparent);

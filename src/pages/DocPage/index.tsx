@@ -994,12 +994,7 @@ function PropHint({ name, description }: { name: string; description: string }) 
 export function PropTable({ props }: PropTableProps) {
 	return (
 		<Tooltip.Provider delay={150}>
-			<Table.Root
-				size="sm"
-				variant="outlined"
-				hoverable={false}
-				aria-label="props"
-			>
+			<Table.Root size="sm" variant="outlined" hoverable={false} aria-label="props">
 				<Table.Header>
 					<Table.Row>
 						{['prop', 'type', 'default'].map((label) => (

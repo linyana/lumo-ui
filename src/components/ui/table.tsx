@@ -243,7 +243,8 @@ export function Head({
 			className={cn(
 				tableCellVariants({ align }),
 				'font-medium transition-colors duration-(--duration-state)',
-				!rowHeader && 'text-xs text-muted-foreground [thead>tr>&]:hover:bg-table-head-hover',
+				!rowHeader &&
+					'text-xs text-muted-foreground [thead>tr>&]:hover:bg-table-head-hover',
 				'data-[sort=ascending]:text-foreground data-[sort=descending]:text-foreground',
 				className,
 			)}

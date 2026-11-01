@@ -104,7 +104,11 @@ const partRows = [
 	],
 	['Table.Header', 'thead', 'An opaque column-title band. sticky supports one header row.'],
 	['Table.Body', 'tbody', 'Records, including native row headers and merged cells.'],
-	['Table.Footer', 'tfoot', 'A summary band, not a toolbar or an automatically calculated total.'],
+	[
+		'Table.Footer',
+		'tfoot',
+		'A summary band, not a toolbar or an automatically calculated total.',
+	],
 	['Table.Row', 'tr', 'Body hover, selected and disabled styling; no click or selection logic.'],
 	['Table.Head', 'th', 'Column titles by default; scope="row" identifies a record in the body.'],
 	[
@@ -151,7 +155,11 @@ const hookRows = [
 		'container attributes',
 		'The chosen surface, density and body-hover setting.',
 	],
-	['data-align · data-sort', 'cell attributes', 'Logical alignment and the displayed sort direction.'],
+	[
+		'data-align · data-sort',
+		'cell attributes',
+		'Logical alignment and the displayed sort direction.',
+	],
 	[
 		'data-selected · data-disabled',
 		'row attributes',
@@ -230,9 +238,8 @@ export function TablePage() {
 						Give the container a <Mono>max-height</Mono> to scroll vertically. A single
 						header row can stay at its top while the body moves underneath. Cells do not
 						wrap by default; use <Mono>whitespace-normal</Mono> for notes, and constrain
-						an inner element for truncation. The branch tooltip also opens from
-						keyboard focus. Multi-row sticky headers, offsets and fixed columns are not
-						included.
+						an inner element for truncation. The branch tooltip also opens from keyboard
+						focus. Multi-row sticky headers, offsets and fixed columns are not included.
 					</>
 				}
 			>
@@ -247,9 +254,9 @@ export function TablePage() {
 					<>
 						Use <Mono>scope="colgroup"</Mono> with <Mono>colSpan</Mono> for grouped
 						headings and <Mono>scope="row"</Mono> to name a record. Native{' '}
-						<Mono>rowSpan</Mono> merges cells; omit the covered cell in later rows.
-						The footer is a summary you calculate, and the caption describes the table.
-						This grouped header is deliberately not sticky.
+						<Mono>rowSpan</Mono> merges cells; omit the covered cell in later rows. The
+						footer is a summary you calculate, and the caption describes the table. This
+						grouped header is deliberately not sticky.
 					</>
 				}
 			>

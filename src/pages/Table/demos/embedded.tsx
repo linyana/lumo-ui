@@ -36,7 +36,9 @@ export default function Embedded() {
 						{invoices.map((invoice) => (
 							<Table.Row key={invoice.id}>
 								<Table.Head scope="row">{invoice.id}</Table.Head>
-								<Table.Cell className="text-muted-foreground">{invoice.date}</Table.Cell>
+								<Table.Cell className="text-muted-foreground">
+									{invoice.date}
+								</Table.Cell>
 								<Table.Cell align="end">{invoice.amount}</Table.Cell>
 							</Table.Row>
 						))}
