@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter, Navigate, redirectDocument } from 'react-router';
 import App from '@/App';
 import { docRoutes } from '@/pages';
 
@@ -9,6 +9,7 @@ export const router = createBrowserRouter([
 		children: [
 			{ index: true, element: <Navigate to={`/${docRoutes[0]!.path}`} replace /> },
 			...docRoutes.map(({ path, element }) => ({ path, element })),
+			{ path: 'llms', loader: () => redirectDocument('/llms.txt') },
 			{ path: '*', element: <Navigate to={`/${docRoutes[0]!.path}`} replace /> },
 		],
 	},

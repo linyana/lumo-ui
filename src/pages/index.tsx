@@ -18,7 +18,6 @@ import { FormPage } from './Form';
 import { InputPage } from './Input';
 import { InstallPage } from './Install';
 import { LayoutPage } from './Layout';
-import { LlmsPage } from './Llms';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
 import { OverviewPage } from './Overview';
@@ -58,7 +57,6 @@ export type DocRoute = {
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
 	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
-	{ path: 'llms', label: 'AI Guide', section: 'Getting Started', element: <LlmsPage /> },
 	{ path: 'accordion', label: 'Accordion', section: 'Components', element: <AccordionPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },

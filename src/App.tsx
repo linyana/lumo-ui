@@ -32,18 +32,27 @@ const row = (path: string, label: string): LayoutNavItem => ({
 	render: <NavLink to={to(path)} />,
 });
 
-const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => ({
-	type: 'group',
-	label: section,
-	children: docRoutes
+const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => {
+	const children = docRoutes
 		.filter((route) => route.section === section)
-		.map(({ path, label }) => row(path, label)),
-}));
+		.map(({ path, label }) => row(path, label));
+
+	if (section === 'Getting Started') {
+		children.push({
+			key: 'llms.txt',
+			label: 'llms.txt',
+			href: '/llms.txt',
+			render: <a href="/llms.txt" target="_blank" rel="noreferrer" />,
+		});
+	}
+
+	return { type: 'group', label: section, children };
+});
 
 /**
- * The shell, and the only place that knows the rail is a set of routes. Every row is a `NavLink`
- * handed to the nav through `render`, so the url selects the row — there is no second copy of
- * that state to keep in sync, and a reload or a shared link lands on the same page.
+ * The shell owns routing: page rows use `NavLink`, while raw documents use plain anchors.
+ * The url selects the page row — there is no second copy of that state to keep in sync,
+ * and a reload or a shared link lands on the same page.
  */
 export default function App() {
 	const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
