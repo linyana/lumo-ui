@@ -1,5 +1,13 @@
 import { SiGithub } from '@icons-pack/react-simple-icons';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+	type ComponentProps,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import {
 	Blocks,
 	BookOpen,
@@ -7,6 +15,7 @@ import {
 	FileText,
 	House,
 	Moon,
+	Search,
 	Sparkles,
 	Sun,
 	Terminal,
@@ -17,6 +26,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
+import { DocSearch, type SearchPage } from '@/pages/DocSearch';
 import { ThemeProvider } from '@/pages/theme';
 
 const to = (path: string) => `/${path}`;
@@ -81,6 +91,41 @@ const nav: LayoutNavEntry[] = docSections.flatMap((section): LayoutNavEntry[] =>
 	];
 });
 
+function SearchTrigger({
+	className,
+	children,
+	shortcut,
+	...props
+}: ComponentProps<'button'> & { shortcut: string }) {
+	return (
+		<button
+			{...props}
+			data-doc-search-trigger=""
+			className={cn(
+				className,
+				'border border-input bg-background/60 text-muted-foreground',
+				'hover:border-input-strong hover:text-foreground',
+			)}
+		>
+			{children}
+			<kbd
+				aria-hidden="true"
+				className={cn(
+					'ms-auto inline-flex h-5 shrink-0 items-center rounded-sm border bg-muted/60 px-1',
+					'font-sans text-xs leading-none text-muted-foreground',
+				)}
+			>
+				{shortcut}
+			</kbd>
+		</button>
+	);
+}
+
+const searchPages: SearchPage[] = [
+	{ path: '', label: 'Home', section: 'Getting Started' },
+	...docRoutes.map(({ path, label, section }) => ({ path, label, section })),
+];
+
 /**
  * The shell owns routing: page rows use `NavLink`, while raw documents use plain anchors.
  * The url selects the page row — there is no second copy of that state to keep in sync,
@@ -89,6 +134,81 @@ const nav: LayoutNavEntry[] = docSections.flatMap((section): LayoutNavEntry[] =>
 export default function App() {
 	const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
 	const { pathname } = useLocation();
+	const [searchOpen, setSearchOpen] = useState(false);
+	const [searchRoute, setSearchRoute] = useState(pathname);
+	const shell = useRef<HTMLDivElement>(null);
+	const searchOrigin = useRef<HTMLElement | null>(null);
+	const shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘ K' : 'Ctrl K';
+
+	if (searchRoute !== pathname) {
+		setSearchRoute(pathname);
+		setSearchOpen(false);
+	}
+
+	const openSearch = useCallback(() => {
+		searchOrigin.current =
+			document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		setSearchOpen(true);
+	}, []);
+
+	const returnSearchFocus = useCallback(() => {
+		const origin = searchOrigin.current;
+		if (
+			origin?.isConnected &&
+			origin !== document.body &&
+			origin.getClientRects().length > 0 &&
+			!origin.closest('[data-slot="layout-mobile-navigation"]')
+		) {
+			return origin;
+		}
+		const layout = shell.current;
+		if (!layout) return null;
+		const mobile = layout.querySelector<HTMLElement>('[data-slot="layout-navigation-trigger"]');
+		if (mobile && mobile.getClientRects().length > 0) return mobile;
+		return layout.querySelector<HTMLElement>('[data-doc-search-trigger]');
+	}, []);
+
+	const navigation = useMemo<LayoutNavEntry[]>(
+		() => [
+			{
+				key: 'search',
+				label: 'Search',
+				icon: <Search />,
+				render: (
+					<SearchTrigger
+						type="button"
+						shortcut={shortcut}
+						aria-haspopup="dialog"
+						aria-keyshortcuts="Control+k Meta+k"
+					/>
+				),
+				onClick: openSearch,
+			},
+			...nav,
+		],
+		[openSearch, shortcut],
+	);
+
+	useEffect(() => {
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (
+				event.defaultPrevented ||
+				event.isComposing ||
+				event.repeat ||
+				event.altKey ||
+				event.shiftKey ||
+				!(event.metaKey || event.ctrlKey) ||
+				event.key.toLowerCase() !== 'k'
+			) {
+				return;
+			}
+			if (document.querySelector('[role="dialog"], [role="alertdialog"]')) return;
+			event.preventDefault();
+			openSearch();
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [openSearch]);
 
 	useEffect(() => {
 		document.documentElement.classList.toggle('dark', dark);
@@ -109,8 +229,9 @@ export default function App() {
 		<ThemeProvider value={theme}>
 			<DocNeighborsProvider value={neighbors}>
 				<Layout
+					ref={shell}
 					variant="default"
-					nav={nav}
+					nav={navigation}
 					selectedKey={selectedKey}
 					resetScrollKey={pathname}
 					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
@@ -149,6 +270,12 @@ export default function App() {
 						<Outlet />
 					</Layout.Content>
 				</Layout>
+				<DocSearch
+					pages={searchPages}
+					open={searchOpen}
+					onOpenChange={setSearchOpen}
+					finalFocus={returnSearchFocus}
+				/>
 			</DocNeighborsProvider>
 		</ThemeProvider>
 	);

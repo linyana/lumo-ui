@@ -10,3 +10,7 @@
 @import '@fontsource-variable/geist-mono';
 @import './lumo-palette.css';
 @import './lumo-tokens.css';
+
+[data-slot='nav-group']:has([data-doc-search-trigger]) {
+	@apply -mb-1 pb-0;
+}
