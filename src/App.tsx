@@ -124,6 +124,12 @@ function SearchTrigger({
 const searchPages: SearchPage[] = [
 	{ path: '', label: 'Home', section: 'Getting Started' },
 	...docRoutes.map(({ path, label, section }) => ({ path, label, section })),
+	...agentDocs.map((file) => ({
+		path: file,
+		label: file,
+		section: 'Getting Started',
+		external: true,
+	})),
 ];
 
 /**

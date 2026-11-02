@@ -22,6 +22,7 @@ export type SearchPage = {
 	path: string;
 	label: string;
 	section: string;
+	external?: boolean;
 };
 
 type DocSearchProps = {
@@ -48,6 +49,11 @@ const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
 
 function PagePreview({ page, onOpen }: { page: SearchPage; onOpen: () => void }) {
 	const Demo = componentPreviews.get(page.path)?.Demo;
+	const link = page.external ? (
+		<a href={`/${page.path}`} target="_blank" rel="noreferrer" />
+	) : (
+		<Link to={`/${page.path}`} />
+	);
 
 	return (
 		<section
@@ -64,7 +70,7 @@ function PagePreview({ page, onOpen }: { page: SearchPage; onOpen: () => void })
 					variant="ghost"
 					size="icon"
 					nativeButton={false}
-					render={<Link to={`/${page.path}`} />}
+					render={link}
 					icon={<ArrowUpRight />}
 					aria-label={`Open ${page.label}`}
 					onClick={onOpen}
@@ -82,12 +88,14 @@ function PagePreview({ page, onOpen }: { page: SearchPage; onOpen: () => void })
 					<div className="flex min-h-full flex-col items-center justify-center gap-4 text-center">
 						<FileText aria-hidden="true" className="size-6 text-muted-foreground" />
 						<p className="text-sm text-muted-foreground">
-							Open this page to read the documentation.
+							{page.external
+								? 'Open this document in a new tab.'
+								: 'Open this page to read the documentation.'}
 						</p>
 						<Button
 							variant="secondary"
 							nativeButton={false}
-							render={<Link to={`/${page.path}`} />}
+							render={link}
 							onClick={onOpen}
 						>
 							Open {page.label}
@@ -192,8 +200,12 @@ function SearchContent({
 								value={page}
 								data-slot="doc-search-result"
 								onClick={() => {
+									if (page.external) {
+										window.open(`/${page.path}`, '_blank', 'noopener,noreferrer');
+									} else {
+										navigate(`/${page.path}`);
+									}
 									onClose();
-									navigate(`/${page.path}`);
 								}}
 								className={cn(row, 'cursor-pointer flex-col gap-1 py-3 pe-4')}
 							>
