@@ -57,9 +57,8 @@
 	--color-border: var(--border);
 	--color-input: var(--input);
 
-	/* Shadows: a surface has three of them, and they are drawn as several layers of the same black
-	   at a few percent, each roughly doubling in blur. One layer at a readable alpha leaves a
-	   visible edge just outside the border; stacked low-alpha layers read as one soft halo. */
+	/* Three elevation levels: the resting surface includes its own hairline edge; the lifted and
+	   overlay shadows spread further without changing the borders of the surfaces using them. */
 	--shadow-surface: var(--shadow-surface);
 	--shadow-lifted: var(--shadow-lifted);
 	--shadow-overlay: var(--shadow-overlay);
@@ -179,11 +178,11 @@
 	   lighter than the page it covers. */
 	--overlay: oklch(0 0 0 / 50%);
 
-	/* The resting card barely leaves the page: two short layers, so the edge is closed by the border
-	   more than by the shadow. The lifted one spreads to nearly the height of the card, which is
-	   what a pointer arriving says. Both are black rather than a token colour — a shadow is the page
-	   below the surface being darker, not a hue of its own. */
-	--shadow-surface: 0 1px 2px rgb(0 0 0 / 4%), 0 2px 4px rgb(0 0 0 / 2%);
+	/* The resting card has no border: one spread-only layer draws the hairline, and two short
+	   shadows lift it just off the page. The lifted shadow adds a wider halo on hover. */
+	--shadow-surface:
+		0 0 0 1px rgb(0 0 0 / 2.9%), 0 3px 6px -2px rgb(0 0 0 / 2%),
+		0 1px 1px rgb(0 0 0 / 4%);
 	--shadow-lifted:
 		0 17.5px 23.4px rgb(0 0 0 / 4%), 0 9.4px 12.5px rgb(0 0 0 / 3%),
 		0 5.25px 7px rgb(0 0 0 / 2%), 0 2.8px 3.7px -2px rgb(0 0 0 / 1%),
@@ -204,9 +203,10 @@
 	/* A step lighter rather than darker: on a dark page an edge is found by adding light. */
 	--input-strong: oklch(1 0 0 / 30%);
 	--overlay: oklch(0 0 0 / 65%);
-	/* Darker, not lighter: black over a dark page needs more of itself to be seen at all, which is
-	   the opposite of the border, where an edge is found by adding light. */
-	--shadow-surface: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 4px rgb(0 0 0 / 3%);
+	/* The hairline adds light on a dark page; the shadows beneath it still remove light. */
+	--shadow-surface:
+		0 0 0 1px rgb(255 255 255 / 10%), 0 3px 6px -2px rgb(0 0 0 / 3%),
+		0 1px 1px rgb(0 0 0 / 6%);
 	--shadow-lifted:
 		0 17.5px 23.4px rgb(0 0 0 / 6%), 0 9.4px 12.5px rgb(0 0 0 / 5%),
 		0 5.25px 7px rgb(0 0 0 / 3%), 0 2.8px 3.7px -2px rgb(0 0 0 / 2%),

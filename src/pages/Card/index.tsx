@@ -29,7 +29,7 @@ const rootProps: Record<string, PropNode> = {
 		type: 'boolean',
 		default: 'false',
 		description:
-			'Whether the surface answers the pointer. Hover is owned by the card, not by whatever inside it is clicked, so a tile whose bar is the link still lifts as a whole: the shadow spreads from a line hugging the card to a halo around it. The edge takes one small step, and only where the shadow is not enough — in the dark theme. The fill never moves, and neither does the cursor: a card is a div, the link is the consumer’s.',
+			'Whether the surface answers the pointer. Hover is owned by the card, not by whatever inside it is clicked, so a tile whose bar is the link still lifts as a whole: the shadow spreads from a line hugging the card to a halo around it. The fine shadow-drawn edge stays in place as the surface lifts. The fill never moves, and neither does the cursor: a card is a div, the link is the consumer’s.',
 	},
 	className: {
 		type: 'string',
@@ -163,9 +163,8 @@ export function CardPage() {
 						<Mono>hoverable</Mono> puts the hover on the surface instead of on whatever
 						inside it happens to be clickable, so a tile answers as one thing from a
 						pointer anywhere inside it. The shadow spreads from a line hugging the card
-						to a halo around it; the edge only steps to <Mono>input</Mono>, which is the
-						same colour as <Mono>border</Mono> in the light theme and one small step
-						above it in the dark one.
+						to a halo around it, while the fine shadow-drawn edge stays in place in both
+						themes.
 					</>
 				}
 			>
