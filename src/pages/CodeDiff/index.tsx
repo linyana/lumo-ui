@@ -13,6 +13,7 @@ import {
 import Added from './demos/added';
 import Basic from './demos/basic';
 import Surfaces from './demos/surfaces';
+import Scroll from './demos/scroll';
 import Unified from './demos/unified';
 
 const files = ['src/components/ui/code-diff.tsx'];
@@ -66,7 +67,13 @@ const diffProps: Record<string, PropNode> = {
 
 const hookRows = [
 	['data-slot="code-diff"', 'the block', 'shares Code’s surface classes and variant tokens.'],
-	['data-view', 'split | unified', 'on the block; the body’s grid columns follow it.'],
+	['data-view', 'split | unified', 'on the block; the inner grid’s columns follow it.'],
+	['data-slot="code-diff-body"', 'the scroll viewport', 'bounded by the block’s width.'],
+	[
+		'data-slot="code-diff-grid"',
+		'the content grid',
+		'grows with long lines inside the viewport.',
+	],
 	['data-slot="code-diff-additions"', '+n', 'counted from the diff, in --success.'],
 	['data-slot="code-diff-deletions"', '−n', 'the mirror, in --destructive.'],
 	[
@@ -128,6 +135,15 @@ export function CodeDiffPage() {
 					<Code code={usageImport} language="tsx" header={false} />
 					<Code code={usageExample} language="tsx" header={false} />
 				</div>
+			</DocSection>
+
+			<DocSection
+				title="long lines"
+				note="the body scrolls inside the frame in either view; the header stays in place."
+			>
+				<DocPreview path="src/pages/CodeDiff/demos/scroll.tsx">
+					<Scroll />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection

@@ -1,8 +1,10 @@
 import { Code } from '@/components/ui/code';
+import Responsive from './demos/responsive';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
 	DocPage,
+	DocPreview,
 	DocSection,
 	DocTable,
 	Mono,
@@ -16,13 +18,14 @@ const files = [
 	'src/components/blocks/layout/header/index.tsx',
 	'src/components/blocks/layout/content/index.tsx',
 	'src/components/blocks/layout/sidebar/index.tsx',
+	'src/components/blocks/layout/mobile/index.tsx',
 ];
 
 const layoutProps: Record<string, PropNode> = {
 	nav: {
 		type: 'LayoutNavEntry[]',
 		description:
-			'Rows, groups, separators and skeletons, in the order the rail draws them. Every row carries its own key, and its own href if it goes somewhere.',
+			'Rows, groups, separators and skeletons shared by the desktop rail and mobile drawer. Supplying nav enables the mobile bar below md. A disabled parent also disables its child destinations.',
 	},
 	selectedKey: {
 		type: 'string',
@@ -111,9 +114,9 @@ const partRows = [
 		'the surface a page scrolls in already scrolls; this is padding.',
 	],
 	[
-		'Layout.Sidebar',
-		'the rail',
-		'assembled from nav, which is why a shell needs no markup for it.',
+		'nav',
+		'the responsive navigation',
+		'assembled inside Layout: a desktop rail, or a mobile bar and drawer below md.',
 	],
 ];
 
@@ -135,6 +138,8 @@ const hookRows = [
 		'sticky top-0, bg-inherit, so it takes the surface’s colour rather than its own.',
 	],
 	['data-slot="layout-sidebar"', 'the rail', 'holds the brand row, the nav and the footer.'],
+	['data-slot="layout-mobile-bar"', 'the mobile bar', 'navigation trigger, brand and actions.'],
+	['data-slot="layout-mobile-navigation"', 'the drawer', 'expanded navigation and the footer.'],
 	[
 		'data-slot="layout-brand-actions"',
 		'the brand row’s trailing end',
@@ -156,9 +161,9 @@ export function LayoutPage() {
 				title="installation"
 				note={
 					<>
-						the one block here: five files, because the rail is a composition rather
-						than a primitive. it is also the only component in the library that is not a
-						wrapper around Base UI — a shell has no behaviour of its own to borrow.
+						the shell is a composition: the same navigation fills a desktop rail and a
+						mobile drawer. Base UI supplies the drawer’s focus, dismissal and scroll
+						lock.
 					</>
 				}
 			>
@@ -168,14 +173,15 @@ export function LayoutPage() {
 					copyNote={
 						<>
 							the rail is drawn by <Mono>Nav</Mono>, scrolls inside{' '}
-							<Mono>ScrollArea</Mono> and collapses from a <Mono>Button</Mono> — and
-							those reach for five more. the list below is the whole chain.
+							<Mono>ScrollArea</Mono> and opens in a <Mono>Drawer</Mono> on mobile —
+							their controls and dependencies come with them.
 						</>
 					}
 					reaches={[
 						'src/components/ui/button.tsx',
 						'src/components/ui/nav.tsx',
 						'src/components/ui/scroll-area.tsx',
+						'src/components/ui/drawer.tsx',
 						'src/lib/utils.ts',
 					]}
 				/>
@@ -194,6 +200,22 @@ export function LayoutPage() {
 					<Code code={usageImport} language="tsx" header={false} />
 					<Code code={usageExample} language="tsx" header={false} />
 				</div>
+			</DocSection>
+
+			<DocSection
+				title="mobile navigation"
+				note={
+					<>
+						below <Mono>md</Mono>, the rail becomes a navigation bar and a left drawer.
+						selecting a destination, changing the route key or returning to desktop
+						closes the drawer. its open state is independent of desktop collapse; the
+						brand actions stay in the mobile bar and the footer stays in the drawer.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Layout/demos/responsive.tsx">
+					<Responsive />
+				</DocPreview>
 			</DocSection>
 
 			<DocSection

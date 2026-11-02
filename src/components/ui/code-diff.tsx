@@ -246,44 +246,46 @@ export function CodeDiff({
 					</span>
 				</Header>
 			)}
-			<div
-				data-slot="code-diff-body"
-				className={cn(
-					'grid overflow-auto py-3',
-					view === 'split'
-						? 'w-fit min-w-full grid-cols-[max-content_auto_max-content_auto]'
-						: 'w-fit min-w-full grid-cols-[max-content_max-content_max-content_auto]',
-				)}
-			>
-				{view === 'split'
-					? rows.map((row, index) => (
-							<Fragment key={index}>
-								<Gutter line={row.left} side="old" />
-								<Content
-									line={row.left}
-									tokens={tokensAt(oldTokens, row.left?.old)}
-								/>
-								<Gutter line={row.right} side="new" />
-								<Content
-									line={row.right}
-									tokens={tokensAt(newTokens, row.right?.new)}
-								/>
-							</Fragment>
-						))
-					: lines.map((line, index) => (
-							<Fragment key={index}>
-								<Gutter line={line} side="old" />
-								<Gutter line={line} side="new" />
-								<Content
-									line={line}
-									sign
-									tokens={tokensAt(
-										line.kind === 'delete' ? oldTokens : newTokens,
-										line.kind === 'delete' ? line.old : line.new,
-									)}
-								/>
-							</Fragment>
-						))}
+			<div data-slot="code-diff-body" className="min-w-0 overflow-auto py-3">
+				<div
+					data-slot="code-diff-grid"
+					className={cn(
+						'grid w-fit min-w-full',
+						view === 'split'
+							? 'grid-cols-[max-content_auto_max-content_auto]'
+							: 'grid-cols-[max-content_max-content_max-content_auto]',
+					)}
+				>
+					{view === 'split'
+						? rows.map((row, index) => (
+								<Fragment key={index}>
+									<Gutter line={row.left} side="old" />
+									<Content
+										line={row.left}
+										tokens={tokensAt(oldTokens, row.left?.old)}
+									/>
+									<Gutter line={row.right} side="new" />
+									<Content
+										line={row.right}
+										tokens={tokensAt(newTokens, row.right?.new)}
+									/>
+								</Fragment>
+							))
+						: lines.map((line, index) => (
+								<Fragment key={index}>
+									<Gutter line={line} side="old" />
+									<Gutter line={line} side="new" />
+									<Content
+										line={line}
+										sign
+										tokens={tokensAt(
+											line.kind === 'delete' ? oldTokens : newTokens,
+											line.kind === 'delete' ? line.old : line.new,
+										)}
+									/>
+								</Fragment>
+							))}
+				</div>
 			</div>
 		</div>
 	);

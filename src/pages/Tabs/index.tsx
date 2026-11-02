@@ -11,6 +11,7 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
+import Canceled from './demos/canceled';
 import Request from './demos/request';
 import Sizes from './demos/sizes';
 import Swapped from './demos/swapped';
@@ -48,7 +49,8 @@ const rootProps: Record<string, PropNode> = {
 	},
 	onValueChange: {
 		type: '(value, details) => void',
-		description: 'Fires on a click and on the arrow keys.',
+		description:
+			'Fires on user changes and automatic selection. Call details.cancel() to reject a user change; automatic initial, disabled and missing fallbacks cannot be canceled.',
 	},
 };
 
@@ -227,6 +229,15 @@ export function TabsPage() {
 			>
 				<DocPreview path="src/pages/Tabs/demos/tracked.tsx">
 					<Tracked />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="canceling a change"
+				note="call details.cancel() in onValueChange to keep both the active tab and its panel in place."
+			>
+				<DocPreview path="src/pages/Tabs/demos/canceled.tsx">
+					<Canceled />
 				</DocPreview>
 			</DocSection>
 

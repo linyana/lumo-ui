@@ -707,7 +707,11 @@ function FilterPanel({
 						<Checkbox.Indicator />
 					</Checkbox.Root>
 				) : (
-					<RadioGroup.Item aria-label={name} value={option.value}>
+					<RadioGroup.Item
+						aria-label={name}
+						value={option.value}
+						disabled={option.disabled}
+					>
 						<RadioGroup.Indicator />
 					</RadioGroup.Item>
 				)}

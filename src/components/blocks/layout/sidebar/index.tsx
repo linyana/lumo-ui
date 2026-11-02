@@ -38,7 +38,24 @@ const subRow = 'h-8 [&_svg]:size-4';
  * nothing of its own — the shell's fill shows through, which is what makes it read as grey next
  * to the card rather than as a second surface.
  */
-export function Sidebar({
+export function Sidebar({ className, collapsed = false, ...props }: SidebarProps) {
+	return (
+		<aside
+			data-slot="layout-sidebar"
+			data-collapsed={collapsed ? '' : undefined}
+			className={cn(
+				'hidden h-full shrink-0 flex-col overflow-hidden md:flex',
+				'transition-[width] duration-(--duration-state) ease-linear',
+				collapsed ? 'w-12' : 'w-64',
+				className,
+			)}
+		>
+			<SidebarContent collapsed={collapsed} {...props} />
+		</aside>
+	);
+}
+
+export function SidebarContent({
 	nav = noNav,
 	selectedKey,
 	onSelect,
@@ -68,6 +85,7 @@ export function Sidebar({
 							item.children.some((child) => isActive(child.key, child.isActive))
 						}
 						defaultOpen={item.defaultOpen}
+						disabled={item.disabled}
 					>
 						{item.children.map((child) => (
 							<Nav.SubItem key={child.key}>
@@ -75,7 +93,7 @@ export function Sidebar({
 									icon={child.icon}
 									className={subRow}
 									isActive={isActive(child.key, child.isActive)}
-									disabled={child.disabled}
+									disabled={item.disabled || child.disabled}
 									href={child.href}
 									render={child.render}
 									onClick={() => {
@@ -170,15 +188,9 @@ export function Sidebar({
 	}
 
 	return (
-		<aside
-			data-slot="layout-sidebar"
-			data-collapsed={collapsed ? '' : undefined}
-			className={cn(
-				'hidden h-full shrink-0 flex-col overflow-hidden md:flex',
-				'transition-[width] duration-(--duration-state) ease-linear',
-				collapsed ? 'w-12' : 'w-64',
-				className,
-			)}
+		<div
+			data-slot="layout-sidebar-content"
+			className={cn('flex h-full min-h-0 w-full flex-col', className)}
 		>
 			{(logo !== undefined ||
 				title !== undefined ||
@@ -237,6 +249,6 @@ export function Sidebar({
 					<Nav.Root compact={collapsed}>{footer}</Nav.Root>
 				</div>
 			)}
-		</aside>
+		</div>
 	);
 }

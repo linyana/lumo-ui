@@ -105,6 +105,12 @@ const subProps: Record<string, PropNode> = {
 		default: 'false',
 		description: 'Whether the inline list starts expanded. Ignored once the nav is compact.',
 	},
+	disabled: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'Disables the trigger in both expanded and compact navigation, and makes the nested destinations inert.',
+	},
 	popoverSide: {
 		type: '"top" | "right" | "bottom" | "left"',
 		default: '"right"',

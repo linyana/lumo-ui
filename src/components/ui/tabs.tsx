@@ -410,12 +410,13 @@ export function Root({
 	children,
 	...props
 }: RootProps) {
-	const [selected, setSelected] = useState<TabsValue>(defaultValue);
+	const [selected, setSelected] = useState<TabsValue>(() => defaultValue);
 
 	const handleValueChange = useCallback(
 		(next: TabsValue, details: Parameters<NonNullable<RootProps['onValueChange']>>[1]) => {
-			setSelected(next);
 			onValueChange?.(next, details);
+			if (details.reason === 'none' && details.isCanceled) return;
+			setSelected(() => next);
 		},
 		[onValueChange],
 	);

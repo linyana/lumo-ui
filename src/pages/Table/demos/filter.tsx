@@ -12,7 +12,10 @@ const runs = [
 const options = (values: string[]) => values.map((value) => ({ value, label: value }));
 
 const statuses = options(['passed', 'failed', 'skipped']);
-const owners = options(['ada', 'barbara', 'edsger', 'grace']);
+const owners = options(['ada', 'barbara', 'edsger', 'grace']).map((option) => ({
+	...option,
+	disabled: option.value === 'edsger',
+}));
 
 export default function Filter() {
 	const [status, setStatus] = useState<string[] | null>(['failed']);

@@ -571,13 +571,14 @@
 			"name": "layout",
 			"type": "registry:block",
 			"title": "Layout",
-			"description": "The app shell: a rail drawn from a nav array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
+			"description": "The responsive app shell: one nav array draws a desktop rail and a mobile navigation drawer, beside the surface a page scrolls in. Choosing a destination closes the drawer without changing the desktop collapse state. Variant `default` insets the desktop surface as a card; `plain` lets the page run edge to edge. Each page keeps its own header.",
 			"dependencies": ["lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"@lumo/utils",
 				"@lumo/button",
 				"@lumo/nav",
-				"@lumo/scroll-area"
+				"@lumo/scroll-area",
+				"@lumo/drawer"
 			],
 			"files": [
 				{
@@ -604,6 +605,11 @@
 					"path": "src/components/blocks/layout/sidebar/index.tsx",
 					"type": "registry:component",
 					"target": "@components/blocks/layout/sidebar/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/layout/mobile/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/mobile/index.tsx"
 				}
 			]
 		},
