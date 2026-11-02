@@ -59,9 +59,9 @@ function PagePreview({ page, onOpen }: { page: SearchPage; onOpen: () => void })
 		<section
 			data-slot="doc-search-preview"
 			aria-label={`${page.label} preview`}
-			className="flex min-h-0 min-w-0 flex-1 flex-col border-s bg-muted/30"
+			className="flex min-h-0 min-w-0 flex-1 flex-col border-s bg-background"
 		>
-			<div className="flex shrink-0 items-center justify-between gap-3 border-b px-5 py-4">
+			<div className="flex shrink-0 items-center justify-between gap-3 px-5 py-4">
 				<div className="min-w-0">
 					<p className="truncate text-sm font-medium">{page.label}</p>
 					<p className="text-xs text-muted-foreground">{Demo ? 'Preview' : page.section}</p>
