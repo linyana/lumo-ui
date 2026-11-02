@@ -89,6 +89,7 @@
 					"font-sans": "'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 					"font-mono": "'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace",
 					"color-background": "var(--background)",
+					"color-layout-content": "var(--layout-content)",
 					"color-foreground": "var(--foreground)",
 					"color-card": "var(--card)",
 					"color-card-foreground": "var(--card-foreground)",
@@ -128,6 +129,7 @@
 					"animate-progress-sweep": "lumo-progress-sweep 1.2s ease-in-out infinite"
 				},
 				"light": {
+					"layout-content": "rgb(249 249 250)",
 					"state-layer-hover-opacity": "0.06",
 					"state-layer-pressed-opacity": "0.14",
 					"state-layer-fill-hover-opacity": "0.16",
@@ -152,6 +154,7 @@
 					"shadow-overlay": "0 40px 80px rgb(0 0 0 / 6%), 0 20px 40px rgb(0 0 0 / 5%), 0 10px 20px rgb(0 0 0 / 4%), 0 5px 10px rgb(0 0 0 / 3%), 0 2px 4px rgb(0 0 0 / 2%)"
 				},
 				"dark": {
+					"layout-content": "var(--background)",
 					"success": "oklch(0.723 0.219 149.579)",
 					"warning": "oklch(0.769 0.188 70.08)",
 					"info": "oklch(0.623 0.214 259.815)",

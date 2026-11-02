@@ -62,8 +62,6 @@ type ComponentPreview = {
 	Demo: ComponentType;
 	/** Defaults to `regular`. */
 	room?: Room;
-	/** The surface the demo needs under it, when the tile's own grey would swallow it. */
-	canvas?: 'page';
 };
 
 type PreviewGroup = {
@@ -114,29 +112,14 @@ const groups: PreviewGroup[] = [
 			// An answer is a paragraph, not a line: the compact tile would hold this demo and leave nothing
 			// around it.
 			{ path: 'accordion', label: 'Accordion', Demo: AccordionBasic },
-			{
-				path: 'avatar',
-				label: 'Avatar',
-				Demo: AvatarBasic,
-				room: 'compact',
-				// The initials sit in `bg-muted`, the same fill the tile is drawn in: without a page of
-				// its own under them, the two empty surfaces would be one.
-				canvas: 'page',
-			},
+			{ path: 'avatar', label: 'Avatar', Demo: AvatarBasic, room: 'compact' },
 			{ path: 'badge', label: 'Badge', Demo: BadgeBasic, room: 'compact' },
 			{ path: 'card', label: 'Card', Demo: CardBasic, room: 'tall' },
 			{ path: 'code', label: 'Code', Demo: CodeBasic, room: 'tall' },
 			{ path: 'code-diff', label: 'CodeDiff', Demo: CodeDiffBasic, room: 'tall' },
 			{ path: 'code-tree', label: 'CodeTree', Demo: CodeTreeBasic, room: 'tall' },
 			{ path: 'collapsible', label: 'Collapsible', Demo: CollapsibleBasic, room: 'compact' },
-			{
-				path: 'table',
-				label: 'Table',
-				Demo: TableBasic,
-				// A table is drawn as a bordered box in a page, and the tile's own grey would show
-				// through the transparent frame as a box drawn on nothing.
-				canvas: 'page',
-			},
+			{ path: 'table', label: 'Table', Demo: TableBasic },
 			{ path: 'popover', label: 'Popover', Demo: PopoverBasic, room: 'compact' },
 			{ path: 'tooltip', label: 'Tooltip', Demo: TooltipBasic, room: 'compact' },
 		],
@@ -147,13 +130,7 @@ const groups: PreviewGroup[] = [
 			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic, room: 'compact' },
 			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic, room: 'compact' },
 			{ path: 'progress', label: 'Progress', Demo: ProgressBasic, room: 'compact' },
-			{
-				path: 'skeleton',
-				label: 'Skeleton',
-				Demo: SkeletonBasic,
-				room: 'compact',
-				canvas: 'page',
-			},
+			{ path: 'skeleton', label: 'Skeleton', Demo: SkeletonBasic, room: 'compact' },
 			{ path: 'spinner', label: 'Spinner', Demo: SpinnerBasic, room: 'compact' },
 			{ path: 'toast', label: 'Toast', Demo: ToastKinds },
 		],
@@ -193,15 +170,12 @@ type PreviewProps = ComponentPreview;
  * pill appears when the tile is pointed at or reached by keyboard — the demo under it keeps its own
  * interactions, so the tile itself is not a link.
  */
-function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) {
+function Preview({ path, label, Demo, room = 'regular' }: PreviewProps) {
 	return (
 		<Card.Root
 			data-slot="overview-card"
-			// Drawn as a fill rather than as a frame: the demo inside is a surface of its own, and a
-			// card that outlined it would put two edges around one thing. It does not answer the
-			// pointer with a lift of its own either — the pill arriving is the whole reply.
 			className={cn(
-				'group/tile relative mb-4 break-inside-avoid gap-0 overflow-hidden rounded-2xl border-0 bg-muted py-0 shadow-none',
+				'group/tile relative mb-4 break-inside-avoid gap-0 overflow-hidden py-0',
 				rooms[room],
 			)}
 		>
@@ -210,19 +184,16 @@ function Preview({ path, label, Demo, room = 'regular', canvas }: PreviewProps) 
 				the demo never had, which is exactly what Transition measures. A demo taller than the
 				tile scrolls instead, so no part of it is out of reach.
 			*/}
-			<div
+			<Card.Content
 				className={cn(
-					'min-h-0 flex-1 overflow-auto p-5',
+					'min-h-0 overflow-auto p-5',
 					'scrollbar-none [&::-webkit-scrollbar]:hidden',
-					// A demo drawn in the muted fill would vanish into the tile, so the one that is gets a
-					// panel of the page inset into it instead — a screenshot inside a frame.
-					canvas === 'page' && 'm-3 rounded-xl bg-background',
 				)}
 			>
 				<div className="flex min-h-full flex-wrap items-center justify-center gap-2">
 					<Demo />
 				</div>
-			</div>
+			</Card.Content>
 			<div
 				data-slot="overview-card-open"
 				className="absolute inset-e-3 top-3 flex items-center"
@@ -303,7 +274,7 @@ export function OverviewPage() {
 						data-slot="overview-filter"
 						className={cn(
 							'sticky top-0 z-10 -mx-8 flex flex-wrap items-center gap-3',
-							'bg-background/90 px-8 py-3 backdrop-blur',
+							'bg-layout-content px-8 py-3',
 						)}
 					>
 						{/* A phone cannot hold seven groups, so the track scrolls rather than overflows. */}

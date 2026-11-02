@@ -25,6 +25,7 @@ import {
 } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Code, Copy } from '@/components/ui/code';
 import { CodeTree } from '@/components/blocks/code-tree';
 import { foldersOf } from '@/components/blocks/code-tree/tree';
@@ -832,16 +833,23 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 	const name = path.slice(path.lastIndexOf('/') + 1);
 
 	return (
-		<div data-slot="doc-preview" data-file={name} className="overflow-hidden rounded-lg border">
-			<div data-slot="doc-preview-toolbar" className="flex justify-end border-b p-1">
+		<Card.Root
+			data-slot="doc-preview"
+			data-file={name}
+			className="gap-0 overflow-hidden py-0"
+		>
+			<Card.Header
+				data-slot="doc-preview-toolbar"
+				className="flex justify-end border-b p-1"
+			>
 				<SourceDialog path={path} name={itemOf(path)}>
 					<ViewCode />
 				</SourceDialog>
-			</div>
-			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
+			</Card.Header>
+			<Card.Content className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
 				{children}
-			</div>
-		</div>
+			</Card.Content>
+		</Card.Root>
 	);
 }
 
