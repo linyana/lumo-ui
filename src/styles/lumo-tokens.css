@@ -82,6 +82,9 @@
 	--color-row-hover: color-mix(in oklch, var(--foreground) 5%, transparent);
 	--color-row-selected: color-mix(in oklch, var(--primary) 8%, transparent);
 	--color-row-selected-hover: color-mix(in oklch, var(--primary) 12%, transparent);
+	/* The column a sort is applied to. Transparent like the row states, and a step lighter than the
+	   hover, so a hovered row still reads as hovered inside a sorted column. */
+	--color-column-sorted: color-mix(in oklch, var(--foreground) 3%, transparent);
 
 	/* --radius is the only knob; the whole scale derives from it. */
 	--radius-sm: calc(var(--radius) * 0.6);

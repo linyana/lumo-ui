@@ -11,6 +11,7 @@ import {
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
 import Embedded from './demos/embedded';
+import Filter from './demos/filter';
 import Scroll from './demos/scroll';
 import Selection from './demos/selection';
 import Sort from './demos/sort';
@@ -28,10 +29,33 @@ const rootProps: Record<string, PropNode> = {
 			'Transparent records, a card-coloured frame, or a muted surface. Outlined and filled have rounded corners; neither adds a vertical cell grid.',
 	},
 	size: {
-		type: '"sm" | "md"',
+		type: '"sm" | "md" | "lg"',
 		default: '"md"',
 		description:
-			'Cell spacing, not text size. Both densities use text-sm; override the font size with className independently.',
+			'Cell spacing, not text size. Every density uses text-sm; override the font size with className independently.',
+	},
+	sortDirections: {
+		type: 'TableSort[]',
+		default: "['ascending', 'descending']",
+		description:
+			'The cycle a press on a sortable column walks. The press after the last direction always clears the column, so a two-way cycle is ascending, descending, unsorted.',
+	},
+	locale: {
+		type: 'TableLocale',
+		description:
+			'Wording of the controls the table draws itself: the sort hints, and the filter panel’s search, reset, apply and empty texts. Omitted fields stay English.',
+	},
+	loading: {
+		type: 'boolean',
+		default: 'false',
+		description:
+			'Covers the records with a spinner while keeping them and their column names in place, and marks the table aria-busy. Rows are not unmounted, so the scroll position survives.',
+	},
+	layout: {
+		type: '"auto" | "fixed"',
+		default: '"auto"',
+		description:
+			'Fixed gives every column the width it was declared, which is what ellipsis needs; an automatic layout sizes columns from the content it is asked to cut off.',
 	},
 	hoverable: {
 		type: 'boolean',
@@ -78,9 +102,42 @@ const headProps: Record<string, PropNode> = {
 			'The displayed order and aria-sort value. Omit it for a column that cannot be sorted; none means sortable but currently unsorted.',
 	},
 	onSort: {
-		type: '() => void',
+		type: '(next: TableSort | undefined) => void',
 		description:
-			'Makes the title a button. The caller owns the ordering and sort cycle; this primitive does not reorder records.',
+			'Makes the title a button and hands over the state the press leads to, including undefined for “stop sorting”. The caller owns the ordering; this primitive does not reorder records.',
+	},
+	sortDirections: {
+		type: 'TableSort[]',
+		description:
+			'This column’s own cycle, overriding the table’s. One direction makes the first press sort and the second one clear.',
+	},
+	filter: {
+		type: 'TableFilterProps',
+		description:
+			'An icon beside the title and the panel behind it: options, applied value, onChange, multiple (false draws radios), searchable, a popup className, or render to replace the panel. The panel edits a draft and writes it on Apply.',
+	},
+	ellipsis: {
+		type: 'boolean | { showTitle?: boolean }',
+		description:
+			'Cut the title off at the column’s width and keep the whole of it in the native title. showTitle: false drops the tooltip.',
+	},
+};
+
+const cellProps: Record<string, PropNode> = {
+	align: {
+		type: '"start" | "center" | "end"',
+		default: '"start"',
+		description: 'The logical edge the cell is set from; Table.Head takes the same prop.',
+	},
+	ellipsis: {
+		type: 'boolean | { showTitle?: boolean }',
+		description:
+			'One line, cut off at the column’s width, with the whole value in the native title. Cap the width with --cell-max-w (default 15rem), or declare it with layout="fixed".',
+	},
+	sort: {
+		type: '"ascending" | "descending" | "none"',
+		description:
+			'The direction its column is displayed in, as Table.Head was told. A sorted column shades its cells, so a sort reads as one band from the header down; none shades nothing.',
 	},
 };
 
@@ -110,11 +167,15 @@ const partRows = [
 		'A summary band, not a toolbar or an automatically calculated total.',
 	],
 	['Table.Row', 'tr', 'Body hover, selected and disabled styling; no click or selection logic.'],
-	['Table.Head', 'th', 'Column titles by default; scope="row" identifies a record in the body.'],
+	[
+		'Table.Head',
+		'th',
+		'Column titles by default; scope="row" identifies a record in the body. sort + onSort make it a sort control, filter adds a panel behind an icon.',
+	],
 	[
 		'Table.Cell',
 		'td',
-		'Logical alignment, tabular figures and nowrap by default. Native span props are passed through.',
+		'Logical alignment, tabular figures and nowrap by default; ellipsis cuts the value to one line. Native span props are passed through.',
 	],
 	['Table.Empty', 'tr + td', 'A centred message spanning columns, so the header stays visible.'],
 	[
@@ -128,7 +189,7 @@ const hookRows = [
 	[
 		'data-slot="table-container"',
 		'scrolling frame',
-		'className belongs here; the native table carries data-slot="table".',
+		'className belongs here; the native table carries data-slot="table", and the frame sits in a data-slot="table-root" box so the loading layer can cover it without scrolling.',
 	],
 	[
 		'--table-surface',
@@ -156,9 +217,19 @@ const hookRows = [
 		'The chosen surface, density and body-hover setting.',
 	],
 	[
-		'data-align · data-sort',
+		'data-align · data-sort · data-filtered · data-ellipsis',
 		'cell attributes',
-		'Logical alignment and the displayed sort direction.',
+		'Logical alignment, the displayed sort direction (on a header and on the cells of its column), an applied filter on the column, and a value cut to one line.',
+	],
+	[
+		'bg-table-head-hover · bg-column-sorted',
+		'sorted column',
+		'The band a sort paints. The header cell takes the opaque step, so a sticky one still hides the records under it; the body cells take a translucent wash, so a hovered or chosen row still reads inside the column.',
+	],
+	[
+		'--cell-max-w',
+		'ellipsis width',
+		'How far a column with ellipsis may run before it is cut. Defaults to 15rem.',
 	],
 	[
 		'data-selected · data-disabled',
@@ -197,7 +268,7 @@ export function TablePage() {
 
 			<DocSection
 				title="installation"
-				note="One file with native table semantics. Base UI is not needed for the table itself; controls inside it keep their own behaviour."
+				note="One file with native table semantics. Sorting and filtering are drawn here from the library's own popover, checkbox, radio group, input and button, which the install brings with it; the records and their order stay the caller's."
 			>
 				<DocInstall
 					name="table"
@@ -283,10 +354,48 @@ export function TablePage() {
 
 			<DocSection
 				title="sorting"
-				note="The header displays direction, announces aria-sort and calls onSort. The caller owns the sort state and record order, whether calculated locally or fetched from a server."
+				note={
+					<>
+						A press anywhere on a sortable column sorts it, and the arrow beside the
+						title is the same 24px icon button as the funnel next to it — tinted under
+						the pointer, and tinted again for as long as the column is sorted. The cell
+						is the pointer’s target, not the keyboard’s: the arrow button carries the
+						same press, named, with a <Mono>title</Mono> that says what the next one
+						will do. The cell announces <Mono>aria-sort</Mono>, and <Mono>onSort</Mono>{' '}
+						is handed the state the press leads to. A sorted column shades itself as one
+						band, the header cell stronger than the body, so the sort starts at the
+						column’s name and survives a sticky header — which is why the same{' '}
+						<Mono>sort</Mono> belongs on that column’s <Mono>Table.Cell</Mono>s too. The
+						default cycle ends in <Mono>undefined</Mono>, so the third press returns the
+						records to the order they arrived in; <Mono>sortDirections</Mono> shortens
+						the cycle per table or per column. The caller still owns the sort state and
+						record order, whether calculated locally or fetched.
+					</>
+				}
 			>
 				<DocPreview path="src/pages/Table/demos/sort.tsx">
 					<Sort />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="filtering"
+				note={
+					<>
+						A <Mono>filter</Mono> on a column draws a funnel beside the title and opens
+						a panel of checkboxes — or radios, with <Mono>multiple={'{false}'}</Mono>.
+						The panel edits a draft: nothing is filtered until Apply, Reset only empties
+						the draft, and closing the popup discards it, so a reader can look and walk
+						away. <Mono>searchable</Mono> adds a search box, and an icon keeps a tint
+						while its column is sorted or filtered, so an applied filter is still
+						visible after the popup has closed. Pass a <Mono>render</Mono> function for
+						a panel of your own. Filtering the records is still the caller’s:{' '}
+						<Mono>onChange</Mono> hands over the chosen values, or <Mono>null</Mono>.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/filter.tsx">
+					<Filter />
 				</DocPreview>
 			</DocSection>
 
@@ -301,7 +410,7 @@ export function TablePage() {
 
 			<DocSection
 				title="nothing, and not yet"
-				note="An empty table keeps its header and centres a message across every column. Loading uses Skeleton cells and aria-busy on the table; there is no loading prop or automatic placeholder layout."
+				note="An empty table keeps its header and centres a message across every column. loading covers the records with a spinner and marks the table aria-busy without unmounting them, so the height and the scroll position survive; Skeleton cells are the alternative when placeholder rows say more than a spinner."
 			>
 				<DocPreview path="src/pages/Table/demos/states.tsx">
 					<States />
@@ -310,7 +419,7 @@ export function TablePage() {
 
 			<DocSection
 				title="api reference"
-				note="A presentation primitive, not a data engine: filtering, pagination, fetching, editing and selection state belong to the caller. All parts accept their native element props."
+				note="A presentation primitive, not a data engine: ordering the records, applying a filter, pagination, fetching, editing and selection state belong to the caller. All parts accept their native element props."
 			>
 				<div className="space-y-6">
 					<div className="space-y-2">
@@ -330,6 +439,12 @@ export function TablePage() {
 							<Mono>Table.Head</Mono>
 						</p>
 						<PropTable props={headProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.Cell</Mono>
+						</p>
+						<PropTable props={cellProps} />
 					</div>
 					<div className="space-y-2">
 						<p className="text-sm text-muted-foreground">

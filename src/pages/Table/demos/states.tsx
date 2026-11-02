@@ -1,6 +1,11 @@
 import { Inbox } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Table } from '@/components/ui/table';
+
+const runs = [
+	{ id: 'run-1041', job: 'unit', duration: '12s' },
+	{ id: 'run-1042', job: 'e2e', duration: '94s' },
+	{ id: 'run-1043', job: 'docs', duration: '31s' },
+];
 
 export default function States() {
 	return (
@@ -24,7 +29,7 @@ export default function States() {
 				<Table.Root
 					variant="outlined"
 					hoverable={false}
-					aria-busy
+					loading
 					aria-label="runs, arriving"
 				>
 					<Table.Header>
@@ -34,16 +39,10 @@ export default function States() {
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{[0, 1, 2].map((row) => (
-							<Table.Row key={row}>
-								<Table.Cell>
-									<Skeleton className="h-4 w-24" />
-								</Table.Cell>
-								<Table.Cell align="end">
-									<div className="flex justify-end">
-										<Skeleton className="h-4 w-12" />
-									</div>
-								</Table.Cell>
+						{runs.map((run) => (
+							<Table.Row key={run.id}>
+								<Table.Cell>{run.job}</Table.Cell>
+								<Table.Cell align="end">{run.duration}</Table.Cell>
 							</Table.Row>
 						))}
 					</Table.Body>

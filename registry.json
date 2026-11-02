@@ -119,6 +119,7 @@
 					"color-row-hover": "color-mix(in oklch, var(--foreground) 5%, transparent)",
 					"color-row-selected": "color-mix(in oklch, var(--primary) 8%, transparent)",
 					"color-row-selected-hover": "color-mix(in oklch, var(--primary) 12%, transparent)",
+					"color-column-sorted": "color-mix(in oklch, var(--foreground) 3%, transparent)",
 					"radius-sm": "calc(var(--radius) * 0.6)",
 					"radius-md": "calc(var(--radius) * 0.8)",
 					"radius-lg": "var(--radius)",
@@ -830,9 +831,18 @@
 			"name": "table",
 			"type": "registry:ui",
 			"title": "Table",
-			"description": "Display structured records with native table semantics, borderless, outlined or filled surfaces, two spacing densities, row headers, selection styling, a single-row sticky header and a centred empty state. Compose sorting controls, merged cells, summaries and captions without handing data ownership to the component.",
+			"description": "Display structured records with native table semantics, borderless, outlined or filled surfaces, three spacing densities, row headers, selection styling, a single-row sticky header, a loading layer, one-line cells and a centred empty state. A sortable column walks a cycle that ends in unsorted and says what the next press will do; a filterable one opens a panel that edits a draft before it applies. Compose merges, summaries, pagination and selection without handing data ownership to the component.",
 			"dependencies": ["tailwind-variants", "lucide-react"],
-			"registryDependencies": ["@lumo/utils", "@lumo/control"],
+			"registryDependencies": [
+				"@lumo/utils",
+				"@lumo/control",
+				"@lumo/button",
+				"@lumo/checkbox",
+				"@lumo/input",
+				"@lumo/popover",
+				"@lumo/radio-group",
+				"@lumo/spinner"
+			],
 			"files": [
 				{
 					"path": "src/components/ui/table.tsx",

@@ -1,6 +1,20 @@
-import { ChevronDown, ChevronsUpDown, ChevronUp } from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ListFilter } from 'lucide-react';
+import {
+	createContext,
+	use,
+	useMemo,
+	useState,
+	type ComponentProps,
+	type MouseEvent,
+	type ReactNode,
+} from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Popover } from '@/components/ui/popover';
+import { RadioGroup } from '@/components/ui/radio-group';
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import { iconSlot } from '@/lib/control';
 
@@ -10,6 +24,86 @@ import { iconSlot } from '@/lib/control';
  * an invitation.
  */
 export type TableSort = 'ascending' | 'descending' | 'none';
+
+/**
+ * The cycle a sortable column walks, and the same list in `Head.sortDirections`. It ends where
+ * `aria-sort` has no word for it: the press after the last direction stops sorting, because a
+ * reader who has tried both ways wants the order they were given, not the first one again.
+ */
+const defaultSortDirections: TableSort[] = ['ascending', 'descending'];
+
+/** One line of a filter panel. `text` is what the search box reads when the label is not a string. */
+export type TableFilterOption = {
+	value: string;
+	label: ReactNode;
+	text?: string;
+	disabled?: boolean;
+};
+
+/** What a custom panel is handed: the draft it is editing, and the four things it can do with it. */
+export type TableFilterRenderProps = {
+	value: string[];
+	setValue: (next: string[]) => void;
+	/** Write the draft back through `onChange` and close the panel. */
+	apply: () => void;
+	/** Drop the draft. Nothing is written until `apply`. */
+	reset: () => void;
+	close: () => void;
+};
+
+export type TableFilterProps = {
+	options: TableFilterOption[];
+	/** The applied answer. An empty list and `null` both mean the column is not filtered. */
+	value?: string[] | null;
+	/** Called on apply with the draft, or `null` when the draft is empty. */
+	onChange?: (next: string[] | null) => void;
+	/** `false` offers one value at a time, drawn as radios. */
+	multiple?: boolean;
+	/** Puts a search box over the options. */
+	searchable?: boolean;
+	/** Merged onto the popup, for a wider panel or a taller one. */
+	className?: string;
+	/** Replaces the panel itself. The draft and the actions are handed over. */
+	render?: (props: TableFilterRenderProps) => ReactNode;
+};
+
+/** The words the table says on its own. Anything left out falls back to English. */
+export type TableLocale = {
+	sortAscending?: string;
+	sortDescending?: string;
+	cancelSort?: string;
+	filter?: string;
+	filterSearch?: string;
+	filterReset?: string;
+	filterApply?: string;
+	filterEmpty?: string;
+	loading?: string;
+};
+
+const defaultLocale: Required<TableLocale> = {
+	sortAscending: 'Sort ascending',
+	sortDescending: 'Sort descending',
+	cancelSort: 'Clear sorting',
+	filter: 'Filter',
+	filterSearch: 'Search options',
+	filterReset: 'Reset',
+	filterApply: 'Apply',
+	filterEmpty: 'No options',
+	loading: 'Loading',
+};
+
+/**
+ * Two settings a part cannot be told individually: the cycle a press walks and the words the table
+ * speaks. Both are table-wide by nature — a column with its own cycle would make two headers count
+ * differently — so they come from the root and a column may still override the cycle.
+ */
+const TableContext = createContext<{
+	sortDirections: TableSort[];
+	locale: Required<TableLocale>;
+}>({ sortDirections: defaultSortDirections, locale: defaultLocale });
+
+const textOf = (node: ReactNode) =>
+	typeof node === 'string' || typeof node === 'number' ? String(node) : undefined;
 
 /**
  * Frameless by default so records can sit inside a Card or panel. Standalone tables can choose
@@ -32,6 +126,7 @@ export const tableVariants = tv({
 		size: {
 			sm: '[--cell-px:--spacing(3)] [--cell-py:--spacing(2)]',
 			md: '[--cell-px:--spacing(4)] [--cell-py:--spacing(3)]',
+			lg: '[--cell-px:--spacing(5)] [--cell-py:--spacing(4)]',
 		},
 		variant: {
 			borderless: '',
@@ -61,6 +156,20 @@ export type RootProps = Omit<ComponentProps<'table'>, 'className'> &
 		className?: string;
 		/** Highlight body rows under the pointer without changing selection or sorting. */
 		hoverable?: boolean;
+		/**
+		 * The directions a press on a sortable column walks before it stops sorting. The step after
+		 * the last one always clears the column, so a cycle that cannot be left is not offered.
+		 */
+		sortDirections?: TableSort[];
+		/** The words behind the controls the table draws itself: sort hints, the filter panel. */
+		locale?: TableLocale;
+		/** Cover the records with a spinner while keeping them, and their column names, in place. */
+		loading?: boolean;
+		/**
+		 * `fixed` gives every column the width it was declared, which is what `ellipsis` needs: an
+		 * automatic layout decides widths from the content it is asked to cut off.
+		 */
+		layout?: 'auto' | 'fixed';
 	};
 
 /**
@@ -72,26 +181,66 @@ export function Root({
 	size = 'md',
 	variant = 'borderless',
 	hoverable = true,
+	loading = false,
+	layout = 'auto',
+	sortDirections = defaultSortDirections,
+	locale,
 	className,
 	children,
 	...props
 }: RootProps) {
+	const value = useMemo(
+		() => ({ sortDirections, locale: { ...defaultLocale, ...locale } }),
+		[sortDirections, locale],
+	);
+
 	return (
-		<div
-			data-slot="table-container"
-			data-size={size}
-			data-variant={variant}
-			data-hoverable={hoverable}
-			className={cn(tableVariants({ size, variant }), className)}
-		>
-			<table
-				data-slot="table"
-				className="w-full border-separate border-spacing-0 caption-bottom"
-				{...props}
+		<TableContext value={value}>
+			<div
+				data-slot="table-root"
+				data-size={size}
+				data-variant={variant}
+				data-loading={loading ? '' : undefined}
+				aria-busy={loading || undefined}
+				className="relative min-w-0 w-full"
 			>
-				{children}
-			</table>
-		</div>
+				<div
+					data-slot="table-container"
+					data-size={size}
+					data-variant={variant}
+					data-hoverable={hoverable}
+					className={cn(
+						tableVariants({ size, variant }),
+						layout === 'fixed' && '[&>table]:table-fixed',
+						className,
+					)}
+				>
+					<table
+						data-slot="table"
+						className="w-full border-separate border-spacing-0 caption-bottom"
+						{...props}
+					>
+						{children}
+					</table>
+				</div>
+				{loading && (
+					<div
+						data-slot="table-loading"
+						role="status"
+						className={cn(
+							'absolute inset-0 z-20 grid place-items-center',
+							'bg-background/70 text-muted-foreground',
+							variant !== 'borderless' && 'rounded-lg',
+						)}
+					>
+						<span className="inline-flex items-center gap-2 text-sm">
+							<Spinner label={null} />
+							{value.locale.loading}
+						</span>
+					</div>
+				)}
+			</div>
+		</TableContext>
 	);
 }
 
@@ -195,6 +344,194 @@ export const tableCellVariants = tv({
 	},
 });
 
+/** One line, cut off at the column's width. `--cell-max-w` is how far a column may run. */
+const ellipsisCell = 'max-w-[var(--cell-max-w,15rem)] overflow-hidden text-ellipsis';
+
+/**
+ * A control in a column title: one 24px square holding one glyph, tinted while the pointer is on it
+ * and tinted again, kept, while its column is sorted or filtered. The sort arrow and the filter icon
+ * are the same control, so a reader learns one shape and reads both.
+ *
+ * The tint is painted on the square; the pointer is taken from a wider invisible box, so a header can
+ * hold two of these a gap apart without their targets merging.
+ */
+const headControl = cn(
+	'relative inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-sm',
+	'text-muted-foreground transition-colors duration-(--duration-state)',
+	'hover:bg-row-hover hover:text-foreground',
+	'data-active:bg-row-hover',
+	'before:absolute before:-inset-1.5',
+);
+
+const filterOptionClass = cn(
+	'flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm select-none',
+	'has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50',
+	'hover:bg-row-hover',
+);
+
+/**
+ * The panel behind a header's filter icon. It edits a draft, because a list of checkboxes that took
+ * effect on every press would refetch the table for each one — the reader picks, then says so.
+ */
+function FilterPanel({
+	filter,
+	locale,
+	label,
+	onClose,
+}: {
+	filter: TableFilterProps;
+	locale: Required<TableLocale>;
+	label?: string;
+	onClose: () => void;
+}) {
+	const { options, multiple = true, searchable = false, render } = filter;
+	const [draft, setDraft] = useState<string[]>(filter.value ?? []);
+	const [query, setQuery] = useState('');
+
+	const needle = query.trim().toLowerCase();
+	const visible =
+		needle.length === 0
+			? options
+			: options.filter((option) =>
+					(option.text ?? textOf(option.label) ?? option.value)
+						.toLowerCase()
+						.includes(needle),
+				);
+
+	const toggle = (value: string, on: boolean) =>
+		setDraft((was) =>
+			on
+				? [...was.filter((one) => one !== value), value]
+				: was.filter((one) => one !== value),
+		);
+	const apply = () => {
+		filter.onChange?.(draft.length === 0 ? null : draft);
+		onClose();
+	};
+	const reset = () => setDraft([]);
+
+	if (render !== undefined) {
+		return <>{render({ value: draft, setValue: setDraft, apply, reset, close: onClose })}</>;
+	}
+
+	const nameOf = (option: TableFilterOption) =>
+		option.text ?? textOf(option.label) ?? option.value;
+
+	const optionRow = (option: TableFilterOption) => {
+		const name = nameOf(option);
+		return (
+			<label
+				key={option.value}
+				className={filterOptionClass}
+				data-disabled={option.disabled ? '' : undefined}
+			>
+				{multiple ? (
+					<Checkbox.Root
+						aria-label={name}
+						checked={draft.includes(option.value)}
+						disabled={option.disabled}
+						onCheckedChange={(next) => toggle(option.value, next === true)}
+					>
+						<Checkbox.Indicator />
+					</Checkbox.Root>
+				) : (
+					<RadioGroup.Item aria-label={name} value={option.value}>
+						<RadioGroup.Indicator />
+					</RadioGroup.Item>
+				)}
+				<span className="min-w-0 truncate">{option.label}</span>
+			</label>
+		);
+	};
+
+	return (
+		<div data-slot="table-filter-panel" className="flex max-h-80 flex-col">
+			{searchable && (
+				<div className="border-b p-2">
+					<Input
+						size="sm"
+						value={query}
+						aria-label={
+							label === undefined
+								? locale.filterSearch
+								: `${locale.filterSearch} ${label}`
+						}
+						placeholder={locale.filterSearch}
+						onChange={(event) => setQuery(event.target.value)}
+					/>
+				</div>
+			)}
+			<div className="min-h-0 flex-1 overflow-auto p-1">
+				{visible.length === 0 ? (
+					<p className="px-2 py-6 text-center text-sm text-muted-foreground">
+						{locale.filterEmpty}
+					</p>
+				) : multiple ? (
+					visible.map(optionRow)
+				) : (
+					<RadioGroup.Root
+						className="gap-0"
+						value={draft[0] ?? null}
+						onValueChange={(next) => setDraft(next == null ? [] : [String(next)])}
+					>
+						{visible.map(optionRow)}
+					</RadioGroup.Root>
+				)}
+			</div>
+			<div className="flex items-center justify-end gap-2 border-t p-2">
+				<Button variant="ghost" size="sm" disabled={draft.length === 0} onClick={reset}>
+					{locale.filterReset}
+				</Button>
+				<Button size="sm" onClick={apply}>
+					{locale.filterApply}
+				</Button>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * The filter icon in a column's title, and the popup it opens. It is tinted while the column is
+ * filtered, which is the only sign of an applied filter once the panel is closed.
+ */
+function FilterControl({
+	filter,
+	locale,
+	label,
+}: {
+	filter: TableFilterProps;
+	locale: Required<TableLocale>;
+	label?: string;
+}) {
+	const [open, setOpen] = useState(false);
+	const active = (filter.value?.length ?? 0) > 0;
+
+	return (
+		<Popover.Root open={open} onOpenChange={setOpen}>
+			<Popover.Trigger
+				data-slot="table-filter"
+				data-active={active ? '' : undefined}
+				aria-label={label === undefined ? locale.filter : `${locale.filter} ${label}`}
+				className={cn(headControl, 'data-active:text-primary', iconSlot)}
+			>
+				<ListFilter />
+			</Popover.Trigger>
+			<Popover.Portal>
+				<Popover.Positioner sideOffset={6} align="end">
+					<Popover.Popup className={cn('w-60 p-0', filter.className)}>
+						<FilterPanel
+							filter={filter}
+							locale={locale}
+							label={label}
+							onClose={() => setOpen(false)}
+						/>
+					</Popover.Popup>
+				</Popover.Positioner>
+			</Popover.Portal>
+		</Popover.Root>
+	);
+}
+
 export type HeadProps = Omit<ComponentProps<'th'>, 'align'> &
 	VariantProps<typeof tableCellVariants> & {
 		/** Which way this column is sorted by. Left out, it is a column that cannot be sorted. */
@@ -203,20 +540,32 @@ export type HeadProps = Omit<ComponentProps<'th'>, 'align'> &
 		 * What to do about the arrow being pressed. Given, the name becomes a button and the cell
 		 * says with `aria-sort` what the arrow is showing.
 		 *
-		 * Sorting the rows is the caller's: order is a fact about the data, and a table that sorted
-		 * what it was handed would be quietly disagreeing with whoever fetched it.
+		 * The next state is handed over rather than asked for: the cycle ends in "stop sorting", and
+		 * a column that only reported "pressed" would leave every caller to write that step again.
+		 * Ordering the rows is still the caller's — a table that sorted what it was handed would be
+		 * quietly disagreeing with whoever fetched it.
 		 */
-		onSort?: () => void;
+		onSort?: (next: TableSort | undefined) => void;
+		/** This column's own cycle. The step after the last direction clears the column. */
+		sortDirections?: TableSort[];
+		/** A filter panel behind an icon beside the title. */
+		filter?: TableFilterProps;
+		/** Cut the title off at the column's width, and keep the whole of it in `title`. */
+		ellipsis?: boolean | { showTitle?: boolean };
 	};
 
-/** The direction the arrow points. Unsorted is a pair of arrows, quiet, so the column still says it can move. */
+/** The direction the arrow points. Unsorted is the two-headed one, quiet, so the column still says it can move. */
 function SortArrow({ sort }: { sort: TableSort }) {
-	if (sort === 'ascending') return <ChevronUp />;
-	if (sort === 'descending') return <ChevronDown />;
+	if (sort === 'ascending') return <ArrowUp />;
+	if (sort === 'descending') return <ArrowDown />;
 
-	return (
-		<ChevronsUpDown className="opacity-40 transition-opacity group-hover/sort:opacity-100" />
-	);
+	return <ArrowUpDown className="opacity-40 transition-opacity group-hover/sort:opacity-100" />;
+}
+
+/** The state a press leads to, including the `undefined` that means "and now not at all". */
+function nextSort(directions: TableSort[], current: TableSort): TableSort | undefined {
+	const index = directions.indexOf(current);
+	return directions[index + 1];
 }
 
 /**
@@ -228,62 +577,141 @@ export function Head({
 	scope = 'col',
 	sort,
 	onSort,
+	sortDirections,
+	filter,
+	ellipsis = false,
+	title,
+	onClick,
 	className,
 	children,
 	...props
 }: HeadProps) {
+	const table = use(TableContext);
 	const rowHeader = scope === 'row' || scope === 'rowgroup';
+	const current = sort ?? 'none';
+	const next = nextSort(sortDirections ?? table.sortDirections, current);
+	const hint =
+		next === 'ascending'
+			? table.locale.sortAscending
+			: next === 'descending'
+				? table.locale.sortDescending
+				: table.locale.cancelSort;
+	const label = textOf(children);
+	const showTitle = typeof ellipsis === 'object' ? ellipsis.showTitle !== false : true;
+	const filtered = (filter?.value?.length ?? 0) > 0;
+	const sorted = sort === 'ascending' || sort === 'descending';
+
+	const sortable = onSort !== undefined;
+	// The cell is the pointer's target, as it is in antd and in lobe: a title is easier to hit than
+	// a 24px arrow. It is not the keyboard's — the arrow button is, and it carries the same press
+	// with a name. A press that lands on a control of its own, or that a caller has already handled,
+	// is left alone, so nothing here fires twice.
+	const pressCell = (event: MouseEvent<HTMLTableCellElement>) => {
+		onClick?.(event);
+		if (!sortable || event.defaultPrevented) return;
+		if ((event.target as Element).closest('button, a, input, select, textarea')) return;
+		onSort(next);
+	};
+
+	const sortButton =
+		onSort === undefined ? null : (
+			<button
+				type="button"
+				data-slot="table-sort"
+				data-active={sorted ? '' : undefined}
+				aria-label={label === undefined ? hint : `${hint} ${label}`}
+				title={hint}
+				onClick={() => onSort(next)}
+				className={cn(headControl, 'group/sort data-active:text-foreground', iconSlot)}
+			>
+				<SortArrow sort={current} />
+			</button>
+		);
+
 	return (
 		<th
 			scope={scope}
 			data-slot="table-head"
 			data-align={align}
 			data-sort={sort}
+			data-filtered={filtered ? '' : undefined}
 			aria-sort={sort ?? (onSort === undefined ? undefined : 'none')}
+			title={title ?? (ellipsis && showTitle ? label : undefined)}
+			onClick={sortable || onClick !== undefined ? pressCell : undefined}
 			className={cn(
 				tableCellVariants({ align }),
+				ellipsis && ellipsisCell,
 				'font-medium transition-colors duration-(--duration-state)',
 				!rowHeader &&
 					'text-xs text-muted-foreground [thead>tr>&]:hover:bg-table-head-hover',
 				'data-[sort=ascending]:text-foreground data-[sort=descending]:text-foreground',
+				// The band runs down the column, so it starts here, opaque: a sticky header may not show
+				// the records that pass under it.
+				'data-[sort=ascending]:bg-table-head-hover data-[sort=descending]:bg-table-head-hover',
+				sortable && 'cursor-pointer select-none',
 				className,
 			)}
 			{...props}
 		>
-			{onSort === undefined ? (
+			{onSort === undefined && filter === undefined ? (
 				children
 			) : (
-				<button
-					type="button"
-					data-slot="table-sort"
-					onClick={onSort}
-					className={cn(
-						'group/sort relative inline-flex items-center gap-1 rounded-sm',
-						'after:absolute after:-inset-x-2 after:-inset-y-1.5',
-						'hover:text-foreground',
-						iconSlot,
-					)}
+				<span
+					data-slot="table-head-controls"
+					className="inline-flex max-w-full min-w-0 items-center gap-1.5"
 				>
-					{children}
-					<SortArrow sort={sort ?? 'none'} />
-				</button>
+					<span className="min-w-0 truncate">{children}</span>
+					{sortButton}
+					{filter !== undefined && (
+						<FilterControl filter={filter} locale={table.locale} label={label} />
+					)}
+				</span>
 			)}
 		</th>
 	);
 }
 
 export type CellProps = Omit<ComponentProps<'td'>, 'align'> &
-	VariantProps<typeof tableCellVariants>;
+	VariantProps<typeof tableCellVariants> & {
+		/** Cut the cell off at the column's width, and keep the whole of it in `title`. */
+		ellipsis?: boolean | { showTitle?: boolean };
+		/**
+		 * The direction its column is displayed in, as `Table.Head` was told. A sorted column shades its
+		 * cells, so it reads as one band from the header down; `none` shades nothing.
+		 */
+		sort?: TableSort;
+	};
 
 /** One field of one record. */
-export function Cell({ align = 'start', className, ...props }: CellProps) {
+export function Cell({
+	align = 'start',
+	ellipsis = false,
+	sort,
+	title,
+	className,
+	children,
+	...props
+}: CellProps) {
+	const showTitle = typeof ellipsis === 'object' ? ellipsis.showTitle !== false : true;
+
 	return (
 		<td
 			data-slot="table-cell"
 			data-align={align}
-			className={cn(tableCellVariants({ align }), className)}
+			data-sort={sort}
+			data-ellipsis={ellipsis ? '' : undefined}
+			title={title ?? (ellipsis && showTitle ? textOf(children) : undefined)}
+			className={cn(
+				tableCellVariants({ align }),
+				ellipsis && ellipsisCell,
+				// The band the header starts, carried down the column.
+				'data-[sort=ascending]:bg-column-sorted data-[sort=descending]:bg-column-sorted',
+				className,
+			)}
 			{...props}
-		/>
+		>
+			{children}
+		</td>
 	);
 }
 

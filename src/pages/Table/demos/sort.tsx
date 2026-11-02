@@ -11,41 +11,40 @@ const members = [
 ];
 
 export default function Sort() {
-	const [by, setBy] = useState<Column>('commits');
-	const [order, setOrder] = useState<TableSort>('descending');
+	// One column at a time. `null` is the unsorted table, which the third press asks for.
+	const [sorted, setSorted] = useState<{ by: Column; order: TableSort } | null>({
+		by: 'commits',
+		order: 'descending',
+	});
 
-	// Pressing the column already sorted turns it around; pressing another starts it from the
-	// beginning, which is the order a reader expects to see a new column in.
-	function sort(column: Column) {
-		if (column === by) {
-			setOrder(order === 'ascending' ? 'descending' : 'ascending');
-			return;
-		}
-
-		setBy(column);
-		setOrder('ascending');
+	// The header hands over the state the press leads to: a direction, or `undefined` to stop.
+	function sort(by: Column, next: TableSort | undefined) {
+		setSorted(next === undefined ? null : { by, order: next });
 	}
 
-	const rows = [...members].sort((a, b) => {
-		const step = by === 'name' ? a.name.localeCompare(b.name) : a.commits - b.commits;
-		return order === 'ascending' ? step : -step;
-	});
+	const rows =
+		sorted === null
+			? members
+			: [...members].sort((a, b) => {
+					const step =
+						sorted.by === 'name' ? a.name.localeCompare(b.name) : a.commits - b.commits;
+					return sorted.order === 'ascending' ? step : -step;
+				});
+
+	const sortOf = (column: Column) => (sorted?.by === column ? sorted.order : ('none' as const));
 
 	return (
 		<div className="w-full max-w-md">
 			<Table.Root aria-label="members">
 				<Table.Header>
 					<Table.Row>
-						<Table.Head
-							sort={by === 'name' ? order : 'none'}
-							onSort={() => sort('name')}
-						>
+						<Table.Head sort={sortOf('name')} onSort={(next) => sort('name', next)}>
 							member
 						</Table.Head>
 						<Table.Head
 							align="end"
-							sort={by === 'commits' ? order : 'none'}
-							onSort={() => sort('commits')}
+							sort={sortOf('commits')}
+							onSort={(next) => sort('commits', next)}
 						>
 							commits
 						</Table.Head>
@@ -54,8 +53,10 @@ export default function Sort() {
 				<Table.Body>
 					{rows.map((member) => (
 						<Table.Row key={member.name}>
-							<Table.Head scope="row">{member.name}</Table.Head>
-							<Table.Cell align="end">{member.commits}</Table.Cell>
+							<Table.Cell sort={sortOf('name')}>{member.name}</Table.Cell>
+							<Table.Cell align="end" sort={sortOf('commits')}>
+								{member.commits}
+							</Table.Cell>
 						</Table.Row>
 					))}
 				</Table.Body>
