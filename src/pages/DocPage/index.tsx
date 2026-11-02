@@ -234,7 +234,7 @@ export function Command({ children }: { children: string }) {
 		<Card.Root data-slot="doc-command" className="gap-0 overflow-hidden py-0">
 			<Tabs.Root
 				variant="pill"
-				size="md"
+				size="sm"
 				value={packageManager}
 				onValueChange={(value) => {
 					if (isPackageManager(value)) update({ packageManager: value });
