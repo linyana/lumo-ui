@@ -840,15 +840,8 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 	const name = path.slice(path.lastIndexOf('/') + 1);
 
 	return (
-		<Card.Root
-			data-slot="doc-preview"
-			data-file={name}
-			className="gap-0 overflow-hidden py-0"
-		>
-			<Card.Header
-				data-slot="doc-preview-toolbar"
-				className="flex justify-end border-b p-1"
-			>
+		<Card.Root data-slot="doc-preview" data-file={name} className="gap-0 overflow-hidden py-0">
+			<Card.Header data-slot="doc-preview-toolbar" className="flex justify-end border-b p-1">
 				<SourceDialog path={path} name={itemOf(path)}>
 					<ViewCode />
 				</SourceDialog>

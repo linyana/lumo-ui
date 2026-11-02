@@ -22,11 +22,15 @@ export function MobileNavigation({
 	resetScrollKey,
 }: MobileNavigationProps) {
 	const [open, setOpen] = useState(false);
+	const [route, setRoute] = useState([selectedKey, resetScrollKey]);
 	const bar = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
+	// A new page closes the drawer. Adjusted during render rather than in an effect, so the drawer
+	// is already shut when the page it opened is first painted.
+	if (route[0] !== selectedKey || route[1] !== resetScrollKey) {
+		setRoute([selectedKey, resetScrollKey]);
 		setOpen(false);
-	}, [selectedKey, resetScrollKey]);
+	}
 
 	useEffect(() => {
 		const element = bar.current;

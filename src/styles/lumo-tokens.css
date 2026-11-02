@@ -183,8 +183,7 @@
 	/* The resting card has no border: one spread-only layer draws the hairline, and two short
 	   shadows lift it just off the page. The lifted shadow adds a wider halo on hover. */
 	--shadow-surface:
-		0 0 0 1px rgb(0 0 0 / 2.9%), 0 3px 6px -2px rgb(0 0 0 / 2%),
-		0 1px 1px rgb(0 0 0 / 4%);
+		0 0 0 1px rgb(0 0 0 / 2.9%), 0 3px 6px -2px rgb(0 0 0 / 2%), 0 1px 1px rgb(0 0 0 / 4%);
 	--shadow-lifted:
 		0 17.5px 23.4px rgb(0 0 0 / 4%), 0 9.4px 12.5px rgb(0 0 0 / 3%),
 		0 5.25px 7px rgb(0 0 0 / 2%), 0 2.8px 3.7px -2px rgb(0 0 0 / 1%),
@@ -208,8 +207,7 @@
 	--overlay: oklch(0 0 0 / 65%);
 	/* The hairline adds light on a dark page; the shadows beneath it still remove light. */
 	--shadow-surface:
-		0 0 0 1px rgb(255 255 255 / 10%), 0 3px 6px -2px rgb(0 0 0 / 3%),
-		0 1px 1px rgb(0 0 0 / 6%);
+		0 0 0 1px rgb(255 255 255 / 10%), 0 3px 6px -2px rgb(0 0 0 / 3%), 0 1px 1px rgb(0 0 0 / 6%);
 	--shadow-lifted:
 		0 17.5px 23.4px rgb(0 0 0 / 6%), 0 9.4px 12.5px rgb(0 0 0 / 5%),
 		0 5.25px 7px rgb(0 0 0 / 3%), 0 2.8px 3.7px -2px rgb(0 0 0 / 2%),

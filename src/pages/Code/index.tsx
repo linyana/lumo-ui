@@ -53,8 +53,7 @@ const codeProps: Record<string, PropNode> = {
 	copyable: {
 		type: 'boolean',
 		default: 'true',
-		description:
-			'Shows the copy button when the built-in header is enabled.',
+		description: 'Shows the copy button when the built-in header is enabled.',
 	},
 	header: {
 		type: 'boolean',
