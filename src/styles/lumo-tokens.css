@@ -35,6 +35,7 @@
 		'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace;
 
 	--color-background: var(--background);
+	--color-layout-background: var(--layout-background);
 	--color-layout-content: var(--layout-content);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
@@ -117,7 +118,8 @@
    (--background, --foreground, --primary, --ring, --border) are the palette's, or the
    consumer's own. */
 :root {
-	/* The content canvas sits below white headers and cards without tinting those surfaces. */
+	/* Shell chrome stays separate from the content canvas and card surfaces. */
+	--layout-background: rgb(239 239 240);
 	--layout-content: rgb(249 249 250);
 
 	/* Interaction feedback — shared by every pressable control.
@@ -196,6 +198,7 @@
 }
 
 .dark {
+	--layout-background: var(--muted);
 	--layout-content: var(--background);
 	--success: oklch(0.723 0.219 149.579);
 	--warning: oklch(0.769 0.188 70.08);

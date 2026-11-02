@@ -18,7 +18,7 @@ export const layoutVariants = tv({
 	slots: {
 		// The shell's fill is the sidebar's: nothing paints the rail, and in `default` the card
 		// rises above the same colour, so one token covers both.
-		root: 'flex h-svh w-full overflow-hidden bg-muted',
+		root: 'flex h-svh w-full overflow-hidden bg-layout-background',
 		main: 'flex min-w-0 flex-1 flex-col',
 		// `relative` makes the scroll box a containing block: an absolutely positioned descendant —
 		// Base UI's hidden checkbox input, most of the time — would otherwise sit against the initial
@@ -30,11 +30,11 @@ export const layoutVariants = tv({
 			/** A rail, then a card inset on every edge. */
 			default: {
 				main: 'p-2 ps-0',
-				surface: 'rounded-xl border bg-card text-card-foreground',
+				surface: 'rounded-xl bg-layout-content text-card-foreground',
 			},
 			/** A rail only: the content is the page, edge to edge. */
 			plain: {
-				surface: 'bg-background',
+				surface: 'bg-layout-content',
 			},
 		},
 	},
