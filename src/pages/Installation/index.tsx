@@ -198,6 +198,23 @@ export function InstallationPage() {
 			</DocSection>
 
 			<DocSection
+				title="install the agent skill"
+				note={
+					<>
+						Install the Lumo UI instructions in your project and choose your coding
+						agent. This does not install components or configure the theme.
+					</>
+				}
+			>
+				<Command>bunx skills add linyana/lumo-ui</Command>
+				<p className="text-sm text-muted-foreground">
+					The installed skill reads the current <AgentFile file="skills.md" /> from
+					the documentation site, so its component index and examples stay with the
+					library. You can also give that link directly to your agent.
+				</p>
+			</DocSection>
+
+			<DocSection
 				title="by hand"
 				note={
 					<>

@@ -88,6 +88,9 @@ export const cardVariants = tv({
 		'[--card-pad:--spacing(6)]',
 	],
 	variants: {
+		bordered: {
+			true: 'border border-border',
+		},
 		size: {
 			sm: 'gap-4 py-4 [--card-pad:--spacing(4)]',
 			md: 'gap-6 py-6',
@@ -102,6 +105,7 @@ export const cardVariants = tv({
 		},
 	},
 	defaultVariants: {
+		bordered: false,
 		size: 'md',
 		hoverable: false,
 	},
@@ -120,13 +124,20 @@ export type RootProps = ComponentProps<'div'> & VariantProps<typeof cardVariants
  * A card is a plain div, so a card that is clicked is still the consumer's to build — the prop says
  * "this one is a target", not "this one is a button".
  */
-export function Root({ className, size = 'md', hoverable = false, ...props }: RootProps) {
+export function Root({
+	className,
+	size = 'md',
+	bordered = false,
+	hoverable = false,
+	...props
+}: RootProps) {
 	return (
 		<div
 			data-slot="card"
 			data-size={size}
+			data-bordered={bordered ? '' : undefined}
 			data-hoverable={hoverable ? '' : undefined}
-			className={cn(cardVariants({ size, hoverable }), className)}
+			className={cn(cardVariants({ size, bordered, hoverable }), className)}
 			{...props}
 		/>
 	);

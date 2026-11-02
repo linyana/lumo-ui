@@ -25,6 +25,11 @@ const rootProps: Record<string, PropNode> = {
 		description:
 			'The padding and the gap between parts. Set once on the root: every part reads it back off the root, so a dense list of cards changes at one place.',
 	},
+	bordered: {
+		type: 'boolean',
+		default: 'false',
+		description: 'Adds an explicit border using the shared border token.',
+	},
 	hoverable: {
 		type: 'boolean',
 		default: 'false',
@@ -73,6 +78,7 @@ const partRows = [
 const hookRows = [
 	['data-slot="card"', 'the surface', 'a div; the card adds the look, nothing else.'],
 	['data-size', 'sm | md', 'on the root, and read by every part through group-data-[size=…].'],
+	['data-bordered', 'present only when bordered', 'on the root when its explicit border is enabled.'],
 	[
 		'data-hoverable',
 		'present only when hoverable',

@@ -206,35 +206,57 @@ export function DocLink({ to, children }: { to: string; children: ReactNode }) {
 	);
 }
 
+function CommandBody({ value, wrap = false }: { value: string; wrap?: boolean }) {
+	return (
+		<Card.Content
+			data-slot="doc-command-body"
+			className="flex min-w-0 items-start gap-3 px-4 py-3"
+		>
+			<code
+				data-slot="doc-command-text"
+				className={cn(
+					'min-w-0 flex-1 py-1 font-mono text-sm leading-5',
+					wrap ? 'whitespace-pre-wrap break-words' : 'overflow-x-auto whitespace-nowrap',
+				)}
+			>
+				{value}
+			</code>
+			<Copy key={value} value={value} />
+		</Card.Content>
+	);
+}
+
 /** One command, with a shared package-manager preference for installation commands. */
-export function Command({ children }: { children: string }) {
+export function Command({
+	children,
+	wrap = false,
+	bordered = false,
+}: {
+	children: string;
+	wrap?: boolean;
+	bordered?: boolean;
+}) {
 	const packageManager = useGlobal((state) => state.packageManager);
 	const update = useGlobal((state) => state.update);
 	const formatted = packageCommand(children, packageManager);
-	const command = formatted ?? children;
-
 	if (formatted === null) {
 		return (
-			<div
+			<Card.Root
 				data-slot="doc-command"
-				className="flex items-center justify-between gap-3 rounded-md bg-muted px-3 py-2"
+				bordered={bordered}
+				className="min-w-0 gap-0 overflow-hidden py-0"
 			>
-				<code
-					data-slot="doc-command-text"
-					className="min-w-0 overflow-x-auto whitespace-nowrap font-mono"
-				>
-					{children}
-				</code>
-				<Copy value={children} />
-			</div>
+				<CommandBody value={children} wrap={wrap} />
+			</Card.Root>
 		);
 	}
 
 	return (
-		<Card.Root data-slot="doc-command" className="gap-0 overflow-hidden py-0">
+		<Card.Root data-slot="doc-command" bordered={bordered} className="gap-0 overflow-hidden py-0">
 			<Tabs.Root
 				variant="pill"
 				size="sm"
+				className="gap-0"
 				value={packageManager}
 				onValueChange={(value) => {
 					if (isPackageManager(value)) update({ packageManager: value });
@@ -242,7 +264,7 @@ export function Command({ children }: { children: string }) {
 			>
 				<Card.Header
 					data-slot="doc-command-header"
-					className="min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2 border-b border-border/50 px-3"
+					className="min-w-0 border-b border-border/50 px-3"
 				>
 					<div
 						data-slot="doc-command-options"
@@ -262,23 +284,10 @@ export function Command({ children }: { children: string }) {
 							<Tabs.Indicator />
 						</Tabs.List>
 					</div>
-					<Card.Action data-slot="doc-command-actions" className="shrink-0">
-						<Copy key={command} value={command} />
-					</Card.Action>
 				</Card.Header>
 				{packageManagers.map((manager) => (
 					<Tabs.Panel key={manager} value={manager}>
-						<Card.Content
-							data-slot="doc-command-body"
-							className="overflow-x-auto px-4 pb-4"
-						>
-							<code
-								data-slot="doc-command-text"
-								className="whitespace-nowrap font-mono"
-							>
-								{packageCommand(children, manager)}
-							</code>
-						</Card.Content>
+						<CommandBody value={packageCommand(children, manager)!} wrap={wrap} />
 					</Tabs.Panel>
 				))}
 			</Tabs.Root>

@@ -16,7 +16,7 @@ const installers: Record<PackageManager, string> = {
 
 /** Only consumer install commands opt in; CSS and repository tooling stay untouched. */
 export function packageCommand(command: string, manager: PackageManager): string | null {
-	if (command.startsWith('bunx shadcn@latest ')) {
+	if (command.startsWith('bunx shadcn@latest ') || command.startsWith('bunx skills ')) {
 		return `${runners[manager]} ${command.slice('bunx '.length)}`;
 	}
 	if (command.startsWith('bun add ')) {

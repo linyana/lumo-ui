@@ -167,6 +167,18 @@ bun run registry:check  # 再用 shadcn CLI 校验 registry.json 本身
 
 ## 给 AI 读的入口
 
+Install the Lumo UI skill in a consuming project:
+
+```bash
+bunx skills add linyana/lumo-ui
+```
+
+The CLI discovers `skills/lumo-ui/SKILL.md` in the GitHub repository. This lightweight
+entry reads the maintained instructions at <https://ui.lumo.cab/skills.md> instead of
+keeping a second component catalogue. Installing the skill does not install components
+or configure the registry and theme. The skill must be available on the repository's
+default branch before the remote install command can discover it.
+
 站点同时是给 agent 的文档源，和 ant.design 的 `llms.txt` 是一回事：
 
 | 地址 | 内容 |
