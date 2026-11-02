@@ -126,7 +126,7 @@ export const listVariants = tv({
 	],
 	variants: {
 		variant: {
-			rounded: 'gap-1 rounded-lg bg-muted p-1',
+			rounded: 'gap-1 rounded-lg bg-secondary p-1',
 			pill: 'gap-1 rounded-lg bg-card p-1',
 			square: [
 				'gap-4',
