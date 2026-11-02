@@ -77,7 +77,7 @@ export const indicatorVariants = tv({
 	variants: {
 		variant: {
 			rounded: 'rounded-md bg-card shadow-sm',
-			pill: 'rounded-md bg-[color-mix(in_oklch,var(--secondary),var(--secondary-foreground)_5%)]',
+			pill: 'rounded-md bg-secondary',
 			square: [
 				'after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary',
 				'data-[orientation=vertical]:after:inset-x-auto',
