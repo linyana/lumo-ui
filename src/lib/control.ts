@@ -68,7 +68,7 @@ export const fieldShell = cn(
  * its ring and puts a dot in it — so only the part they agree on is here.
  */
 export const toggleBox = cn(
-	'inline-flex size-4 shrink-0 cursor-pointer items-center justify-center',
+	'inline-flex size-4 shrink-0 cursor-pointer items-center justify-center align-middle',
 	'border border-input bg-background',
 	'transition-[color,background-color,border-color] duration-(--duration-state)',
 	// The same two states a field wears, on the box instead of the shell. Only focus moves the edge of

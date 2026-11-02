@@ -1197,16 +1197,12 @@ export function SelectionCell({
 }
 
 /**
- * The chevron that opens a record. It is a step smaller than a column's sort square, and it holds no
- * state of its own while open: the turn of the glyph already says which way it leads, and a tint
- * that stayed would read as a chosen row.
+ * The chevron shares the header controls' appearance, but an open record is marked only by its turn:
+ * a tint that stayed would read as a chosen row.
  */
 const branchToggle = cn(
-	'relative inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm',
-	'text-muted-foreground transition-colors duration-(--duration-state)',
-	'hover:bg-row-hover hover:text-foreground',
-	'before:absolute before:-inset-1.5',
-	'[&_svg]:pointer-events-none [&_svg]:size-3',
+	headControl,
+	iconSlot,
 	'[&_svg]:transition-transform [&_svg]:duration-(--duration-state)',
 	'[&[aria-expanded=true]>svg]:rotate-90',
 );
@@ -1227,7 +1223,7 @@ export type BranchProps = {
 
 /**
  * A record's name, inset by the depth its row was given, with the control that opens what is filed
- * under it. The toggle is a step smaller than a column's sort arrow and turns instead of filling, so
+ * under it. The toggle matches a column's sort control and turns instead of filling, so
  * an open row is not read as a chosen one; a row with nothing under it keeps the space and drops the
  * glyph, which is what holds a tree's names to one line.
  */
@@ -1264,7 +1260,7 @@ export function Branch({
 					<ChevronRight />
 				</button>
 			) : (
-				<span aria-hidden className="size-5 shrink-0" />
+				<span aria-hidden className="size-6 shrink-0" />
 			)}
 			<span className="min-w-0 truncate">{children}</span>
 		</span>
