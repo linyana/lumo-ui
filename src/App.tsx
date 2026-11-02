@@ -32,18 +32,23 @@ const row = (path: string, label: string): LayoutNavItem => ({
 	render: <NavLink to={to(path)} />,
 });
 
+/** The raw documents the rail ends with: files an agent fetches, not routes this app renders. */
+const agentDocs = ['skills.md', 'llms.txt'];
+
 const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => {
 	const children = docRoutes
 		.filter((route) => route.section === section)
 		.map(({ path, label }) => row(path, label));
 
 	if (section === 'Getting Started') {
-		children.push({
-			key: 'llms.txt',
-			label: 'llms.txt',
-			href: '/llms.txt',
-			render: <a href="/llms.txt" target="_blank" rel="noreferrer" />,
-		});
+		children.push(
+			...agentDocs.map((file) => ({
+				key: file,
+				label: file,
+				href: `/${file}`,
+				render: <a href={`/${file}`} target="_blank" rel="noreferrer" />,
+			})),
+		);
 	}
 
 	return { type: 'group', label: section, children };

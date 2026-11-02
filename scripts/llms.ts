@@ -7,7 +7,7 @@
  * prose, and the files it copies, so the index cannot advertise a component the CLI would not
  * install, and an item added here shows up in all three files without a second edit.
  *
- * Three outputs, smallest to largest:
+ * Four outputs, smallest to largest:
  *
  * - `/docs/<name>.md` — one item: what it is, how it is installed, the source it copies, and the
  *   examples its page shows.
@@ -15,6 +15,9 @@
  *   then every item by layer, each linking to its markdown.
  * - `/llms-full.txt` — the rules, the index and every item in one fetch, for a reader that would
  *   rather have it all than follow links.
+ * - `/skills.md` — the same corpus as a skill: frontmatter a session can load, the install and the
+ *   rules, then the index in one sentence an item. A doc is browsed and a skill is obeyed, so this
+ *   one says what to do in what order and leaves the source to the page it links.
  *
  * The examples are read off the page directory that documents the item (`src/pages/Button/demos` is
  * `@lumo/button`), which is the same rule the docs app uses to name an item — so a page and its
@@ -268,6 +271,35 @@ function ordered(group: (typeof groups)[number]) {
 		.sort((left, right) => left.name.localeCompare(right.name));
 }
 
+/**
+ * The first sentence of an item's prose. `description` is written for a page that has room for a
+ * paragraph; a skill's index is skimmed to choose a name, so it keeps the one line that says what
+ * the item is for and drops the rest.
+ */
+function gist(description: string | undefined) {
+	if (description === undefined) return '';
+	const text = description.replaceAll(/\s+/g, ' ').trim();
+	const sentence = /^.+?[.!?](?=\s|$)/.exec(text)?.[0] ?? text;
+	return sentence.length <= 140 ? sentence : `${sentence.slice(0, 139).trimEnd()}…`;
+}
+
+/** The catalogue as a skill reads it: the same order, one sentence an item, each linking to its page. */
+function skillIndex() {
+	const lines: string[] = [];
+	for (const group of groups) {
+		const items = ordered(group);
+		if (items.length === 0) continue;
+
+		lines.push(`### ${group.title}`, '');
+		for (const item of items) {
+			const note = gist(item.description);
+			lines.push(`- [${item.name}](/docs/${item.name}.md)${note === '' ? '' : `: ${note}`}`);
+		}
+		lines.push('');
+	}
+	return lines.join('\n').trimEnd();
+}
+
 const summary =
 	'> Components to copy, not to install: Base UI for behaviour, Tailwind v4 for styling, CSS\n' +
 	'> variables for theme.';
@@ -276,6 +308,7 @@ const navigation = [
 	'## navigation',
 	'',
 	'- [Full documentation](/llms-full.txt): every item, its source and its examples, in one file.',
+	'- [Agent skill](/skills.md): the same corpus as instructions, to load instead of browse.',
 	'- [Repository rules](/docs/agents.md): layer, naming, token, icon and registry rules, and why.',
 	'- `/r/<name>.json`: the payload the CLI installs; `/docs/<name>.md`: the same item as prose.',
 ].join('\n');
@@ -290,13 +323,90 @@ const markdown = [
 ].join('\n\n');
 
 /**
+ * The skill: the corpus read as instructions rather than as documentation.
+ *
+ * A session that loads a skill gets one body of text and is expected to act inside it, so this file
+ * opens with the two fields that decide whether the skill is loaded at all, says the install and the
+ * rules once, then spends the rest on the one thing a model cannot infer from prose — which items
+ * exist — and hands the source back to `/docs/<name>.md`, where the item's own page already keeps it
+ * up to date. Nothing here is written twice: the install, the rules and the prose are the same
+ * functions `/llms.txt` is built from.
+ */
+function skill() {
+	const description =
+		'Components to copy, not to install: Base UI for behaviour, Tailwind v4 for styling and CSS ' +
+		'variables for theme, installed as a shadcn registry rather than an npm package. Use when ' +
+		'installing an item from @lumo, writing a screen with it, or looking up one of its parts, ' +
+		'variants or state attributes.';
+
+	return [
+		'---',
+		'name: lumo-ui',
+		`description: ${JSON.stringify(description)}`,
+		'---',
+		'',
+		'# lumo-ui',
+		'',
+		summary,
+		'',
+		brief(),
+		'',
+		'## workflow',
+		'',
+		'1. Choose the item from the index below, then fetch `/docs/<name>.md` for it: the install ' +
+			'command, the source the CLI copies, and the examples its page shows.',
+		'2. Read that source before writing a call site — it is the API. There is no generated prop ' +
+			'table, so a part, a variant or a prop that is not in the file does not exist.',
+		'3. Follow the rules above instead of inventing a convention beside them, and copy the shape ' +
+			'the examples already use rather than re-deriving it from this text.',
+		'',
+		'## index',
+		'',
+		skillIndex(),
+		'',
+	]
+		.join('\n')
+		.replaceAll(/\n{3,}/g, '\n\n')
+		.trimEnd()
+		.concat('\n');
+}
+
+/**
+ * The typography `skills.md` says in ASCII, and what it says instead.
+ *
+ * The other files open with a BOM, which is what keeps a reader that ignores the charset from
+ * drawing a garbled glyph where one of these sits. That file cannot: its first line is frontmatter,
+ * and three bytes ahead of `---` are three bytes of YAML a loader did not expect. So it says the
+ * same text in the subset every reader agrees on instead — the marks that only exist because a page
+ * read better with them are exactly the ones a guessing reader breaks on, and a skill is parsed,
+ * not admired.
+ */
+const asciiTypography: Record<string, string> = {
+	'\u2018': "'",
+	'\u2019': "'",
+	'\u201C': '"',
+	'\u201D': '"',
+	'\u2013': '-',
+	'\u2014': '-',
+	'\u2026': '...',
+	'\u00A0': ' ',
+	'\u202F': ' ',
+};
+
+const ascii = (text: string) =>
+	text.replaceAll(/[\u2018\u2019\u201C\u201D\u2013\u2014\u2026\u00A0\u202F]/g, (mark) => {
+		return asciiTypography[mark] ?? mark;
+	});
+
+/**
  * The mark every generated file opens with.
  *
  * `_headers` declares the charset, and a reader that honours it needs nothing more — but one that
  * does not, a Chinese-locale browser or a downloaded copy opened in a Windows editor, falls back to
  * the machine's own code page, and `—` (`E2 80 94`) then reads as `鈥` beside a replacement
  * character. A BOM is sniffed before the charset and before any guess from the language, so these
- * three bytes are what keeps a reader that trusts neither on UTF-8.
+ * three bytes are what keeps a reader that trusts neither on UTF-8. `skills.md` is the exception,
+ * and is spelled in ASCII for the reason given at `asciiTypography`.
  */
 const BOM = '\uFEFF';
 
@@ -313,14 +423,18 @@ const full = [
 	...groups.flatMap((group) => ordered(group)).map((item) => itemDocs.get(item.name)!),
 ].join('\n\n---\n\n');
 
+const skills = ascii(skill());
+
 await rm(docs, { recursive: true, force: true });
 await mkdir(docs, { recursive: true });
 await write(join(out, 'llms.txt'), markdown);
 await write(join(out, 'llms-full.txt'), `${full}\n`);
+await Bun.write(join(out, 'skills.md'), skills);
 await write(join(docs, 'agents.md'), rules);
 for (const [name, doc] of itemDocs) await write(join(docs, `${name}.md`), doc);
 
 const size = (text: string) => `${Math.round(text.length / 1024)}K`;
 console.log(
-	`llms ok: ${itemDocs.size} item pages, llms.txt ${size(markdown)}, llms-full.txt ${size(full)}`,
+	`llms ok: ${itemDocs.size} item pages, llms.txt ${size(markdown)}, ` +
+		`llms-full.txt ${size(full)}, skills.md ${size(skills)}`,
 );

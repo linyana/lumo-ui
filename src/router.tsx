@@ -10,6 +10,7 @@ export const router = createBrowserRouter([
 			{ index: true, element: <Navigate to={`/${docRoutes[0]!.path}`} replace /> },
 			...docRoutes.map(({ path, element }) => ({ path, element })),
 			{ path: 'llms', loader: () => redirectDocument('/llms.txt') },
+			{ path: 'skills', loader: () => redirectDocument('/skills.md') },
 			{ path: '*', element: <Navigate to={`/${docRoutes[0]!.path}`} replace /> },
 		],
 	},

@@ -4,6 +4,7 @@ dist-ssr
 public/r
 public/docs
 public/llms*.txt
+public/skills.md
 *.local
 .vite
 .wrangler

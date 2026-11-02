@@ -11,6 +11,20 @@ import {
 	registryUrl,
 } from '@/pages/DocPage';
 
+/** A generated file beside the site: fetched whole, not routed, so it opens in its own tab. */
+function AgentFile({ file }: { file: string }) {
+	return (
+		<a
+			href={`/${file}`}
+			target="_blank"
+			rel="noreferrer"
+			className="underline underline-offset-2 hover:text-foreground"
+		>
+			{file}
+		</a>
+	);
+}
+
 /**
  * What a project does once, on the way in: the namespace, the theme, and the first component.
  *
@@ -198,15 +212,9 @@ export function InstallPage() {
 				<p className="text-sm text-muted-foreground">
 					see <DocLink to="/button">button</DocLink> for the shape of it, or{' '}
 					<DocLink to="/overview">the overview</DocLink> for what there is to install. to
-					hand the library to an assistant, start at{' '}
-					<a
-						href="/llms.txt"
-						target="_blank"
-						rel="noreferrer"
-						className="underline underline-offset-2 hover:text-foreground"
-					>
-						llms.txt
-					</a>.
+					hand the library to an assistant, start at <AgentFile file="skills.md" /> — the
+					rules and the index in one file it can load as a skill — or read{' '}
+					<AgentFile file="llms.txt" />.
 				</p>
 			</DocSection>
 		</DocPage>
