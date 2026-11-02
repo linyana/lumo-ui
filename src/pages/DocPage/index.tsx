@@ -242,7 +242,7 @@ export function Command({ children }: { children: string }) {
 			>
 				<Card.Header
 					data-slot="doc-command-header"
-					className="min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2 border-b border-border/50 px-3 py-0"
+					className="min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2 border-b border-border/50 px-3"
 				>
 					<div
 						data-slot="doc-command-options"
