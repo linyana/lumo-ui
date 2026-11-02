@@ -1,3 +1,4 @@
+import { SiGithub } from '@icons-pack/react-simple-icons';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import {
 	Blocks,
@@ -17,7 +18,6 @@ import { cn } from '@/lib/utils';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
 import { ThemeProvider } from '@/pages/theme';
-import { GitHub } from '@/pages/icons';
 
 const to = (path: string) => `/${path}`;
 
@@ -131,7 +131,7 @@ export default function App() {
 									'size-8 shrink-0',
 								)}
 							>
-								<GitHub />
+								<SiGithub aria-hidden="true" />
 							</a>
 							<Button
 								variant="ghost"

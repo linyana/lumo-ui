@@ -1,8 +1,8 @@
+import { SiGithub } from '@icons-pack/react-simple-icons';
 import { ArrowRight, CodeXml, Layers, MousePointer2 } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Command } from '@/pages/DocPage';
-import { GitHub } from '@/pages/icons';
 import { Gallery } from './gallery';
 import { installCommand, Onboarding } from './onboarding';
 import { Showcase } from './showcase';
@@ -62,7 +62,7 @@ export default function Home() {
 						<Button
 							size="lg"
 							variant="outline"
-							icon={<GitHub aria-hidden="true" />}
+							icon={<SiGithub aria-hidden="true" />}
 							nativeButton={false}
 							render={
 								<a href="https://github.com/linyana/lumo-ui" target="_blank" rel="noreferrer" />
