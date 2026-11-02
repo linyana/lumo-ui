@@ -16,7 +16,7 @@ import { FieldPage } from './Field';
 import { FieldsetPage } from './Fieldset';
 import { FormPage } from './Form';
 import { InputPage } from './Input';
-import { InstallPage } from './Install';
+import { InstallationPage } from './Installation';
 import { LayoutPage } from './Layout';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
@@ -56,7 +56,12 @@ export type DocRoute = {
 /** One page per component, in the order the rail lists them: a section, then alphabetical. */
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
-	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
+	{
+		path: 'installation',
+		label: 'Installation',
+		section: 'Getting Started',
+		element: <InstallationPage />,
+	},
 	{ path: 'accordion', label: 'Accordion', section: 'Components', element: <AccordionPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },

@@ -467,7 +467,7 @@ export function DocInstall({
 					</p>
 					<p className="text-muted-foreground">
 						the namespace and the theme are set up once — see{' '}
-						<DocLink to="/install">install</DocLink>.
+						<DocLink to="/installation">installation</DocLink>.
 						{stylesheet && (
 							<>
 								{' '}

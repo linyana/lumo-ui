@@ -31,7 +31,7 @@ function AgentFile({ file }: { file: string }) {
  * Everything a component page says about installing is the same three steps, so they are said here
  * instead — a page under Components only has to name its own item.
  */
-export function InstallPage() {
+export function InstallationPage() {
 	const packageManager = useGlobal((state) => state.packageManager);
 	const namespace = `{
 	"registries": {
@@ -41,7 +41,7 @@ export function InstallPage() {
 
 	return (
 		<DocPage
-			title="Install"
+			title="Installation"
 			description="one namespace, one theme, then a component at a time."
 		>
 			<DocSection

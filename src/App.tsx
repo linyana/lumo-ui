@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { createLucideIcon, Moon, Sun } from 'lucide-react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { BookOpen, createLucideIcon, FileText, Moon, Sparkles, Sun, Terminal } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/blocks/layout';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -24,10 +24,18 @@ const GitHub = createLucideIcon('GitHub', [
 	],
 ]);
 
+const navIcons: Record<string, ReactNode> = {
+	overview: <BookOpen />,
+	installation: <Terminal />,
+	'skills.md': <Sparkles />,
+	'llms.txt': <FileText />,
+};
+
 /** A row that is a route: the anchor comes from the router, the look from the nav. */
 const row = (path: string, label: string): LayoutNavItem => ({
 	key: path,
 	label,
+	icon: navIcons[path],
 	href: to(path),
 	render: <NavLink to={to(path)} />,
 });
@@ -35,7 +43,7 @@ const row = (path: string, label: string): LayoutNavItem => ({
 /** The raw documents the rail ends with: files an agent fetches, not routes this app renders. */
 const agentDocs = ['skills.md', 'llms.txt'];
 
-const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => {
+const nav: LayoutNavEntry[] = docSections.flatMap((section): LayoutNavEntry[] => {
 	const children = docRoutes
 		.filter((route) => route.section === section)
 		.map(({ path, label }) => row(path, label));
@@ -45,13 +53,15 @@ const nav: LayoutNavEntry[] = docSections.map((section): LayoutNavEntry => {
 			...agentDocs.map((file) => ({
 				key: file,
 				label: file,
+				icon: navIcons[file],
 				href: `/${file}`,
 				render: <a href={`/${file}`} target="_blank" rel="noreferrer" />,
 			})),
 		);
 	}
 
-	return { type: 'group', label: section, children };
+	const group: LayoutNavEntry = { type: 'group', label: section, children };
+	return section === 'Getting Started' ? [group, { type: 'separator' }] : [group];
 });
 
 /**
