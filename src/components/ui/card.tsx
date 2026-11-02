@@ -10,7 +10,9 @@ export function Action({ className, ...props }: ActionProps) {
 		<div
 			data-slot="card-action"
 			className={cn(
-				'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
+				'col-start-2 row-start-1 self-center justify-self-end',
+				'group-has-data-[slot=card-description]/card-header:row-span-2',
+				'group-has-data-[slot=card-description]/card-header:self-start',
 				className,
 			)}
 			{...props}
@@ -65,9 +67,10 @@ export function Header({ className, ...props }: HeaderProps) {
 			// Two columns only when an action is present, so a title and its description stay in
 			// one column and the action sits opposite both of them.
 			className={cn(
-				'grid auto-rows-min items-start gap-1.5 px-(--card-pad)',
+				'group/card-header grid auto-rows-min items-center gap-1.5 px-(--card-pad)',
 				'has-data-[slot=card-action]:grid-cols-[1fr_auto]',
 				'has-data-[slot=card-description]:grid-rows-[auto_auto]',
+				'has-data-[slot=card-description]:items-start',
 				className,
 			)}
 			{...props}

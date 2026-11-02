@@ -123,7 +123,7 @@ export function LlmsPage() {
 					don&rsquo;t have to paste the introduction each time. Append it to existing
 					rules rather than replacing them.
 				</p>
-				<Code code={instruction} language="text" fileName="Project instruction" wrap />
+				<Code code={instruction} language="text" fileName="Project instruction" header wrap />
 				<DocTable
 					head={['Where you work', 'Where to put it']}
 					rows={[

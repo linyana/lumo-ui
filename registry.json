@@ -608,7 +608,7 @@
 			"name": "code",
 			"type": "registry:ui",
 			"title": "Code",
-			"description": "A block of source: a header naming the file or language, a copy button, optional line numbers, and shiki highlighting whose grammars load only when a block needs them. An unknown language falls back to plain text instead of failing.",
+			"description": "Highlighted source with optional line numbers, bare by default so Card can supply the surface, title and actions. Exports a reusable copy button and an opt-in header. Shiki grammars load only when needed; unknown languages fall back to plain text.",
 			"dependencies": ["shiki", "lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"@lumo/utils",

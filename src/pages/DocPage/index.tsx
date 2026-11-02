@@ -231,25 +231,29 @@ export function Command({ children }: { children: string }) {
 	}
 
 	return (
-		<div data-slot="doc-command" className="overflow-hidden rounded-lg bg-muted">
+		<Card.Root data-slot="doc-command" className="gap-0 overflow-hidden py-0">
 			<Tabs.Root
-				size="sm"
+				variant="pill"
+				size="md"
 				value={packageManager}
 				onValueChange={(value) => {
 					if (isPackageManager(value)) update({ packageManager: value });
 				}}
 			>
-				<div
+				<Card.Header
 					data-slot="doc-command-header"
-					className="flex min-w-0 items-center gap-2 border-b px-3 py-1"
+					className="min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2 border-b border-border/50 px-3 py-0"
 				>
-					<SquareTerminal
-						data-slot="doc-command-icon"
-						aria-hidden="true"
-						className="size-4 shrink-0 text-muted-foreground"
-					/>
-					<div data-slot="doc-command-options" className="min-w-0 overflow-x-auto">
-						<Tabs.List aria-label="package manager">
+					<div
+						data-slot="doc-command-options"
+						className="flex min-w-0 items-center gap-2 overflow-x-auto overflow-y-hidden py-1"
+					>
+						<SquareTerminal
+							data-slot="doc-command-icon"
+							aria-hidden="true"
+							className="size-4 shrink-0 text-muted-foreground"
+						/>
+						<Tabs.List aria-label="package manager" className="shrink-0 p-0">
 							{packageManagers.map((manager) => (
 								<Tabs.Tab key={manager} value={manager}>
 									{manager}
@@ -258,24 +262,27 @@ export function Command({ children }: { children: string }) {
 							<Tabs.Indicator />
 						</Tabs.List>
 					</div>
-					<div data-slot="doc-command-actions" className="ml-auto shrink-0">
+					<Card.Action data-slot="doc-command-actions" className="shrink-0">
 						<Copy key={command} value={command} />
-					</div>
-				</div>
+					</Card.Action>
+				</Card.Header>
 				{packageManagers.map((manager) => (
 					<Tabs.Panel key={manager} value={manager}>
-						<div data-slot="doc-command-body" className="overflow-x-auto px-4 pb-4">
+						<Card.Content
+							data-slot="doc-command-body"
+							className="overflow-x-auto px-4 pb-4"
+						>
 							<code
 								data-slot="doc-command-text"
 								className="whitespace-nowrap font-mono"
 							>
 								{packageCommand(children, manager)}
 							</code>
-						</div>
+						</Card.Content>
 					</Tabs.Panel>
 				))}
 			</Tabs.Root>
-		</div>
+		</Card.Root>
 	);
 }
 
@@ -1002,7 +1009,7 @@ function PropHint({ name, description }: { name: string; description: string }) 
 export function PropTable({ props }: PropTableProps) {
 	return (
 		<Tooltip.Provider delay={150}>
-			<Table.Root size="sm" variant="outlined" hoverable={false} aria-label="props">
+			<Table.Root size="sm" variant="borderless" hoverable={false} aria-label="props">
 				<Table.Header>
 					<Table.Row>
 						{['prop', 'type', 'default'].map((label) => (
@@ -1068,7 +1075,7 @@ function Names({ children }: { children: ReactNode }) {
 
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
-		<Table.Root size="sm" variant="outlined" hoverable={false}>
+		<Table.Root size="sm" variant="borderless" hoverable={false}>
 			<Table.Header>
 				<Table.Row>
 					{head.map((label, column) => (

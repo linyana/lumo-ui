@@ -22,10 +22,10 @@ const files = ['src/components/ui/tabs.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	variant: {
-		type: '"rounded" | "square" | "point"',
+		type: '"rounded" | "pill" | "square" | "point"',
 		default: '"rounded"',
 		description:
-			'The skin, and the shape of the indicator with it: a pill in a muted track, a bar on the list’s edge, or a dot under the label.',
+			'The skin: rounded has a white highlight on a muted track; pill has a secondary highlight on a Card surface; square draws an edge bar, and point draws a dot.',
 	},
 	size: {
 		type: '"sm" | "md" | "lg"',
@@ -180,12 +180,13 @@ export function TabsPage() {
 			</DocSection>
 
 			<DocSection
-				title="three indicators, one measurement"
+				title="four skins, one measurement"
 				note={
 					<>
-						each variant is the same element wearing a different skin: a pill, a bar on
-						the list’s edge, or a dot. Base UI measures the active tab and hands the
-						result over as <Mono>--active-tab-*</Mono>, so nothing here is per-tab.
+						each variant is the same element wearing a different skin: a white highlight
+						on a muted track, a grey pill on a Card surface, an edge bar, or a dot. Base
+						UI measures the active tab and hands the result over as{' '}
+						<Mono>--active-tab-*</Mono>, so nothing here is per-tab.
 					</>
 				}
 			>

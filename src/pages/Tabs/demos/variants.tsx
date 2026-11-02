@@ -1,6 +1,6 @@
 import { Tabs } from '@/components/ui/tabs';
 
-const variants = ['rounded', 'square', 'point'] as const;
+const variants = ['rounded', 'pill', 'square', 'point'] as const;
 const items = ['overview', 'activity', 'settings'];
 
 export default function Variants() {

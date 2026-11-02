@@ -56,7 +56,7 @@ const partRows = [
 	[
 		'Card.Action',
 		'the corner slot',
-		'spans both rows, so it hangs beside the title and the description rather than under them.',
+		'centred beside a title alone; spans both rows and aligns to the top when a description is present.',
 	],
 	[
 		'Card.Content',
@@ -85,7 +85,11 @@ const hookRows = [
 	],
 	['data-slot="card-title"', 'its name', 'text-base font-semibold, overridable like any div.'],
 	['data-slot="card-description"', 'the line under it', 'text-sm text-muted-foreground.'],
-	['data-slot="card-action"', 'the corner slot', 'column two, rows one to two.'],
+	[
+		'data-slot="card-action"',
+		'the corner slot',
+		'column two; spans two rows only when the header has a description.',
+	],
 	['data-slot="card-content"', 'the body', 'flex-1, so a stretched card keeps its footer down.'],
 	['data-slot="card-footer"', 'the bottom row', 'flex items-center gap-2.'],
 ];
