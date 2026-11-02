@@ -25,6 +25,7 @@ import {
 } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Code, Copy } from '@/components/ui/code';
 import { CodeTree } from '@/components/blocks/code-tree';
 import { foldersOf } from '@/components/blocks/code-tree/tree';
@@ -205,50 +206,76 @@ export function DocLink({ to, children }: { to: string; children: ReactNode }) {
 	);
 }
 
+function CommandBody({ value, wrap = false }: { value: string; wrap?: boolean }) {
+	return (
+		<Card.Content
+			data-slot="doc-command-body"
+			className="flex min-w-0 items-start gap-3 px-4 py-3"
+		>
+			<code
+				data-slot="doc-command-text"
+				className={cn(
+					'min-w-0 flex-1 py-1 font-mono text-sm leading-5',
+					wrap ? 'whitespace-pre-wrap break-words' : 'overflow-x-auto whitespace-nowrap',
+				)}
+			>
+				{value}
+			</code>
+			<Copy key={value} value={value} />
+		</Card.Content>
+	);
+}
+
 /** One command, with a shared package-manager preference for installation commands. */
-export function Command({ children }: { children: string }) {
+export function Command({
+	children,
+	wrap = false,
+	bordered = false,
+}: {
+	children: string;
+	wrap?: boolean;
+	bordered?: boolean;
+}) {
 	const packageManager = useGlobal((state) => state.packageManager);
 	const update = useGlobal((state) => state.update);
 	const formatted = packageCommand(children, packageManager);
-	const command = formatted ?? children;
-
 	if (formatted === null) {
 		return (
-			<div
+			<Card.Root
 				data-slot="doc-command"
-				className="flex items-center justify-between gap-3 rounded-md bg-muted px-3 py-2"
+				bordered={bordered}
+				className="min-w-0 gap-0 overflow-hidden py-0"
 			>
-				<code
-					data-slot="doc-command-text"
-					className="min-w-0 overflow-x-auto whitespace-nowrap font-mono"
-				>
-					{children}
-				</code>
-				<Copy value={children} />
-			</div>
+				<CommandBody value={children} wrap={wrap} />
+			</Card.Root>
 		);
 	}
 
 	return (
-		<div data-slot="doc-command" className="overflow-hidden rounded-lg bg-muted">
+		<Card.Root data-slot="doc-command" bordered={bordered} className="gap-0 overflow-hidden py-0">
 			<Tabs.Root
+				variant="pill"
 				size="sm"
+				className="gap-0"
 				value={packageManager}
 				onValueChange={(value) => {
 					if (isPackageManager(value)) update({ packageManager: value });
 				}}
 			>
-				<div
+				<Card.Header
 					data-slot="doc-command-header"
-					className="flex min-w-0 items-center gap-2 border-b px-3 py-1"
+					className="min-w-0 border-b border-border/50 px-3"
 				>
-					<SquareTerminal
-						data-slot="doc-command-icon"
-						aria-hidden="true"
-						className="size-4 shrink-0 text-muted-foreground"
-					/>
-					<div data-slot="doc-command-options" className="min-w-0 overflow-x-auto">
-						<Tabs.List aria-label="package manager">
+					<div
+						data-slot="doc-command-options"
+						className="flex min-w-0 items-center gap-2 overflow-x-auto overflow-y-hidden py-1"
+					>
+						<SquareTerminal
+							data-slot="doc-command-icon"
+							aria-hidden="true"
+							className="size-4 shrink-0 text-muted-foreground"
+						/>
+						<Tabs.List aria-label="package manager" className="shrink-0 p-0">
 							{packageManagers.map((manager) => (
 								<Tabs.Tab key={manager} value={manager}>
 									{manager}
@@ -257,24 +284,14 @@ export function Command({ children }: { children: string }) {
 							<Tabs.Indicator />
 						</Tabs.List>
 					</div>
-					<div data-slot="doc-command-actions" className="ml-auto shrink-0">
-						<Copy key={command} value={command} />
-					</div>
-				</div>
+				</Card.Header>
 				{packageManagers.map((manager) => (
 					<Tabs.Panel key={manager} value={manager}>
-						<div data-slot="doc-command-body" className="overflow-x-auto px-4 pb-4">
-							<code
-								data-slot="doc-command-text"
-								className="whitespace-nowrap font-mono"
-							>
-								{packageCommand(children, manager)}
-							</code>
-						</div>
+						<CommandBody value={packageCommand(children, manager)!} wrap={wrap} />
 					</Tabs.Panel>
 				))}
 			</Tabs.Root>
-		</div>
+		</Card.Root>
 	);
 }
 
@@ -459,7 +476,7 @@ export function DocInstall({
 					</p>
 					<p className="text-muted-foreground">
 						the namespace and the theme are set up once — see{' '}
-						<DocLink to="/install">install</DocLink>.
+						<DocLink to="/installation">installation</DocLink>.
 						{stylesheet && (
 							<>
 								{' '}
@@ -832,16 +849,16 @@ export function DocPreview({ path, children }: DocPreviewProps) {
 	const name = path.slice(path.lastIndexOf('/') + 1);
 
 	return (
-		<div data-slot="doc-preview" data-file={name} className="overflow-hidden rounded-lg border">
-			<div data-slot="doc-preview-toolbar" className="flex justify-end border-b p-1">
+		<Card.Root data-slot="doc-preview" data-file={name} className="gap-0 overflow-hidden py-0">
+			<Card.Header data-slot="doc-preview-toolbar" className="flex justify-end border-b p-1">
 				<SourceDialog path={path} name={itemOf(path)}>
 					<ViewCode />
 				</SourceDialog>
-			</div>
-			<div className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
+			</Card.Header>
+			<Card.Content className="flex min-h-40 flex-wrap items-center justify-center gap-3 p-8">
 				{children}
-			</div>
-		</div>
+			</Card.Content>
+		</Card.Root>
 	);
 }
 
@@ -994,13 +1011,7 @@ function PropHint({ name, description }: { name: string; description: string }) 
 export function PropTable({ props }: PropTableProps) {
 	return (
 		<Tooltip.Provider delay={150}>
-			<Table.Root
-				size="sm"
-				// The panel is the docs’ own, so it also drops the last row’s rule: the row’s line and
-				// the panel’s edge would otherwise sit on top of each other as one 2px line.
-				className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
-				aria-label="props"
-			>
+			<Table.Root size="sm" variant="borderless" hoverable={false} aria-label="props">
 				<Table.Header>
 					<Table.Row>
 						{['prop', 'type', 'default'].map((label) => (
@@ -1012,7 +1023,7 @@ export function PropTable({ props }: PropTableProps) {
 					{Object.entries(props).map(([name, node]) => (
 						<Table.Row key={name}>
 							{/* Top-aligned, because a prop and its sentence are never the same height. */}
-							<Table.Cell className="align-top">
+							<Table.Head scope="row" className="align-top font-normal">
 								<span className="inline-flex items-center gap-1.5 font-mono">
 									{name}
 									{!node.required && '?'}
@@ -1020,7 +1031,7 @@ export function PropTable({ props }: PropTableProps) {
 										<PropHint name={name} description={node.description} />
 									)}
 								</span>
-							</Table.Cell>
+							</Table.Head>
 							<Table.Cell className="align-top whitespace-normal font-mono">
 								{node.type}
 							</Table.Cell>
@@ -1066,11 +1077,7 @@ function Names({ children }: { children: ReactNode }) {
 
 export function DocTable({ head, mono, rows }: DocTableProps) {
 	return (
-		<Table.Root
-			size="sm"
-			// See `PropTable`: the panel closes the table, so the last row does not.
-			className="rounded-lg border [&_tbody>tr:last-child>*]:border-b-0"
-		>
+		<Table.Root size="sm" variant="borderless" hoverable={false}>
 			<Table.Header>
 				<Table.Row>
 					{head.map((label, column) => (

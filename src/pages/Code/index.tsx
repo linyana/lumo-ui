@@ -31,12 +31,12 @@ const codeProps: Record<string, PropNode> = {
 	},
 	fileName: {
 		type: 'string',
-		description: 'Shown in the header instead of the language, which then sits beside it.',
+		description: 'Shown instead of the language when the built-in header is enabled.',
 	},
 	variant: {
 		type: '"filled" | "outlined" | "ghost"',
-		default: '"outlined"',
-		description: 'The surface: muted, bordered on the page, or nothing at all.',
+		default: '"ghost"',
+		description: 'Transparent by default; compose with Card for a surface, title and actions.',
 	},
 	showLineNumbers: {
 		type: 'boolean',
@@ -53,14 +53,13 @@ const codeProps: Record<string, PropNode> = {
 	copyable: {
 		type: 'boolean',
 		default: 'true',
-		description:
-			'The button in the header, which takes the whole block and says so for a moment.',
+		description: 'Shows the copy button when the built-in header is enabled.',
 	},
 	header: {
 		type: 'boolean',
-		default: 'true',
+		default: 'false',
 		description:
-			'The bar above the block. Off, the code is the whole block and language only picks the grammar.',
+			'Opts into the built-in title and copy bar. Leave it off when Card supplies the header.',
 	},
 	className: {
 		type: 'string',
@@ -140,17 +139,23 @@ const languages = [
 	'yaml',
 ];
 
-const usageImport = "import { Code } from '@/components/ui/code';";
-const usageExample = `<Code
-	code={source}
-	language="ts"
-	fileName="cn.ts"
-	showLineNumbers
-/>`;
+const usageImport = `import { Card } from '@/components/ui/card';
+import { Code, Copy } from '@/components/ui/code';`;
+const usageExample = `<Card.Root className="gap-0 overflow-hidden py-0">
+	<Card.Header className="min-h-9 border-b border-border/50 px-3 py-1">
+		<Card.Title className="font-mono text-xs font-medium">cn.ts</Card.Title>
+		<Card.Action>
+			<Copy value={source} />
+		</Card.Action>
+	</Card.Header>
+	<Card.Content className="min-w-0 px-0">
+		<Code code={source} language="ts" showLineNumbers />
+	</Card.Content>
+</Card.Root>`;
 
 export function CodePage() {
 	return (
-		<DocPage title="code" description="source, coloured, with a way to take it">
+		<DocPage title="code" description="source, coloured; the surface is yours to compose">
 			<DocPreview path="src/pages/Code/demos/basic.tsx">
 				<Basic />
 			</DocPreview>
@@ -161,7 +166,8 @@ export function CodePage() {
 					<>
 						the block is one file; the highlighter behind it is another, and it is the
 						half that carries the weight. <Mono>Code</Mono> also borrows{' '}
-						<Mono>Button</Mono> for the copy.
+						<Mono>Button</Mono> for the exported copy button. Add <Mono>Card</Mono> when
+						you want a surface with a title and actions.
 					</>
 				}
 			>
@@ -179,11 +185,11 @@ export function CodePage() {
 
 			<DocSection
 				title="usage"
-				note="one string, one grammar. the header names the file and takes the whole block."
+				note="Code renders the source. Card owns the surface, title and copy action."
 			>
 				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
+					<Code code={usageImport} language="tsx" />
+					<Code code={usageExample} language="tsx" />
 				</div>
 			</DocSection>
 
@@ -203,7 +209,7 @@ export function CodePage() {
 
 			<DocSection
 				title="surfaces"
-				note="the same block on a filled, an outlined and a bare background."
+				note="a muted Card, the default Card surface, and Code on its own with no header or background."
 			>
 				<DocPreview path="src/pages/Code/demos/surfaces.tsx">
 					<Surfaces />

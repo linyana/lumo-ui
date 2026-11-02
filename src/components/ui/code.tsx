@@ -29,7 +29,7 @@ export function Copy({ value, className }: CopyProps) {
 		<Button
 			data-slot="code-copy"
 			size="icon"
-			variant="secondary"
+			variant="ghost"
 			icon={copied ? <Check /> : <CopyIcon />}
 			aria-label={copied ? 'copied' : 'copy code'}
 			className={cn('size-7', className)}
@@ -181,7 +181,7 @@ export const codeVariants = tv({
 		},
 	},
 	defaultVariants: {
-		variant: 'outlined',
+		variant: 'ghost',
 	},
 });
 
@@ -196,23 +196,20 @@ export type CodeProps = Omit<ComponentProps<'div'>, 'children'> &
 		/** Wrap long lines instead of scrolling them sideways. */
 		wrap?: boolean;
 		copyable?: boolean;
-		/**
-		 * The bar above the block: what the file is, and the button taking it. Off, the code is the
-		 * whole block and `language` only chooses the grammar.
-		 */
+		/** Opt into the built-in title and copy bar; omitted by default for external composition. */
 		header?: boolean;
 	};
 
-/** A block of source, highlighted, with a header saying what it is and a button to take it. */
+/** Highlighted source, bare by default so a surrounding surface can own its title and actions. */
 export function Code({
 	code,
 	language,
 	fileName,
-	variant = 'outlined',
+	variant = 'ghost',
 	showLineNumbers = false,
 	wrap = false,
 	copyable = true,
-	header = true,
+	header = false,
 	className,
 	...props
 }: CodeProps) {

@@ -11,8 +11,8 @@ export type HeaderProps = Omit<ComponentProps<'header'>, 'title'> & {
 
 /**
  * The page's header, drawn inside the surface so it scrolls with nothing: it sticks to the top
- * of the scroll container and carries that container's own fill, which is why a page can drop it
- * anywhere in its content and still keep it in place.
+ * of the scroll container. Its chrome uses the shell's fill in light mode and the containing
+ * surface's fill in dark mode.
  */
 export function Header({
 	title,
@@ -27,7 +27,7 @@ export function Header({
 			data-slot="layout-header"
 			className={cn(
 				'sticky top-0 z-10 flex min-h-14 shrink-0 flex-wrap items-center gap-x-4 gap-y-2',
-				'border-b bg-inherit px-6 py-3',
+				'border-b bg-layout-background px-6 py-3 dark:bg-inherit',
 				className,
 			)}
 			{...props}

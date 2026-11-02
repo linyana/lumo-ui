@@ -29,7 +29,7 @@ import {
 } from '@/lib/motion';
 import { Transition } from './transition';
 
-export type TabsVariant = 'rounded' | 'square' | 'point';
+export type TabsVariant = 'rounded' | 'pill' | 'square' | 'point';
 export type TabsSize = 'sm' | 'md' | 'lg';
 
 /** Whatever a `Tabs.Tab` is held to — the same values Base UI accepts. */
@@ -77,6 +77,7 @@ export const indicatorVariants = tv({
 	variants: {
 		variant: {
 			rounded: 'rounded-md bg-card shadow-sm',
+			pill: 'rounded-md bg-secondary',
 			square: [
 				'after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary',
 				'data-[orientation=vertical]:after:inset-x-auto',
@@ -126,6 +127,7 @@ export const listVariants = tv({
 	variants: {
 		variant: {
 			rounded: 'gap-1 rounded-lg bg-muted p-1',
+			pill: 'gap-1 rounded-lg bg-card p-1',
 			square: [
 				'gap-4',
 				'shadow-[inset_0_-1px_0_var(--border)]',
@@ -408,12 +410,13 @@ export function Root({
 	children,
 	...props
 }: RootProps) {
-	const [selected, setSelected] = useState<TabsValue>(defaultValue);
+	const [selected, setSelected] = useState<TabsValue>(() => defaultValue);
 
 	const handleValueChange = useCallback(
 		(next: TabsValue, details: Parameters<NonNullable<RootProps['onValueChange']>>[1]) => {
-			setSelected(next);
 			onValueChange?.(next, details);
+			if (details.reason === 'none' && details.isCanceled) return;
+			setSelected(() => next);
 		},
 		[onValueChange],
 	);
@@ -458,6 +461,7 @@ export const tabVariants = tv({
 	variants: {
 		variant: {
 			rounded: 'rounded-md',
+			pill: 'rounded-md data-active:text-secondary-foreground',
 			// Both of these are shaped by the space their indicator needs, not by a fixed height.
 			square: 'h-auto! rounded-none py-2',
 			point: 'h-auto! rounded-none pt-1.5 pb-3',

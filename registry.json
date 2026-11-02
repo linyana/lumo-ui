@@ -89,6 +89,8 @@
 					"font-sans": "'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 					"font-mono": "'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace",
 					"color-background": "var(--background)",
+					"color-layout-background": "var(--layout-background)",
+					"color-layout-content": "var(--layout-content)",
 					"color-foreground": "var(--foreground)",
 					"color-card": "var(--card)",
 					"color-card-foreground": "var(--card-foreground)",
@@ -114,11 +116,12 @@
 					"shadow-overlay": "var(--shadow-overlay)",
 					"color-input-strong": "var(--input-strong)",
 					"color-ring": "var(--ring)",
-					"color-table-head": "color-mix(in oklch, var(--foreground) 2%, var(--background))",
-					"color-table-head-hover": "color-mix(in oklch, var(--foreground) 8%, var(--background))",
+					"color-table-head": "color-mix( in oklch, var(--foreground) 2%, var(--table-surface, var(--background)) )",
+					"color-table-head-hover": "color-mix( in oklch, var(--foreground) 8%, var(--table-surface, var(--background)) )",
 					"color-row-hover": "color-mix(in oklch, var(--foreground) 5%, transparent)",
 					"color-row-selected": "color-mix(in oklch, var(--primary) 8%, transparent)",
 					"color-row-selected-hover": "color-mix(in oklch, var(--primary) 12%, transparent)",
+					"color-column-sorted": "color-mix(in oklch, var(--foreground) 3%, transparent)",
 					"radius-sm": "calc(var(--radius) * 0.6)",
 					"radius-md": "calc(var(--radius) * 0.8)",
 					"radius-lg": "var(--radius)",
@@ -127,6 +130,8 @@
 					"animate-progress-sweep": "lumo-progress-sweep 1.2s ease-in-out infinite"
 				},
 				"light": {
+					"layout-background": "rgb(239 239 240)",
+					"layout-content": "rgb(249 249 250)",
 					"state-layer-hover-opacity": "0.06",
 					"state-layer-pressed-opacity": "0.14",
 					"state-layer-fill-hover-opacity": "0.16",
@@ -146,17 +151,19 @@
 					"info": "oklch(0.546 0.245 262.881)",
 					"input-strong": "oklch(0.78 0 0)",
 					"overlay": "oklch(0 0 0 / 50%)",
-					"shadow-surface": "0 1px 2px rgb(0 0 0 / 4%), 0 2px 4px rgb(0 0 0 / 2%)",
+					"shadow-surface": "0 0 0 1px rgb(0 0 0 / 2.9%), 0 3px 6px -2px rgb(0 0 0 / 2%), 0 1px 1px rgb(0 0 0 / 4%)",
 					"shadow-lifted": "0 17.5px 23.4px rgb(0 0 0 / 4%), 0 9.4px 12.5px rgb(0 0 0 / 3%), 0 5.25px 7px rgb(0 0 0 / 2%), 0 2.8px 3.7px -2px rgb(0 0 0 / 1%), 0 1.2px 1.5px rgb(0 0 0 / 1%)",
 					"shadow-overlay": "0 40px 80px rgb(0 0 0 / 6%), 0 20px 40px rgb(0 0 0 / 5%), 0 10px 20px rgb(0 0 0 / 4%), 0 5px 10px rgb(0 0 0 / 3%), 0 2px 4px rgb(0 0 0 / 2%)"
 				},
 				"dark": {
+					"layout-background": "var(--muted)",
+					"layout-content": "var(--background)",
 					"success": "oklch(0.723 0.219 149.579)",
 					"warning": "oklch(0.769 0.188 70.08)",
 					"info": "oklch(0.623 0.214 259.815)",
 					"input-strong": "oklch(1 0 0 / 30%)",
 					"overlay": "oklch(0 0 0 / 65%)",
-					"shadow-surface": "0 1px 2px rgb(0 0 0 / 6%), 0 2px 4px rgb(0 0 0 / 3%)",
+					"shadow-surface": "0 0 0 1px rgb(255 255 255 / 10%), 0 3px 6px -2px rgb(0 0 0 / 3%), 0 1px 1px rgb(0 0 0 / 6%)",
 					"shadow-lifted": "0 17.5px 23.4px rgb(0 0 0 / 6%), 0 9.4px 12.5px rgb(0 0 0 / 5%), 0 5.25px 7px rgb(0 0 0 / 3%), 0 2.8px 3.7px -2px rgb(0 0 0 / 2%), 0 1.2px 1.5px rgb(0 0 0 / 2%)",
 					"shadow-overlay": "0 40px 80px rgb(0 0 0 / 9%), 0 20px 40px rgb(0 0 0 / 8%), 0 10px 20px rgb(0 0 0 / 6%), 0 5px 10px rgb(0 0 0 / 5%), 0 2px 4px rgb(0 0 0 / 3%)"
 				}
@@ -248,9 +255,9 @@
 					"popover-foreground": "oklch(0.145 0 0)",
 					"primary": "oklch(0.205 0 0)",
 					"primary-foreground": "oklch(0.985 0 0)",
-					"secondary": "oklch(0.97 0 0)",
+					"secondary": "oklch(0.94 0 0)",
 					"secondary-foreground": "oklch(0.205 0 0)",
-					"muted": "oklch(0.97 0 0)",
+					"muted": "oklch(0.94 0 0)",
 					"muted-foreground": "oklch(0.556 0 0)",
 					"accent": "oklch(0.97 0 0)",
 					"accent-foreground": "oklch(0.205 0 0)",
@@ -269,9 +276,9 @@
 					"popover-foreground": "oklch(0.985 0 0)",
 					"primary": "oklch(0.922 0 0)",
 					"primary-foreground": "oklch(0.205 0 0)",
-					"secondary": "oklch(0.269 0 0)",
+					"secondary": "oklch(0.295 0 0)",
 					"secondary-foreground": "oklch(0.985 0 0)",
-					"muted": "oklch(0.269 0 0)",
+					"muted": "oklch(0.295 0 0)",
 					"muted-foreground": "oklch(0.708 0 0)",
 					"accent": "oklch(0.269 0 0)",
 					"accent-foreground": "oklch(0.985 0 0)",
@@ -519,6 +526,20 @@
 			]
 		},
 		{
+			"name": "pagination",
+			"type": "registry:ui",
+			"title": "Pagination",
+			"description": "Which page of the records you are on, and the way to another: a window of numbers that keeps the first and last page and collapses everything between into one gap, a line that says what the page holds out of the whole, and two arrows that disable where there is nowhere to go. The page is handed in and the press is handed back, so the same control can read from a URL, a store or a fetch.",
+			"dependencies": ["lucide-react", "tailwind-variants"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
+			"files": [
+				{
+					"path": "src/components/ui/pagination.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
 			"name": "scroll-area",
 			"type": "registry:ui",
 			"title": "ScrollArea",
@@ -550,13 +571,14 @@
 			"name": "layout",
 			"type": "registry:block",
 			"title": "Layout",
-			"description": "The app shell: a rail drawn from a nav array, and the surface a page scrolls in. Variant `default` insets that surface as a card on every edge; `plain` lets the page run edge to edge. Each page keeps its own header.",
+			"description": "The responsive app shell: one nav array draws a desktop rail and a mobile navigation drawer, beside the surface a page scrolls in. Choosing a destination closes the drawer without changing the desktop collapse state. Variant `default` insets the desktop surface as a card; `plain` lets the page run edge to edge. Each page keeps its own header.",
 			"dependencies": ["lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"@lumo/utils",
 				"@lumo/button",
 				"@lumo/nav",
-				"@lumo/scroll-area"
+				"@lumo/scroll-area",
+				"@lumo/drawer"
 			],
 			"files": [
 				{
@@ -583,6 +605,11 @@
 					"path": "src/components/blocks/layout/sidebar/index.tsx",
 					"type": "registry:component",
 					"target": "@components/blocks/layout/sidebar/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/layout/mobile/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/layout/mobile/index.tsx"
 				}
 			]
 		},
@@ -590,7 +617,7 @@
 			"name": "code",
 			"type": "registry:ui",
 			"title": "Code",
-			"description": "A block of source: a header naming the file or language, a copy button, optional line numbers, and shiki highlighting whose grammars load only when a block needs them. An unknown language falls back to plain text instead of failing.",
+			"description": "Highlighted source with optional line numbers, bare by default so Card can supply the surface, title and actions. Exports a reusable copy button and an opt-in header. Shiki grammars load only when needed; unknown languages fall back to plain text.",
 			"dependencies": ["shiki", "lucide-react", "tailwind-variants"],
 			"registryDependencies": [
 				"@lumo/utils",
@@ -682,6 +709,34 @@
 			"files": [
 				{
 					"path": "src/components/ui/field.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "fieldset",
+			"type": "registry:ui",
+			"title": "Fieldset",
+			"description": "A heading over the fields it names, so a long form reads as several answers instead of one list. A native `<fieldset>` with its frame taken off — the legend is the group's accessible name, and a group that is disabled dims as one.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils"],
+			"files": [
+				{
+					"path": "src/components/ui/fieldset.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "form",
+			"type": "registry:ui",
+			"title": "Form",
+			"description": "The fields as one submission: it collects their values, checks them on submit, moves focus to the first one that failed, and files every verdict — a browser's, a validator's or a server's — back in the field it belongs to. Nothing is wired between the two by hand.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils"],
+			"files": [
+				{
+					"path": "src/components/ui/form.tsx",
 					"type": "registry:ui"
 				}
 			]
@@ -802,9 +857,20 @@
 			"name": "table",
 			"type": "registry:ui",
 			"title": "Table",
-			"description": "Records in columns: a frame that scrolls, the header that names them — sticky when the rows have somewhere to go — rows that answer the pointer with the tint a nav row takes, an empty row that keeps the columns, and an arrow that says which way a column runs without ever reordering anything.",
+			"description": "Display structured records with native table semantics, borderless, outlined or filled surfaces, three spacing densities, row headers, selection styling, a loading layer, one-line cells and a centred empty state. The frame scrolls on both axes with the columns keeping their declared widths, a header holds every row it was given, a column can be pinned to either edge — its offset measured, its shadow cast only once content has passed under it — and a column can wait for a breakpoint. A selection column holds every box in view and never a row it cannot see; a record can carry its depth, open the rows filed under it, and open a panel of its own. A sortable column walks a cycle that ends in unsorted and says what the next press will do; a filterable one opens a panel that edits a draft before it applies. Compose merges, summaries, pagination and selection without handing data ownership to the component.",
 			"dependencies": ["tailwind-variants", "lucide-react"],
-			"registryDependencies": ["@lumo/utils", "@lumo/control"],
+			"registryDependencies": [
+				"@lumo/utils",
+				"@lumo/control",
+				"@lumo/button",
+				"@lumo/checkbox",
+				"@lumo/input",
+				"@lumo/menu",
+				"@lumo/popover",
+				"@lumo/radio-group",
+				"@lumo/spinner",
+				"@lumo/tooltip"
+			],
 			"files": [
 				{
 					"path": "src/components/ui/table.tsx",

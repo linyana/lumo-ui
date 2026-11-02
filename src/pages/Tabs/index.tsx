@@ -11,6 +11,7 @@ import {
 	type PropNode,
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
+import Canceled from './demos/canceled';
 import Request from './demos/request';
 import Sizes from './demos/sizes';
 import Swapped from './demos/swapped';
@@ -22,10 +23,10 @@ const files = ['src/components/ui/tabs.tsx'];
 
 const rootProps: Record<string, PropNode> = {
 	variant: {
-		type: '"rounded" | "square" | "point"',
+		type: '"rounded" | "pill" | "square" | "point"',
 		default: '"rounded"',
 		description:
-			'The skin, and the shape of the indicator with it: a pill in a muted track, a bar on the list’s edge, or a dot under the label.',
+			'The skin: rounded has a white highlight on a muted track; pill has a secondary highlight on a Card surface; square draws an edge bar, and point draws a dot.',
 	},
 	size: {
 		type: '"sm" | "md" | "lg"',
@@ -48,7 +49,8 @@ const rootProps: Record<string, PropNode> = {
 	},
 	onValueChange: {
 		type: '(value, details) => void',
-		description: 'Fires on a click and on the arrow keys.',
+		description:
+			'Fires on user changes and automatic selection. Call details.cancel() to reject a user change; automatic initial, disabled and missing fallbacks cannot be canceled.',
 	},
 };
 
@@ -180,12 +182,13 @@ export function TabsPage() {
 			</DocSection>
 
 			<DocSection
-				title="three indicators, one measurement"
+				title="four skins, one measurement"
 				note={
 					<>
-						each variant is the same element wearing a different skin: a pill, a bar on
-						the list’s edge, or a dot. Base UI measures the active tab and hands the
-						result over as <Mono>--active-tab-*</Mono>, so nothing here is per-tab.
+						each variant is the same element wearing a different skin: a white highlight
+						on a muted track, a grey pill on a Card surface, an edge bar, or a dot. Base
+						UI measures the active tab and hands the result over as{' '}
+						<Mono>--active-tab-*</Mono>, so nothing here is per-tab.
 					</>
 				}
 			>
@@ -226,6 +229,15 @@ export function TabsPage() {
 			>
 				<DocPreview path="src/pages/Tabs/demos/tracked.tsx">
 					<Tracked />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="canceling a change"
+				note="call details.cancel() in onValueChange to keep both the active tab and its panel in place."
+			>
+				<DocPreview path="src/pages/Tabs/demos/canceled.tsx">
+					<Canceled />
 				</DocPreview>
 			</DocSection>
 

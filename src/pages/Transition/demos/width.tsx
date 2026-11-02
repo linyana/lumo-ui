@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Tabs } from '@/components/ui/tabs';
 import { Transition } from '@/components/ui/transition';
 
 const notes = [
@@ -29,27 +29,30 @@ export default function Width() {
 
 	return (
 		<div className="w-full max-w-sm space-y-3">
-			<div className="flex gap-1">
-				{notes.map((item) => (
-					<Button
-						key={item.value}
-						size="sm"
-						variant={item.value === value ? 'secondary' : 'ghost'}
-						onClick={() => setValue(item.value)}
-					>
-						{item.label}
-					</Button>
-				))}
-			</div>
-			<div className="rounded-md border p-3">
-				{/* `w-fit`: nothing else sizes this box, so the content does — in both directions. */}
-				<Transition className="w-fit">
-					<div className="space-y-0.5">
-						<div className="text-sm font-medium">{note.headline}</div>
-						<p className="text-sm text-muted-foreground">{note.detail}</p>
-					</div>
-				</Transition>
-			</div>
+			<Tabs.Root
+				variant="pill"
+				value={value}
+				onValueChange={(next) => setValue(next)}
+				className="gap-3"
+			>
+				<Tabs.List aria-label="Indexing status">
+					{notes.map((item) => (
+						<Tabs.Tab key={item.value} value={item.value}>
+							{item.label}
+						</Tabs.Tab>
+					))}
+					<Tabs.Indicator />
+				</Tabs.List>
+				<Tabs.Panel value={value} transition={false} className="rounded-md border p-3">
+					{/* `w-fit`: nothing else sizes this box, so the content does — in both directions. */}
+					<Transition className="w-fit">
+						<div className="space-y-0.5">
+							<div className="text-sm font-medium">{note.headline}</div>
+							<p className="text-sm text-muted-foreground">{note.detail}</p>
+						</div>
+					</Transition>
+				</Tabs.Panel>
+			</Tabs.Root>
 			<p className="text-sm text-muted-foreground">
 				the box is sized by its content here, so the width glides with the height.
 			</p>

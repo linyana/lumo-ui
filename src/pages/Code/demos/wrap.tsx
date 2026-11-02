@@ -1,4 +1,5 @@
-import { Code } from '@/components/ui/code';
+import { Card } from '@/components/ui/card';
+import { Code, Copy } from '@/components/ui/code';
 
 const source = [
 	'const message =',
@@ -9,8 +10,21 @@ const source = [
 export default function Wrap() {
 	return (
 		<div className="w-full space-y-3">
-			<Code code={source} language="ts" fileName="scroll.ts" />
-			<Code code={source} language="ts" fileName="wrap.ts" wrap />
+			{[false, true].map((wrap) => (
+				<Card.Root key={String(wrap)} className="gap-0 overflow-hidden py-0">
+					<Card.Header className="min-h-9 border-b border-border/50 px-3 py-1">
+						<Card.Title className="font-mono text-xs font-medium">
+							{wrap ? 'wrap.ts' : 'scroll.ts'}
+						</Card.Title>
+						<Card.Action>
+							<Copy value={source} />
+						</Card.Action>
+					</Card.Header>
+					<Card.Content className="min-w-0 px-0">
+						<Code code={source} language="ts" wrap={wrap} />
+					</Card.Content>
+				</Card.Root>
+			))}
 		</div>
 	);
 }

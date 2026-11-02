@@ -13,13 +13,15 @@ import { ComboboxPage } from './Combobox';
 import { DialogPage } from './Dialog';
 import { DrawerPage } from './Drawer';
 import { FieldPage } from './Field';
+import { FieldsetPage } from './Fieldset';
+import { FormPage } from './Form';
 import { InputPage } from './Input';
-import { InstallPage } from './Install';
+import { InstallationPage } from './Installation';
 import { LayoutPage } from './Layout';
-import { LlmsPage } from './Llms';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
 import { OverviewPage } from './Overview';
+import { PaginationPage } from './Pagination';
 import { PopoverPage } from './Popover';
 import { ProgressPage } from './Progress';
 import { RadioGroupPage } from './RadioGroup';
@@ -54,8 +56,12 @@ export type DocRoute = {
 /** One page per component, in the order the rail lists them: a section, then alphabetical. */
 export const docRoutes: DocRoute[] = [
 	{ path: 'overview', label: 'Overview', section: 'Getting Started', element: <OverviewPage /> },
-	{ path: 'install', label: 'Install', section: 'Getting Started', element: <InstallPage /> },
-	{ path: 'llms', label: 'AI Guide', section: 'Getting Started', element: <LlmsPage /> },
+	{
+		path: 'installation',
+		label: 'Installation',
+		section: 'Getting Started',
+		element: <InstallationPage />,
+	},
 	{ path: 'accordion', label: 'Accordion', section: 'Components', element: <AccordionPage /> },
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
@@ -75,9 +81,17 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'dialog', label: 'Dialog', section: 'Components', element: <DialogPage /> },
 	{ path: 'drawer', label: 'Drawer', section: 'Components', element: <DrawerPage /> },
 	{ path: 'field', label: 'Field', section: 'Components', element: <FieldPage /> },
+	{ path: 'fieldset', label: 'Fieldset', section: 'Components', element: <FieldsetPage /> },
+	{ path: 'form', label: 'Form', section: 'Components', element: <FormPage /> },
 	{ path: 'input', label: 'Input', section: 'Components', element: <InputPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'nav', label: 'Nav', section: 'Components', element: <NavPage /> },
+	{
+		path: 'pagination',
+		label: 'Pagination',
+		section: 'Components',
+		element: <PaginationPage />,
+	},
 	{ path: 'popover', label: 'Popover', section: 'Components', element: <PopoverPage /> },
 	{ path: 'progress', label: 'Progress', section: 'Components', element: <ProgressPage /> },
 	{

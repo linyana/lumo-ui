@@ -10,6 +10,7 @@ export type LayoutNavItem = {
 	icon?: ReactNode;
 	/** A count or a state on the row's trailing edge. */
 	badge?: ReactNode;
+	/** Disables the row and, for a parent, every destination below it. */
 	disabled?: boolean;
 	/** A row that goes somewhere: the shell draws a link and lets `onSelect` report it. */
 	href?: string;

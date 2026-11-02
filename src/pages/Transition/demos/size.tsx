@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Tabs } from '@/components/ui/tabs';
 import { Transition } from '@/components/ui/transition';
 
 const notes = [
@@ -22,25 +22,26 @@ export default function Size() {
 
 	return (
 		<div className="w-full max-w-sm space-y-3">
-			<div className="flex gap-1">
-				{notes.map((item) => (
-					<Button
-						key={item.value}
-						size="sm"
-						// A filled step rather than a tint: the trigger row has to say which note is open
-						// wherever the demo is drawn, and `secondary` only reads on a white page.
-						variant={item.value === value ? 'default' : 'ghost'}
-						onClick={() => setValue(item.value)}
-					>
-						{item.label}
-					</Button>
-				))}
-			</div>
-			<div className="rounded-md border p-3">
-				<Transition>
-					<p className="text-sm text-muted-foreground">{note.body}</p>
-				</Transition>
-			</div>
+			<Tabs.Root
+				variant="pill"
+				value={value}
+				onValueChange={(next) => setValue(next)}
+				className="gap-3"
+			>
+				<Tabs.List aria-label="Publication status">
+					{notes.map((item) => (
+						<Tabs.Tab key={item.value} value={item.value}>
+							{item.label}
+						</Tabs.Tab>
+					))}
+					<Tabs.Indicator />
+				</Tabs.List>
+				<Tabs.Panel value={value} transition={false} className="rounded-md border p-3">
+					<Transition>
+						<p className="text-sm text-muted-foreground">{note.body}</p>
+					</Transition>
+				</Tabs.Panel>
+			</Tabs.Root>
 			<p className="text-sm text-muted-foreground">
 				the content is replaced in place and the box is what moves: it measures what is
 				inside it and eases to the new height.

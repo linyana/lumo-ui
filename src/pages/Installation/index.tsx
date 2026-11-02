@@ -11,13 +11,27 @@ import {
 	registryUrl,
 } from '@/pages/DocPage';
 
+/** A generated file beside the site: fetched whole, not routed, so it opens in its own tab. */
+function AgentFile({ file }: { file: string }) {
+	return (
+		<a
+			href={`/${file}`}
+			target="_blank"
+			rel="noreferrer"
+			className="underline underline-offset-2 hover:text-foreground"
+		>
+			{file}
+		</a>
+	);
+}
+
 /**
  * What a project does once, on the way in: the namespace, the theme, and the first component.
  *
  * Everything a component page says about installing is the same three steps, so they are said here
  * instead — a page under Components only has to name its own item.
  */
-export function InstallPage() {
+export function InstallationPage() {
 	const packageManager = useGlobal((state) => state.packageManager);
 	const namespace = `{
 	"registries": {
@@ -27,7 +41,7 @@ export function InstallPage() {
 
 	return (
 		<DocPage
-			title="Install"
+			title="Installation"
 			description="one namespace, one theme, then a component at a time."
 		>
 			<DocSection
@@ -184,6 +198,23 @@ export function InstallPage() {
 			</DocSection>
 
 			<DocSection
+				title="install the agent skill"
+				note={
+					<>
+						Install the Lumo UI instructions in your project and choose your coding
+						agent. This does not install components or configure the theme.
+					</>
+				}
+			>
+				<Command>bunx skills add linyana/lumo-ui</Command>
+				<p className="text-sm text-muted-foreground">
+					The installed skill reads the current <AgentFile file="skills.md" /> from
+					the documentation site, so its component index and examples stay with the
+					library. You can also give that link directly to your agent.
+				</p>
+			</DocSection>
+
+			<DocSection
 				title="by hand"
 				note={
 					<>
@@ -198,8 +229,9 @@ export function InstallPage() {
 				<p className="text-sm text-muted-foreground">
 					see <DocLink to="/button">button</DocLink> for the shape of it, or{' '}
 					<DocLink to="/overview">the overview</DocLink> for what there is to install. to
-					hand the library to an assistant, start at{' '}
-					<DocLink to="/llms">AI Guide</DocLink>.
+					hand the library to an assistant, start at <AgentFile file="skills.md" /> — the
+					rules and the index in one file it can load as a skill — or read{' '}
+					<AgentFile file="llms.txt" />.
 				</p>
 			</DocSection>
 		</DocPage>

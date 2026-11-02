@@ -35,6 +35,8 @@
 		'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace;
 
 	--color-background: var(--background);
+	--color-layout-background: var(--layout-background);
+	--color-layout-content: var(--layout-content);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
 	--color-card-foreground: var(--card-foreground);
@@ -56,27 +58,34 @@
 	--color-border: var(--border);
 	--color-input: var(--input);
 
-	/* Shadows: a surface has three of them, and they are drawn as several layers of the same black
-	   at a few percent, each roughly doubling in blur. One layer at a readable alpha leaves a
-	   visible edge just outside the border; stacked low-alpha layers read as one soft halo. */
+	/* Three elevation levels: the resting surface includes its own hairline edge; the lifted and
+	   overlay shadows spread further without changing the borders of the surfaces using them. */
 	--shadow-surface: var(--shadow-surface);
 	--shadow-lifted: var(--shadow-lifted);
 	--shadow-overlay: var(--shadow-overlay);
 	--color-input-strong: var(--input-strong);
 	--color-ring: var(--ring);
 
-	/* A table: the band its column names sit in, the same band under the pointer, and the three fills a
-	   row can wear. All five are washes mixed with `transparent` or with the page, never colours of
-	   their own — a row's hover has to read on the page as well as inside a card, and a band has to be
-	   opaque enough that the rows of a sticky header do not show through it. The band is faint, because
-	   it names the columns and is not a record itself; the pointer deepens it to the weight of the rule
-	   under it. The colours are named rather than written once in `:root`, because a mix written there
-	   would freeze the light theme's `--primary` into the value it hands down to `.dark`. */
-	--color-table-head: color-mix(in oklch, var(--foreground) 2%, var(--background));
-	--color-table-head-hover: color-mix(in oklch, var(--foreground) 8%, var(--background));
+	/* Table bands are opaque so sticky headers hide the records beneath them. A standalone table
+	   supplies its surface; a frameless table can name its host through --table-surface. Row states
+	   stay transparent so the same washes work on either surface. Keep these mixes inline: a value
+	   resolved in :root would freeze the light theme before a dark scope can change its colours. */
+	--color-table-head: color-mix(
+		in oklch,
+		var(--foreground) 2%,
+		var(--table-surface, var(--background))
+	);
+	--color-table-head-hover: color-mix(
+		in oklch,
+		var(--foreground) 8%,
+		var(--table-surface, var(--background))
+	);
 	--color-row-hover: color-mix(in oklch, var(--foreground) 5%, transparent);
 	--color-row-selected: color-mix(in oklch, var(--primary) 8%, transparent);
 	--color-row-selected-hover: color-mix(in oklch, var(--primary) 12%, transparent);
+	/* The column a sort is applied to. Transparent like the row states, and a step lighter than the
+	   hover, so a hovered row still reads as hovered inside a sorted column. */
+	--color-column-sorted: color-mix(in oklch, var(--foreground) 3%, transparent);
 
 	/* --radius is the only knob; the whole scale derives from it. */
 	--radius-sm: calc(var(--radius) * 0.6);
@@ -109,6 +118,10 @@
    (--background, --foreground, --primary, --ring, --border) are the palette's, or the
    consumer's own. */
 :root {
+	/* Shell chrome stays separate from the content canvas and card surfaces. */
+	--layout-background: rgb(239 239 240);
+	--layout-content: rgb(249 249 250);
+
 	/* Interaction feedback — shared by every pressable control.
 	   Filled buttons tint themselves with their light foreground colour, which reads
 	   weaker than the dark tint the surface variants get, so they carry their own pair.
@@ -167,11 +180,10 @@
 	   lighter than the page it covers. */
 	--overlay: oklch(0 0 0 / 50%);
 
-	/* The resting card barely leaves the page: two short layers, so the edge is closed by the border
-	   more than by the shadow. The lifted one spreads to nearly the height of the card, which is
-	   what a pointer arriving says. Both are black rather than a token colour — a shadow is the page
-	   below the surface being darker, not a hue of its own. */
-	--shadow-surface: 0 1px 2px rgb(0 0 0 / 4%), 0 2px 4px rgb(0 0 0 / 2%);
+	/* The resting card has no border: one spread-only layer draws the hairline, and two short
+	   shadows lift it just off the page. The lifted shadow adds a wider halo on hover. */
+	--shadow-surface:
+		0 0 0 1px rgb(0 0 0 / 2.9%), 0 3px 6px -2px rgb(0 0 0 / 2%), 0 1px 1px rgb(0 0 0 / 4%);
 	--shadow-lifted:
 		0 17.5px 23.4px rgb(0 0 0 / 4%), 0 9.4px 12.5px rgb(0 0 0 / 3%),
 		0 5.25px 7px rgb(0 0 0 / 2%), 0 2.8px 3.7px -2px rgb(0 0 0 / 1%),
@@ -185,15 +197,17 @@
 }
 
 .dark {
+	--layout-background: var(--muted);
+	--layout-content: var(--background);
 	--success: oklch(0.723 0.219 149.579);
 	--warning: oklch(0.769 0.188 70.08);
 	--info: oklch(0.623 0.214 259.815);
 	/* A step lighter rather than darker: on a dark page an edge is found by adding light. */
 	--input-strong: oklch(1 0 0 / 30%);
 	--overlay: oklch(0 0 0 / 65%);
-	/* Darker, not lighter: black over a dark page needs more of itself to be seen at all, which is
-	   the opposite of the border, where an edge is found by adding light. */
-	--shadow-surface: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 4px rgb(0 0 0 / 3%);
+	/* The hairline adds light on a dark page; the shadows beneath it still remove light. */
+	--shadow-surface:
+		0 0 0 1px rgb(255 255 255 / 10%), 0 3px 6px -2px rgb(0 0 0 / 3%), 0 1px 1px rgb(0 0 0 / 6%);
 	--shadow-lifted:
 		0 17.5px 23.4px rgb(0 0 0 / 6%), 0 9.4px 12.5px rgb(0 0 0 / 5%),
 		0 5.25px 7px rgb(0 0 0 / 3%), 0 2.8px 3.7px -2px rgb(0 0 0 / 2%),

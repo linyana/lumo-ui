@@ -480,6 +480,7 @@ export type SubProps = {
 	/** Highlights the row, so a parent reads as current when one of its children is. */
 	isActive?: boolean;
 	defaultOpen?: boolean;
+	disabled?: boolean;
 	/** Which side the popover opens on when the nav is compact. Defaults to the row's right. */
 	popoverSide?: 'top' | 'right' | 'bottom' | 'left';
 };
@@ -497,6 +498,7 @@ export function Sub({
 	className,
 	isActive = false,
 	defaultOpen = false,
+	disabled = false,
 	popoverSide = 'right',
 }: SubProps) {
 	const { compact } = useNav();
@@ -505,13 +507,15 @@ export function Sub({
 		return (
 			<Popover.Root>
 				<Popover.Trigger
-					openOnHover
+					disabled={disabled}
+					openOnHover={!disabled}
 					delay={80}
 					render={
 						<NavRow
 							icon={icon}
 							label={label}
 							isActive={isActive}
+							disabled={disabled}
 							tooltip={false}
 							className={className}
 						/>
@@ -523,7 +527,9 @@ export function Sub({
 							<Popover.Title className="px-2 py-1 text-xs font-medium text-muted-foreground">
 								{label}
 							</Popover.Title>
-							<SubList className="ms-0 me-0 border-s-0 ps-1">{children}</SubList>
+							<SubList inert={disabled} className="ms-0 me-0 border-s-0 ps-1">
+								{children}
+							</SubList>
 						</Popover.Popup>
 					</Popover.Positioner>
 				</Popover.Portal>
@@ -532,7 +538,7 @@ export function Sub({
 	}
 
 	return (
-		<Collapsible.Root defaultOpen={defaultOpen}>
+		<Collapsible.Root defaultOpen={defaultOpen} disabled={disabled}>
 			{/* Base UI's own trigger rather than `Collapsible.Trigger`: that one paints a collapsible
 			    header, and a nav row already has an appearance of its own. Two looks on one element
 			    mean every shared property — padding, text size, the icon's size — is settled by
@@ -544,6 +550,7 @@ export function Sub({
 						icon={icon}
 						label={label}
 						isActive={isActive}
+						disabled={disabled}
 						className={cn('group', className)}
 					>
 						<Collapsible.Icon className="ms-auto" />
@@ -551,7 +558,7 @@ export function Sub({
 				}
 			/>
 			<Collapsible.Panel>
-				<SubList>{children}</SubList>
+				<SubList inert={disabled}>{children}</SubList>
 			</Collapsible.Panel>
 		</Collapsible.Root>
 	);

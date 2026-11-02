@@ -35,7 +35,7 @@ export default function Basic() {
 				<Table.Body>
 					{runs.map((run) => (
 						<Table.Row key={run.job}>
-							<Table.Cell className="font-medium">{run.job}</Table.Cell>
+							<Table.Head scope="row">{run.job}</Table.Head>
 							<Table.Cell className="text-muted-foreground">{run.branch}</Table.Cell>
 							<Table.Cell align="end">{run.duration}</Table.Cell>
 							<Table.Cell>

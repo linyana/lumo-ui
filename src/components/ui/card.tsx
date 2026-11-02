@@ -10,7 +10,9 @@ export function Action({ className, ...props }: ActionProps) {
 		<div
 			data-slot="card-action"
 			className={cn(
-				'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
+				'col-start-2 row-start-1 self-center justify-self-end',
+				'group-has-data-[slot=card-description]/card-header:row-span-2',
+				'group-has-data-[slot=card-description]/card-header:self-start',
 				className,
 			)}
 			{...props}
@@ -65,9 +67,10 @@ export function Header({ className, ...props }: HeaderProps) {
 			// Two columns only when an action is present, so a title and its description stay in
 			// one column and the action sits opposite both of them.
 			className={cn(
-				'grid auto-rows-min items-start gap-1.5 px-(--card-pad)',
+				'group/card-header grid auto-rows-min items-center gap-1.5 px-(--card-pad) py-1',
 				'has-data-[slot=card-action]:grid-cols-[1fr_auto]',
 				'has-data-[slot=card-description]:grid-rows-[auto_auto]',
+				'has-data-[slot=card-description]:items-start',
 				className,
 			)}
 			{...props}
@@ -78,30 +81,31 @@ export function Header({ className, ...props }: HeaderProps) {
 export const cardVariants = tv({
 	base: [
 		'group/card flex flex-col',
-		'rounded-xl border bg-card text-card-foreground shadow-surface',
+		'rounded-xl bg-card text-card-foreground shadow-surface',
 		// The inline inset every part is drawn at. A variable rather than a class per part, so a
 		// header, a body and a footer cannot drift apart, and a part added later is inset too
 		// without being told to be.
 		'[--card-pad:--spacing(6)]',
 	],
 	variants: {
+		bordered: {
+			true: 'border border-border',
+		},
 		size: {
 			sm: 'gap-4 py-4 [--card-pad:--spacing(4)]',
 			md: 'gap-6 py-6',
 		},
 		hoverable: {
 			true: [
-				// The shadow is what answers the pointer: it spreads from a line hugging the card to a
-				// halo around it, and nothing about the card's own drawing changes. The edge moves only
-				// as far as it has to — `input` is the same colour as `border` in the light theme and
-				// one small step above it in the dark one, where a shadow has nothing to fall on. The
-				// cursor is not here: a card is a div, the link is the consumer's.
-				'transition-[box-shadow,border-color] duration-(--duration-state)',
-				'hover:border-input hover:shadow-lifted',
+				// Keep the surface's hairline while adding the hover halo. The cursor is the
+				// consumer's: a card is a div, not the link inside it.
+				'transition-shadow duration-(--duration-state)',
+				'hover:shadow-[var(--shadow-surface),var(--shadow-lifted)]',
 			],
 		},
 	},
 	defaultVariants: {
+		bordered: false,
 		size: 'md',
 		hoverable: false,
 	},
@@ -120,13 +124,20 @@ export type RootProps = ComponentProps<'div'> & VariantProps<typeof cardVariants
  * A card is a plain div, so a card that is clicked is still the consumer's to build — the prop says
  * "this one is a target", not "this one is a button".
  */
-export function Root({ className, size = 'md', hoverable = false, ...props }: RootProps) {
+export function Root({
+	className,
+	size = 'md',
+	bordered = false,
+	hoverable = false,
+	...props
+}: RootProps) {
 	return (
 		<div
 			data-slot="card"
 			data-size={size}
+			data-bordered={bordered ? '' : undefined}
 			data-hoverable={hoverable ? '' : undefined}
-			className={cn(cardVariants({ size, hoverable }), className)}
+			className={cn(cardVariants({ size, bordered, hoverable }), className)}
 			{...props}
 		/>
 	);

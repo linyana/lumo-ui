@@ -12,29 +12,30 @@ import { cn } from '@/lib/utils';
 import { Content } from './content';
 import { Header } from './header';
 import { Sidebar } from './sidebar';
+import { MobileNavigation } from './mobile';
 import type { LayoutNavEntry } from './types';
 
 export const layoutVariants = tv({
 	slots: {
 		// The shell's fill is the sidebar's: nothing paints the rail, and in `default` the card
 		// rises above the same colour, so one token covers both.
-		root: 'flex h-svh w-full overflow-hidden bg-muted',
-		main: 'flex min-w-0 flex-1 flex-col',
+		root: 'flex h-svh w-full overflow-hidden bg-layout-background',
+		main: 'flex min-h-0 min-w-0 flex-1 flex-col',
 		// `relative` makes the scroll box a containing block: an absolutely positioned descendant —
 		// Base UI's hidden checkbox input, most of the time — would otherwise sit against the initial
 		// containing block, escape this box's clipping and give the document a scrollbar of its own.
-		surface: 'relative flex h-full min-w-0 flex-col overflow-y-auto',
+		surface: 'relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto',
 	},
 	variants: {
 		variant: {
 			/** A rail, then a card inset on every edge. */
 			default: {
-				main: 'p-2 ps-0',
-				surface: 'rounded-xl border bg-card text-card-foreground',
+				main: 'md:p-2 md:ps-0',
+				surface: 'bg-layout-content text-card-foreground md:rounded-xl',
 			},
 			/** A rail only: the content is the page, edge to edge. */
 			plain: {
-				surface: 'bg-background',
+				surface: 'bg-layout-content',
 			},
 		},
 	},
@@ -46,7 +47,7 @@ export const layoutVariants = tv({
 // `onSelect` is a div's own event; here the name belongs to the nav, so the DOM handler goes.
 export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 	variant?: VariantProps<typeof layoutVariants>['variant'];
-	/** Rows, groups and separators, in the order the rail draws them. */
+	/** Shared by the desktop rail and the mobile drawer. Supplying it enables mobile navigation. */
 	nav?: LayoutNavEntry[];
 	selectedKey?: string;
 	onSelect?: (key: string) => void;
@@ -146,6 +147,18 @@ function LayoutRoot({
 				onToggle={toggle}
 			/>
 			<div data-slot="layout-main" className={main()}>
+				{nav !== undefined && (
+					<MobileNavigation
+						nav={nav}
+						selectedKey={selectedKey}
+						onSelect={onSelect}
+						logo={logo}
+						title={title}
+						brandActions={brandActions}
+						footer={footer}
+						resetScrollKey={resetScrollKey}
+					/>
+				)}
 				<main ref={surfaceRef} data-slot="layout-surface" className={surface()}>
 					{children}
 				</main>
@@ -155,8 +168,8 @@ function LayoutRoot({
 }
 
 /**
- * The app shell — the one component here that is not a Base UI primitive. It owns the rail, the
- * scroll container and the surface above it; the page owns everything inside, header included.
+ * The responsive app shell. It owns the rail, the mobile drawer and the scrolling surface;
+ * the page owns everything inside, header included.
  * So it takes the data a shell has (a variant, a nav, a selection) and hangs the page's parts
  * off the same name, the way antd's Layout does.
  */

@@ -25,11 +25,16 @@ const rootProps: Record<string, PropNode> = {
 		description:
 			'The padding and the gap between parts. Set once on the root: every part reads it back off the root, so a dense list of cards changes at one place.',
 	},
+	bordered: {
+		type: 'boolean',
+		default: 'false',
+		description: 'Adds an explicit border using the shared border token.',
+	},
 	hoverable: {
 		type: 'boolean',
 		default: 'false',
 		description:
-			'Whether the surface answers the pointer. Hover is owned by the card, not by whatever inside it is clicked, so a tile whose bar is the link still lifts as a whole: the shadow spreads from a line hugging the card to a halo around it. The edge takes one small step, and only where the shadow is not enough — in the dark theme. The fill never moves, and neither does the cursor: a card is a div, the link is the consumer’s.',
+			'Whether the surface answers the pointer. Hover is owned by the card, not by whatever inside it is clicked, so a tile whose bar is the link still lifts as a whole: the shadow spreads from a line hugging the card to a halo around it. The fine shadow-drawn edge stays in place as the surface lifts. The fill never moves, and neither does the cursor: a card is a div, the link is the consumer’s.',
 	},
 	className: {
 		type: 'string',
@@ -56,7 +61,7 @@ const partRows = [
 	[
 		'Card.Action',
 		'the corner slot',
-		'spans both rows, so it hangs beside the title and the description rather than under them.',
+		'centred beside a title alone; spans both rows and aligns to the top when a description is present.',
 	],
 	[
 		'Card.Content',
@@ -73,6 +78,7 @@ const partRows = [
 const hookRows = [
 	['data-slot="card"', 'the surface', 'a div; the card adds the look, nothing else.'],
 	['data-size', 'sm | md', 'on the root, and read by every part through group-data-[size=…].'],
+	['data-bordered', 'present only when bordered', 'on the root when its explicit border is enabled.'],
 	[
 		'data-hoverable',
 		'present only when hoverable',
@@ -85,7 +91,11 @@ const hookRows = [
 	],
 	['data-slot="card-title"', 'its name', 'text-base font-semibold, overridable like any div.'],
 	['data-slot="card-description"', 'the line under it', 'text-sm text-muted-foreground.'],
-	['data-slot="card-action"', 'the corner slot', 'column two, rows one to two.'],
+	[
+		'data-slot="card-action"',
+		'the corner slot',
+		'column two; spans two rows only when the header has a description.',
+	],
 	['data-slot="card-content"', 'the body', 'flex-1, so a stretched card keeps its footer down.'],
 	['data-slot="card-footer"', 'the bottom row', 'flex items-center gap-2.'],
 ];
@@ -163,9 +173,8 @@ export function CardPage() {
 						<Mono>hoverable</Mono> puts the hover on the surface instead of on whatever
 						inside it happens to be clickable, so a tile answers as one thing from a
 						pointer anywhere inside it. The shadow spreads from a line hugging the card
-						to a halo around it; the edge only steps to <Mono>input</Mono>, which is the
-						same colour as <Mono>border</Mono> in the light theme and one small step
-						above it in the dark one.
+						to a halo around it, while the fine shadow-drawn edge stays in place in both
+						themes.
 					</>
 				}
 			>
