@@ -22,6 +22,7 @@ import { LlmsPage } from './Llms';
 import { MenuPage } from './Menu';
 import { NavPage } from './Nav';
 import { OverviewPage } from './Overview';
+import { PaginationPage } from './Pagination';
 import { PopoverPage } from './Popover';
 import { ProgressPage } from './Progress';
 import { RadioGroupPage } from './RadioGroup';
@@ -82,6 +83,12 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'input', label: 'Input', section: 'Components', element: <InputPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'nav', label: 'Nav', section: 'Components', element: <NavPage /> },
+	{
+		path: 'pagination',
+		label: 'Pagination',
+		section: 'Components',
+		element: <PaginationPage />,
+	},
 	{ path: 'popover', label: 'Popover', section: 'Components', element: <PopoverPage /> },
 	{ path: 'progress', label: 'Progress', section: 'Components', element: <ProgressPage /> },
 	{

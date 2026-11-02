@@ -27,6 +27,7 @@ import FormBasic from '@/pages/Form/demos/basic';
 import InputBasic from '@/pages/Input/demos/basic';
 import MenuBasic from '@/pages/Menu/demos/basic';
 import NavBasic from '@/pages/Nav/demos/basic';
+import PaginationBasic from '@/pages/Pagination/demos/basic';
 import PopoverBasic from '@/pages/Popover/demos/basic';
 import ProgressBasic from '@/pages/Progress/demos/basic';
 import RadioGroupBasic from '@/pages/RadioGroup/demos/basic';
@@ -84,6 +85,7 @@ const groups: PreviewGroup[] = [
 			// The rail is a list from its first group to its last: it takes the one step above `tall`,
 			// so neither end of it is cut.
 			{ path: 'nav', label: 'Nav', Demo: NavBasic, room: 'xtall' },
+			{ path: 'pagination', label: 'Pagination', Demo: PaginationBasic, room: 'compact' },
 			{ path: 'steps', label: 'Steps', Demo: StepsVertical, room: 'tall' },
 			{ path: 'tabs', label: 'Tabs', Demo: TabsBasic, room: 'compact' },
 		],

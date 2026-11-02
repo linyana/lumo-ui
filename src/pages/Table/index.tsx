@@ -11,13 +11,17 @@ import {
 } from '@/pages/DocPage';
 import Basic from './demos/basic';
 import Embedded from './demos/embedded';
+import Expansion from './demos/expansion';
 import Filter from './demos/filter';
+import Fixed from './demos/fixed';
+import Responsive from './demos/responsive';
 import Scroll from './demos/scroll';
 import Selection from './demos/selection';
 import Sort from './demos/sort';
 import States from './demos/states';
 import Structure from './demos/structure';
 import Surfaces from './demos/surfaces';
+import Tree from './demos/tree';
 
 const files = ['src/components/ui/table.tsx'];
 
@@ -43,7 +47,7 @@ const rootProps: Record<string, PropNode> = {
 	locale: {
 		type: 'TableLocale',
 		description:
-			'Wording of the controls the table draws itself: the sort hints, and the filter panel’s search, reset, apply and empty texts. Omitted fields stay English.',
+			'Wording of the controls the table draws itself: the sort hints, the filter panel’s search, reset, apply and empty texts, and the words the selection column and the branch toggle are named with. Omitted fields stay English.',
 	},
 	loading: {
 		type: 'boolean',
@@ -56,6 +60,11 @@ const rootProps: Record<string, PropNode> = {
 		default: '"auto"',
 		description:
 			'Fixed gives every column the width it was declared, which is what ellipsis needs; an automatic layout sizes columns from the content it is asked to cut off.',
+	},
+	scroll: {
+		type: '{ x?: number | string; y?: number | string }',
+		description:
+			'The two axes of the frame. x is a floor under the table’s width, so the frame scrolls sideways instead of squeezing the columns; y is a ceiling on the frame’s height, so the records scroll under the header. Both take a pixel count or any CSS length.',
 	},
 	hoverable: {
 		type: 'boolean',
@@ -80,7 +89,7 @@ const headerProps: Record<string, PropNode> = {
 		type: 'boolean',
 		default: 'false',
 		description:
-			'Keep a single header row at the top of the scrolling container. Give Table.Root a height or max-height. Grouped sticky headers, offsets and page-level sticking are not provided.',
+			'Hold the column names at the top of the frame while the records move under them. Every row of the header holds, so a grouped header stacks: each row is measured and starts under the one above it. The frame needs a ceiling — scroll y, or a max-height class. Sticking to the page around the frame is not included.',
 	},
 };
 
@@ -116,6 +125,16 @@ const headProps: Record<string, PropNode> = {
 		description:
 			'An icon beside the title and the panel behind it: options, applied value, onChange, multiple (false draws radios), searchable, a popup className, or render to replace the panel. The panel edits a draft and writes it on Apply.',
 	},
+	fixed: {
+		type: '"start" | "end"',
+		description:
+			'Pin the column to an edge of the frame so it stays readable while the rest scrolls under it. The offset is measured from the widths of the columns beside it, so nothing has to be declared; give the same edge to every Table.Cell of the column.',
+	},
+	responsive: {
+		type: '("sm" | "md" | "lg" | "xl" | "2xl")[]',
+		description:
+			'Show the column from the smallest breakpoint named, up. An empty list is a column that is never shown. A column is hidden by CSS, so the same list belongs on its Table.Cells, and a grouped header keeps its colSpan.',
+	},
 	ellipsis: {
 		type: 'boolean | { showTitle?: boolean }',
 		description:
@@ -139,6 +158,16 @@ const cellProps: Record<string, PropNode> = {
 		description:
 			'The direction its column is displayed in, as Table.Head was told. A sorted column shades its cells, so a sort reads as one band from the header down; none shades nothing.',
 	},
+	fixed: {
+		type: '"start" | "end"',
+		description:
+			'Pin the cell to an edge of the frame, exactly as its Table.Head does. The two only have to agree on the edge: the offset, the opaque fill and the shadow come from the measurement.',
+	},
+	responsive: {
+		type: '("sm" | "md" | "lg" | "xl" | "2xl")[]',
+		description:
+			'Show the cell from the smallest breakpoint named, up — the same list as its Table.Head. Hiding a column is CSS only: a native colSpan cannot follow it.',
+	},
 };
 
 const emptyProps: Record<string, PropNode> = {
@@ -153,24 +182,119 @@ const emptyProps: Record<string, PropNode> = {
 	},
 };
 
+const selectionHeadProps: Record<string, PropNode> = {
+	selection: {
+		type: 'TableSelection',
+		required: true,
+		description:
+			'The chosen rows and the way back: keys (the rows in view, which is all the header may act on), value (the chosen keys), onChange (the whole list), type (“checkbox” or “radio”) and menu (all, invert, none). Hand the same object to every SelectionCell.',
+	},
+	fixed: {
+		type: '"start" | "end"',
+		description: 'Pin the column, exactly as Table.Head does.',
+	},
+	className: {
+		type: 'string',
+		description: 'Merged last through cn(); the column is w-10 unless this changes it.',
+	},
+};
+
+const selectionCellProps: Record<string, PropNode> = {
+	selection: {
+		type: 'TableSelection',
+		required: true,
+		description: 'The same object the header was given, so the two can never disagree.',
+	},
+	value: {
+		type: 'string',
+		required: true,
+		description: 'The key of the record this box belongs to.',
+	},
+	label: {
+		type: 'string',
+		description:
+			'What a screen reader hears instead of the key: the record’s own name. Defaults to the key.',
+	},
+	disabled: {
+		type: 'boolean',
+		default: 'false',
+		description: 'A record that cannot be chosen.',
+	},
+	fixed: {
+		type: '"start" | "end"',
+		description: 'Pin the column, exactly as Table.Cell does.',
+	},
+};
+
+const branchProps: Record<string, PropNode> = {
+	children: {
+		type: 'ReactNode',
+		required: true,
+		description: 'The record’s own name, at the end of the indent.',
+	},
+	hasChildren: {
+		type: 'boolean',
+		default: 'true',
+		description:
+			'Rows sit under this one, so the toggle is drawn. False keeps the space and drops the glyph, which is what holds a tree’s names to one line.',
+	},
+	open: {
+		type: 'boolean',
+		default: 'false',
+		description: 'Whether those rows are showing; announced with aria-expanded.',
+	},
+	onOpenChange: {
+		type: '(open: boolean) => void',
+		description:
+			'Called with the state the press leads to. The caller owns which rows are open.',
+	},
+	label: {
+		type: 'string',
+		description:
+			'What the toggle is called, after the word for the direction it leads. Defaults to the text of children when that is a string.',
+	},
+};
+
+const expandedRowProps: Record<string, PropNode> = {
+	columns: {
+		type: 'number',
+		required: true,
+		description: 'How many columns the panel reaches across: the whole row.',
+	},
+	depth: {
+		type: 'number',
+		default: '1',
+		description:
+			'How deep the record above it sits, so the panel opens under the name it belongs to.',
+	},
+	className: {
+		type: 'string',
+		description: 'Merged last through cn() on the cell that holds the panel.',
+	},
+};
+
 const partRows = [
 	[
 		'Table.Root',
 		'scrolling container + table',
 		'The container owns density and surface; all remaining native props belong to the table.',
 	],
-	['Table.Header', 'thead', 'An opaque column-title band. sticky supports one header row.'],
+	['Table.Header', 'thead', 'An opaque column-title band. sticky holds every row of the header.'],
 	['Table.Body', 'tbody', 'Records, including native row headers and merged cells.'],
 	[
 		'Table.Footer',
 		'tfoot',
 		'A summary band, not a toolbar or an automatically calculated total.',
 	],
-	['Table.Row', 'tr', 'Body hover, selected and disabled styling; no click or selection logic.'],
+	[
+		'Table.Row',
+		'tr',
+		'Body hover, selected and disabled styling; depth is what a tree sits on, and neither clicks nor selects anything.',
+	],
 	[
 		'Table.Head',
 		'th',
-		'Column titles by default; scope="row" identifies a record in the body. sort + onSort make it a sort control, filter adds a panel behind an icon.',
+		'Column titles by default; scope="row" identifies a record in the body. sort + onSort make it a sort control, filter adds a panel behind an icon, fixed pins the column to an edge, responsive shows it from a breakpoint up.',
 	],
 	[
 		'Table.Cell',
@@ -178,6 +302,26 @@ const partRows = [
 		'Logical alignment, tabular figures and nowrap by default; ellipsis cuts the value to one line. Native span props are passed through.',
 	],
 	['Table.Empty', 'tr + td', 'A centred message spanning columns, so the header stays visible.'],
+	[
+		'Table.SelectionHead',
+		'th',
+		'The column of boxes: all, some or none of the keys the header was given, with an optional menu that takes all, none or the opposite.',
+	],
+	[
+		'Table.SelectionCell',
+		'td',
+		'One box for one record, belonging to the set the header holds. A radio column is the same part with type: “radio”.',
+	],
+	[
+		'Table.Branch',
+		'span + button',
+		'A record’s name, inset by its row’s depth, with the toggle that opens what is filed under it.',
+	],
+	[
+		'Table.ExpandedRow',
+		'tr + td',
+		'The panel a record opens into: a row spanning every column, so the table keeps its header and its widths.',
+	],
 	[
 		'Table.Caption',
 		'caption',
@@ -194,7 +338,22 @@ const hookRows = [
 	[
 		'--table-surface',
 		'host background',
-		'Opaque base for the header and footer. Falls back to background; outlined uses card and filled uses muted. Set it explicitly when a borderless table sits on another surface.',
+		'Opaque base for the header, the footer and every pinned column. Falls back to background; outlined uses card and filled uses muted. Set it explicitly when a borderless table sits on another surface.',
+	],
+	[
+		'--table-head-top',
+		'sticky header rows',
+		'The offset each header row holds at, measured from the rows above it, so a grouped header stacks without anyone adding up heights.',
+	],
+	[
+		'data-fixed · --table-fixed-offset',
+		'pinned columns',
+		'Set by fixed on a title or a cell. The offset is measured from the widths of the columns before it and written as a custom property, so no column declares how far it should stick.',
+	],
+	[
+		'data-fixed-edge · data-scrolled-start · data-scrolled-end',
+		'edges of a scrolling frame',
+		'The last pinned column of a run is marked as the one that casts the shadow, and the frame says which edges still have content behind them, so a shadow appears only once something has passed under it.',
 	],
 	[
 		'--cell-px · --cell-py',
@@ -230,6 +389,11 @@ const hookRows = [
 		'--cell-max-w',
 		'ellipsis width',
 		'How far a column with ellipsis may run before it is cut. Defaults to 15rem.',
+	],
+	[
+		'--table-depth · data-depth',
+		'the level a row sits at',
+		'Written by depth on Table.Row: Branch insets its name by it, and ExpandedRow opens under it. One number, read by two parts and by nothing else.',
 	],
 	[
 		'data-selected · data-disabled',
@@ -268,7 +432,7 @@ export function TablePage() {
 
 			<DocSection
 				title="installation"
-				note="One file with native table semantics. Sorting and filtering are drawn here from the library's own popover, checkbox, radio group, input and button, which the install brings with it; the records and their order stay the caller's."
+				note="One file with native table semantics. Sorting, filtering, the selection column and the branch toggle are drawn here from the library's own popover, menu, checkbox, radio group, input and button, which the install brings with it; the records, their order and which of them are chosen stay the caller's."
 			>
 				<DocInstall
 					name="table"
@@ -306,16 +470,63 @@ export function TablePage() {
 				title="scrolling and a sticky header"
 				note={
 					<>
-						Give the container a <Mono>max-height</Mono> to scroll vertically. A single
-						header row can stay at its top while the body moves underneath. Cells do not
-						wrap by default; use <Mono>whitespace-normal</Mono> for notes, and constrain
-						an inner element for truncation. The branch tooltip also opens from keyboard
-						focus. Multi-row sticky headers, offsets and fixed columns are not included.
+						<Mono>scroll</Mono> gives the frame its two axes: <Mono>x</Mono> is a floor
+						under the table’s width, so the columns keep the widths they were declared
+						and the frame scrolls instead of squeezing them, and <Mono>y</Mono> is a
+						ceiling on the frame’s height. A <Mono>sticky</Mono> header then holds at
+						its top — every row of a grouped one holds too, each measured under the row
+						above it. Cells do not wrap by default; use <Mono>whitespace-normal</Mono>{' '}
+						for notes, and constrain an inner element for truncation. The branch tooltip
+						also opens from keyboard focus. A header that sticks to the page around the
+						frame is not included.
 					</>
 				}
 			>
 				<DocPreview path="src/pages/Table/demos/scroll.tsx">
 					<Scroll />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="pinned columns"
+				note={
+					<>
+						<Mono>fixed</Mono> pins a column to an edge of the frame, so the record
+						keeps its name while the rest of it scrolls sideways. Both edges are
+						measured: the offset comes from the widths of the columns beside it, which
+						is why a title and its cells only have to agree on the edge and never on a
+						distance. A pinned cell is filled opaquely — nothing may be read through a
+						column standing in front of the others — so a hovered or chosen row is laid
+						on that fill as a layer instead of replacing it. The shadow belongs to the
+						last pinned column of a run and appears only once something has passed under
+						it, so the frame is what tells it which way there is more to read. Widths,
+						not content, are what a pinned column is measured against: declare them,
+						with <Mono>layout=&quot;fixed&quot;</Mono> and a<Mono>colgroup</Mono> or a
+						width class on each title.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/fixed.tsx">
+					<Fixed />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="responsive columns"
+				note={
+					<>
+						<Mono>responsive</Mono> names the smallest breakpoint a column is shown
+						from, and the column is hidden by CSS below it — one class, so nothing
+						re-renders when the window moves. Give the same list to the column’s{' '}
+						<Mono>Table.Head</Mono> and to each of its <Mono>Table.Cell</Mono>s. A
+						native <Mono>colSpan</Mono> cannot follow a hidden column, so leave a
+						grouped header out of it, and keep the rule on the table rather than inside
+						a container query that would disagree with it.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/responsive.tsx">
+					<Responsive />
 				</DocPreview>
 			</DocSection>
 
@@ -327,7 +538,7 @@ export function TablePage() {
 						headings and <Mono>scope="row"</Mono> to name a record. Native{' '}
 						<Mono>rowSpan</Mono> merges cells; omit the covered cell in later rows. The
 						footer is a summary you calculate, and the caption describes the table. This
-						grouped header is deliberately not sticky.
+						grouped header is left in place; the scrolling demo shows one that holds.
 					</>
 				}
 			>
@@ -401,10 +612,58 @@ export function TablePage() {
 
 			<DocSection
 				title="a chosen row"
-				note="Checkboxes own their behaviour; the caller owns the selected keys and sets data-selected on each row. The selected tint stays visible after the pointer leaves and deepens on hover."
+				note={
+					<>
+						<Mono>selection</Mono> is one object handed to the header and to every box:
+						the keys the column is responsible for, the keys that are chosen, and the
+						way back. The header acts on exactly those keys and never on rows it cannot
+						see, so a fetched page and one shared selected set live together — the page
+						can change under a chosen set without the header claiming anything. The box
+						that is neither all nor none is drawn as indeterminate; the menu beside it
+						takes all, none, or the opposite. The caller still owns{' '}
+						<Mono>data-selected</Mono> on the row, because a row is not told what the
+						boxes beside it are holding.
+					</>
+				}
 			>
 				<DocPreview path="src/pages/Table/demos/selection.tsx">
 					<Selection />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="a tree of records"
+				note={
+					<>
+						A record carries its depth on its row, and <Mono>Table.Branch</Mono> insets
+						the name by it — one level, one row at a time, with no width to calculate.
+						The toggle turns rather than filling: an open row says it is open with the
+						way the glyph points, not with a tint that would read as a chosen row. A row
+						with nothing under it keeps the space and drops the glyph, so the names stay
+						on one line. Which rows are open is the caller’s: a set of keys, the same
+						shape a selection has.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/tree.tsx">
+					<Tree />
+				</DocPreview>
+			</DocSection>
+
+			<DocSection
+				title="a record that opens"
+				note={
+					<>
+						<Mono>Table.ExpandedRow</Mono> is a row, not a box floating under one: the
+						table keeps its columns, the header stays where a reader was reading, and
+						the panel is inset by the depth its record was given. Render it under the
+						record it belongs to, where <Mono>Table.Body</Mono> would otherwise have
+						gone on with the next one.
+					</>
+				}
+			>
+				<DocPreview path="src/pages/Table/demos/expansion.tsx">
+					<Expansion />
 				</DocPreview>
 			</DocSection>
 
@@ -451,6 +710,30 @@ export function TablePage() {
 							<Mono>Table.Empty</Mono>
 						</p>
 						<PropTable props={emptyProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.SelectionHead</Mono>
+						</p>
+						<PropTable props={selectionHeadProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.SelectionCell</Mono>
+						</p>
+						<PropTable props={selectionCellProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.Branch</Mono>
+						</p>
+						<PropTable props={branchProps} />
+					</div>
+					<div className="space-y-2">
+						<p className="text-sm text-muted-foreground">
+							<Mono>Table.ExpandedRow</Mono>
+						</p>
+						<PropTable props={expandedRowProps} />
 					</div>
 					<DocTable head={['part', 'element', 'notes']} mono={[0, 1]} rows={partRows} />
 				</div>

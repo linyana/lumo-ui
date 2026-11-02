@@ -520,6 +520,20 @@
 			]
 		},
 		{
+			"name": "pagination",
+			"type": "registry:ui",
+			"title": "Pagination",
+			"description": "Which page of the records you are on, and the way to another: a window of numbers that keeps the first and last page and collapses everything between into one gap, a line that says what the page holds out of the whole, and two arrows that disable where there is nowhere to go. The page is handed in and the press is handed back, so the same control can read from a URL, a store or a fetch.",
+			"dependencies": ["lucide-react", "tailwind-variants"],
+			"registryDependencies": ["@lumo/utils", "@lumo/control"],
+			"files": [
+				{
+					"path": "src/components/ui/pagination.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
 			"name": "scroll-area",
 			"type": "registry:ui",
 			"title": "ScrollArea",
@@ -831,7 +845,7 @@
 			"name": "table",
 			"type": "registry:ui",
 			"title": "Table",
-			"description": "Display structured records with native table semantics, borderless, outlined or filled surfaces, three spacing densities, row headers, selection styling, a single-row sticky header, a loading layer, one-line cells and a centred empty state. A sortable column walks a cycle that ends in unsorted and says what the next press will do; a filterable one opens a panel that edits a draft before it applies. Compose merges, summaries, pagination and selection without handing data ownership to the component.",
+			"description": "Display structured records with native table semantics, borderless, outlined or filled surfaces, three spacing densities, row headers, selection styling, a loading layer, one-line cells and a centred empty state. The frame scrolls on both axes with the columns keeping their declared widths, a header holds every row it was given, a column can be pinned to either edge — its offset measured, its shadow cast only once content has passed under it — and a column can wait for a breakpoint. A selection column holds every box in view and never a row it cannot see; a record can carry its depth, open the rows filed under it, and open a panel of its own. A sortable column walks a cycle that ends in unsorted and says what the next press will do; a filterable one opens a panel that edits a draft before it applies. Compose merges, summaries, pagination and selection without handing data ownership to the component.",
 			"dependencies": ["tailwind-variants", "lucide-react"],
 			"registryDependencies": [
 				"@lumo/utils",
@@ -839,6 +853,7 @@
 				"@lumo/button",
 				"@lumo/checkbox",
 				"@lumo/input",
+				"@lumo/menu",
 				"@lumo/popover",
 				"@lumo/radio-group",
 				"@lumo/spinner"

@@ -1,40 +1,33 @@
 import { useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Table } from '@/components/ui/table';
+import { Table, type TableSelection } from '@/components/ui/table';
 
 const runs = [
-	{ id: 'run-1041', job: 'unit' },
-	{ id: 'run-1042', job: 'e2e' },
-	{ id: 'run-1043', job: 'docs' },
+	{ id: 'run-1041', job: 'unit', artifacts: 12 },
+	{ id: 'run-1042', job: 'e2e', artifacts: 48 },
+	{ id: 'run-1043', job: 'docs', artifacts: 3 },
+	{ id: 'run-1044', job: 'lint', artifacts: 1 },
+	{ id: 'run-1045', job: 'unit', artifacts: 12 },
 ];
 
 export default function Selection() {
 	const [chosen, setChosen] = useState<string[]>(['run-1042']);
-	const all = chosen.length === runs.length;
-	const some = chosen.length > 0 && !all;
 
-	function toggle(id: string) {
-		setChosen((was) => (was.includes(id) ? was.filter((one) => one !== id) : [...was, id]));
-	}
+	// One object, handed to the header and to every box: the keys are the rows in view, the value is
+	// what the caller keeps, and the table writes nothing but that list back.
+	const selection: TableSelection = {
+		keys: runs.map((run) => run.id),
+		value: chosen,
+		onChange: setChosen,
+		menu: true,
+	};
 
 	return (
-		<div className="w-full max-w-md">
+		<div className="w-full max-w-lg">
 			<Table.Root aria-label="runs to keep">
 				<Table.Header>
 					<Table.Row>
-						<Table.Head className="w-10">
-							<Checkbox.Root
-								aria-label="every run"
-								checked={all}
-								indeterminate={some}
-								onCheckedChange={(next) =>
-									setChosen(next ? runs.map((run) => run.id) : [])
-								}
-							>
-								<Checkbox.Indicator />
-							</Checkbox.Root>
-						</Table.Head>
-						<Table.Head>run</Table.Head>
+						<Table.SelectionHead selection={selection} />
+						<Table.Head className="w-full">run</Table.Head>
 						<Table.Head align="end">artifacts</Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -44,19 +37,13 @@ export default function Selection() {
 							key={run.id}
 							data-selected={chosen.includes(run.id) || undefined}
 						>
-							<Table.Cell>
-								<Checkbox.Root
-									aria-label={run.id}
-									checked={chosen.includes(run.id)}
-									onCheckedChange={() => toggle(run.id)}
-								>
-									<Checkbox.Indicator />
-								</Checkbox.Root>
-							</Table.Cell>
+							<Table.SelectionCell
+								selection={selection}
+								value={run.id}
+								label={run.id}
+							/>
 							<Table.Head scope="row">{run.job}</Table.Head>
-							<Table.Cell align="end">
-								{chosen.includes(run.id) ? 'kept 90 days' : 'kept 7 days'}
-							</Table.Cell>
+							<Table.Cell align="end">{run.artifacts}</Table.Cell>
 						</Table.Row>
 					))}
 				</Table.Body>

@@ -17,9 +17,15 @@ export default function Scroll() {
 		<Tooltip.Provider>
 			<div className="min-w-0 w-full space-y-3">
 				<p className="text-sm text-muted-foreground">
-					Scroll in either direction. Branch names keep their width; notes can wrap.
+					Scroll in either direction. The frame keeps the declared column widths rather
+					than squeezing them, the header holds at its top, and branch names keep their
+					width while notes can wrap.
 				</p>
-				<Table.Root variant="outlined" className="max-h-72" aria-label="deployment history">
+				<Table.Root
+					variant="outlined"
+					scroll={{ x: 928, y: 288 }}
+					aria-label="deployment history"
+				>
 					<colgroup>
 						<col className="w-32" />
 						<col className="w-44" />
@@ -29,11 +35,18 @@ export default function Scroll() {
 					</colgroup>
 					<Table.Header sticky>
 						<Table.Row>
-							<Table.Head>run</Table.Head>
-							<Table.Head>job</Table.Head>
+							<Table.Head rowSpan={2}>run</Table.Head>
+							<Table.Head rowSpan={2}>job</Table.Head>
+							<Table.Head scope="colgroup" colSpan={2} align="center">
+								change
+							</Table.Head>
+							<Table.Head rowSpan={2} align="end">
+								duration
+							</Table.Head>
+						</Table.Row>
+						<Table.Row>
 							<Table.Head>branch</Table.Head>
 							<Table.Head>note</Table.Head>
-							<Table.Head align="end">duration</Table.Head>
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>

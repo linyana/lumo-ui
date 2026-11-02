@@ -1,17 +1,30 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, ListFilter } from 'lucide-react';
+import {
+	ArrowDown,
+	ArrowUp,
+	ArrowUpDown,
+	ChevronDown,
+	ChevronRight,
+	ListFilter,
+} from 'lucide-react';
 import {
 	createContext,
 	use,
+	useEffect,
+	useLayoutEffect,
 	useMemo,
+	useRef,
 	useState,
 	type ComponentProps,
+	type CSSProperties,
 	type MouseEvent,
 	type ReactNode,
+	type RefObject,
 } from 'react';
 import { tv, type VariantProps } from 'tailwind-variants';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Menu } from '@/components/ui/menu';
 import { Popover } from '@/components/ui/popover';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Spinner } from '@/components/ui/spinner';
@@ -78,6 +91,12 @@ export type TableLocale = {
 	filterApply?: string;
 	filterEmpty?: string;
 	loading?: string;
+	selectAll?: string;
+	selectNone?: string;
+	selectInvert?: string;
+	selectOptions?: string;
+	expand?: string;
+	collapse?: string;
 };
 
 const defaultLocale: Required<TableLocale> = {
@@ -90,6 +109,30 @@ const defaultLocale: Required<TableLocale> = {
 	filterApply: 'Apply',
 	filterEmpty: 'No options',
 	loading: 'Loading',
+	selectAll: 'Select every row',
+	selectNone: 'Select nothing',
+	selectInvert: 'Invert the selection',
+	selectOptions: 'Selection options',
+	expand: 'Expand',
+	collapse: 'Collapse',
+};
+
+/**
+ * A chosen set of rows, as data: the keys the column of boxes acts on, the keys that are chosen, and
+ * the way back. It is handed to both the header and each cell, so the two can never disagree about
+ * which rows are in play — the header acts on exactly what its column can see.
+ */
+export type TableSelection = {
+	/** Every key the header's control acts on: the rows in view, not the whole data set. */
+	keys: readonly string[];
+	/** The chosen keys. */
+	value: readonly string[];
+	/** Called with the chosen keys, whole — a list, never a patch. */
+	onChange: (next: string[]) => void;
+	/** `radio` chooses one row at a time; a box is the default. */
+	type?: 'checkbox' | 'radio';
+	/** Offer all / invert / none beside the header box, where a page holds more than a few rows. */
+	menu?: boolean;
 };
 
 /**
@@ -104,6 +147,200 @@ const TableContext = createContext<{
 
 const textOf = (node: ReactNode) =>
 	typeof node === 'string' || typeof node === 'number' ? String(node) : undefined;
+
+/** Whether the header a title cell belongs to holds still, which is what makes that cell sticky. */
+const HeaderContext = createContext<{ sticky: boolean } | null>(null);
+
+/** Two of them, so the provider's value is a constant rather than an object built per render. */
+const StickyHeader = { sticky: true };
+const StillHeader = { sticky: false };
+
+/** The two ways a table leaves its frame: sideways when it is wider than it was given room for. */
+export type TableScroll = {
+	/** A floor on the table's own width, so the frame scrolls instead of squeezing the columns. */
+	x?: number | string;
+	/** A ceiling on the frame's height, so the records scroll under the header. */
+	y?: number | string;
+};
+
+/** Which edge a column is pinned to. How far it is pinned is measured, never declared. */
+export type TableFixed = 'start' | 'end';
+
+/** The breakpoints a column can be shown from, in the order the theme names them. */
+const breakpoints = ['sm', 'md', 'lg', 'xl', '2xl'] as const;
+
+export type TableBreakpoint = (typeof breakpoints)[number];
+
+/** One class per breakpoint, because a class name assembled at runtime is never generated. */
+const responsiveDisplay: Record<TableBreakpoint, string> = {
+	sm: 'hidden sm:table-cell',
+	md: 'hidden md:table-cell',
+	lg: 'hidden lg:table-cell',
+	xl: 'hidden xl:table-cell',
+	'2xl': 'hidden 2xl:table-cell',
+};
+
+/**
+ * A column appears from the smallest breakpoint it names, which is how the list reads: the screen has
+ * to be at least that wide. An empty list is a column that is never shown.
+ */
+function responsiveClass(responsive: TableBreakpoint[] | undefined) {
+	if (responsive === undefined) return undefined;
+	const first = breakpoints.find((one) => responsive.includes(one));
+	return first === undefined ? 'hidden' : responsiveDisplay[first];
+}
+
+/**
+ * Whether there is still something to read past either edge of the frame. A pinned column casts its
+ * shadow from this and not from its own position, so nothing is cast while the table fits.
+ */
+function syncScroll(box: HTMLElement) {
+	const rest = box.scrollWidth - box.clientWidth - box.scrollLeft;
+	const mark = (name: string, on: boolean) => {
+		if (on === box.hasAttribute(name)) return;
+		if (on) box.setAttribute(name, '');
+		else box.removeAttribute(name);
+	};
+	mark('data-scrolled-start', box.scrollLeft > 1);
+	mark('data-scrolled-end', rest > 1);
+}
+
+/** Where a pinned column's offset is written, in pixels, for its own rule to read. */
+const fixedOffset = '--table-fixed-offset';
+
+function place(cell: HTMLTableCellElement, offset: number) {
+	const value = `${offset}px`;
+	if (cell.style.getPropertyValue(fixedOffset) !== value)
+		cell.style.setProperty(fixedOffset, value);
+}
+
+/** The column at the inner end of a run of pinned columns is the one that casts the shadow. */
+function markEdge(cell: HTMLTableCellElement, edge: TableFixed | undefined) {
+	if (edge === undefined) {
+		if (cell.hasAttribute('data-fixed-edge')) cell.removeAttribute('data-fixed-edge');
+		return;
+	}
+	if (cell.getAttribute('data-fixed-edge') !== edge) cell.setAttribute('data-fixed-edge', edge);
+}
+
+/**
+ * The two things a table cannot be told from its own markup: how far each pinned column is from the
+ * edge it is pinned to, and how far down each sticky header row starts.
+ *
+ * Both are measured from the cells, which is why a column only has to name an edge instead of an
+ * offset, and why a grouped header stacks without anyone adding up row heights. The widths are the
+ * layout's own — `offsetWidth`, not the rectangle a transform ancestor or a zoom would report — and
+ * every write is compared first, so a render that changes nothing costs one pass and no invalidation.
+ */
+function measureTable(element: HTMLTableElement, box: HTMLElement) {
+	if (element.querySelector('[data-fixed]') !== null) {
+		for (const row of element.rows) {
+			const cells = Array.from(row.cells);
+			const starts = cells.filter((cell) => cell.dataset.fixed === 'start');
+			const ends = cells.filter((cell) => cell.dataset.fixed === 'end').reverse();
+
+			let start = 0;
+			for (const [index, cell] of starts.entries()) {
+				place(cell, start);
+				markEdge(cell, index === starts.length - 1 ? 'start' : undefined);
+				start += cell.offsetWidth;
+			}
+
+			let end = 0;
+			for (const [index, cell] of ends.entries()) {
+				place(cell, end);
+				markEdge(cell, index === ends.length - 1 ? 'end' : undefined);
+				end += cell.offsetWidth;
+			}
+		}
+	}
+
+	const head = element.tHead;
+	if (head !== null && head.hasAttribute('data-sticky')) {
+		let top = 0;
+		for (const row of head.rows) {
+			const value = `${top}px`;
+			if (row.style.getPropertyValue('--table-head-top') !== value) {
+				row.style.setProperty('--table-head-top', value);
+			}
+			top += row.offsetHeight;
+		}
+	}
+
+	syncScroll(box);
+}
+
+/**
+ * Runs the measurement after every render, because a new row is a new set of cells to place, and
+ * again on a resize of either the table or its frame, which changes widths without rendering.
+ */
+function useTableLayout(root: RefObject<HTMLDivElement | null>) {
+	useLayoutEffect(() => {
+		const element = root.current?.querySelector('table');
+		const box = root.current?.querySelector<HTMLElement>('[data-slot="table-container"]');
+		if (!element || !box) return;
+		measureTable(element, box);
+	});
+
+	useEffect(() => {
+		const element = root.current?.querySelector('table');
+		const box = root.current?.querySelector<HTMLElement>('[data-slot="table-container"]');
+		if (!element || !box) return;
+		const observer = new ResizeObserver(() => measureTable(element, box));
+		observer.observe(element);
+		observer.observe(box);
+		return () => observer.disconnect();
+	}, [root]);
+}
+
+/**
+ * The washes a row can show, on a pinned cell. The cell's fill is opaque — nothing may be read
+ * through a column standing in front of the others — so a translucent row state is laid on top of
+ * it as a layer instead of replacing it.
+ */
+const fixedRowStates = cn(
+	// Below the cell's own content, above its fill, so the wash tints the row and not the words in it.
+	'before:pointer-events-none before:absolute before:inset-0 before:-z-10',
+	'before:bg-row-hover before:opacity-0',
+	'[[data-slot=table-container][data-hoverable=true]_tbody>tr:not([data-selected]):hover>&]:before:opacity-100',
+	'[tr[data-selected]>&]:before:bg-row-selected [tr[data-selected]>&]:before:opacity-100',
+	'[tr[data-selected]:hover>&]:before:bg-row-selected-hover',
+);
+
+/**
+ * The shadow of a pinned column, cast past its inner edge and only while something is passing under
+ * it: the frame says which edges still have content behind them, and the last pinned column of a run
+ * is the only one that draws it.
+ */
+const fixedShadow = cn(
+	'after:pointer-events-none after:absolute after:inset-y-0 after:w-4',
+	'after:from-foreground/10 after:to-transparent after:opacity-0',
+	'after:transition-opacity after:duration-(--duration-state)',
+	'[[data-scrolled-start]_&[data-fixed-edge=start]]:after:opacity-100',
+	'[[data-scrolled-end]_&[data-fixed-edge=end]]:after:opacity-100',
+);
+
+/** Which layer a cell is drawn on: a pinned one in front of its row, a title in front of the records. */
+function layerOf(fixed: TableFixed | undefined, inHead: boolean, holds: boolean) {
+	if (fixed !== undefined) return inHead ? 'z-20' : 'z-1';
+	return holds ? 'z-10' : undefined;
+}
+
+/** What a column pinned to an edge is drawn with, whether it is a title or a cell. */
+function fixedClass(fixed: TableFixed | undefined) {
+	if (fixed === undefined) return undefined;
+	return cn(
+		'sticky bg-[var(--table-surface,var(--background))]',
+		fixed === 'start'
+			? 'left-[var(--table-fixed-offset,0px)]'
+			: 'right-[var(--table-fixed-offset,0px)]',
+		fixedRowStates,
+		fixed === 'start'
+			? 'after:left-full after:bg-linear-to-r'
+			: 'after:right-full after:bg-linear-to-l',
+		fixedShadow,
+	);
+}
 
 /**
  * Frameless by default so records can sit inside a Card or panel. Standalone tables can choose
@@ -154,6 +391,12 @@ export type RootProps = Omit<ComponentProps<'table'>, 'className'> &
 		 * table's own, so `aria-label` still lands on the element a screen reader reads.
 		 */
 		className?: string;
+		/**
+		 * The two axes of the frame, both a way out of squeezing the records: `x` puts a floor under the
+		 * table's width so it scrolls sideways, `y` puts a ceiling on the frame so a sticky header can
+		 * hold still. Either is a pixel count or any CSS length; both are applied to the frame.
+		 */
+		scroll?: TableScroll;
 		/** Highlight body rows under the pointer without changing selection or sorting. */
 		hoverable?: boolean;
 		/**
@@ -185,10 +428,15 @@ export function Root({
 	layout = 'auto',
 	sortDirections = defaultSortDirections,
 	locale,
+	scroll,
 	className,
+	style,
 	children,
 	...props
 }: RootProps) {
+	const root = useRef<HTMLDivElement>(null);
+	useTableLayout(root);
+
 	const value = useMemo(
 		() => ({ sortDirections, locale: { ...defaultLocale, ...locale } }),
 		[sortDirections, locale],
@@ -197,6 +445,7 @@ export function Root({
 	return (
 		<TableContext value={value}>
 			<div
+				ref={root}
 				data-slot="table-root"
 				data-size={size}
 				data-variant={variant}
@@ -209,6 +458,8 @@ export function Root({
 					data-size={size}
 					data-variant={variant}
 					data-hoverable={hoverable}
+					style={scroll?.y === undefined ? undefined : { maxHeight: scroll.y }}
+					onScroll={(event) => syncScroll(event.currentTarget)}
 					className={cn(
 						tableVariants({ size, variant }),
 						layout === 'fixed' && '[&>table]:table-fixed',
@@ -217,6 +468,7 @@ export function Root({
 				>
 					<table
 						data-slot="table"
+						style={{ minWidth: scroll?.x, ...style }}
 						className="w-full border-separate border-spacing-0 caption-bottom"
 						{...props}
 					>
@@ -247,7 +499,9 @@ export function Root({
 export type HeaderProps = ComponentProps<'thead'> & {
 	/**
 	 * Holds the column names in place while the rows pass under them, which is what a table with a
-	 * height needs. Supports one header row; grouped headers need their own sticky offsets.
+	 * height needs. Every row of the header holds, so a grouped header stacks: each row is measured
+	 * and starts under the one above it. The frame needs a ceiling — `scroll={{ y }}` or a height
+	 * class — and the header sticks to that frame, not to the page around it.
 	 */
 	sticky?: boolean;
 };
@@ -259,16 +513,14 @@ export type HeaderProps = ComponentProps<'thead'> & {
  */
 export function Header({ sticky = false, className, ...props }: HeaderProps) {
 	return (
-		<thead
-			data-slot="table-header"
-			data-sticky={sticky ? '' : undefined}
-			className={cn(
-				'[&>tr>th]:bg-table-head',
-				sticky && '[&>tr>th]:sticky [&>tr>th]:top-0 [&>tr>th]:z-10',
-				className,
-			)}
-			{...props}
-		/>
+		<HeaderContext value={sticky ? StickyHeader : StillHeader}>
+			<thead
+				data-slot="table-header"
+				data-sticky={sticky ? '' : undefined}
+				className={cn('[&>tr>th]:bg-table-head', className)}
+				{...props}
+			/>
+		</HeaderContext>
 	);
 }
 
@@ -315,11 +567,29 @@ export const tableRowVariants = tv({
 	],
 });
 
-export type RowProps = ComponentProps<'tr'>;
+export type RowProps = ComponentProps<'tr'> & {
+	/**
+	 * How deep the record sits under the one above it. It is written as `--table-depth`, which
+	 * `Table.Branch` insets by, so a tree reads as a tree and a row keeps one class at every level.
+	 */
+	depth?: number;
+};
 
 /** One record. */
-export function Row({ className, ...props }: RowProps) {
-	return <tr data-slot="table-row" className={cn(tableRowVariants(), className)} {...props} />;
+export function Row({ depth, className, style, ...props }: RowProps) {
+	return (
+		<tr
+			data-slot="table-row"
+			data-depth={depth}
+			style={
+				depth === undefined
+					? style
+					: ({ '--table-depth': depth, ...style } as CSSProperties)
+			}
+			className={cn(tableRowVariants(), className)}
+			{...props}
+		/>
+	);
 }
 
 /**
@@ -550,6 +820,13 @@ export type HeadProps = Omit<ComponentProps<'th'>, 'align'> &
 		sortDirections?: TableSort[];
 		/** A filter panel behind an icon beside the title. */
 		filter?: TableFilterProps;
+		/**
+		 * Pin the column to an edge of the frame, so it stays readable while the rest scrolls under it.
+		 * The offset is measured from the columns beside it; nothing has to be declared beyond the edge.
+		 */
+		fixed?: TableFixed;
+		/** Show the column from a breakpoint up. Give the same list to its `Table.Cell`s. */
+		responsive?: TableBreakpoint[];
 		/** Cut the title off at the column's width, and keep the whole of it in `title`. */
 		ellipsis?: boolean | { showTitle?: boolean };
 	};
@@ -579,6 +856,8 @@ export function Head({
 	onSort,
 	sortDirections,
 	filter,
+	fixed,
+	responsive,
 	ellipsis = false,
 	title,
 	onClick,
@@ -587,6 +866,8 @@ export function Head({
 	...props
 }: HeadProps) {
 	const table = use(TableContext);
+	const header = use(HeaderContext);
+	const holds = header?.sticky === true;
 	const rowHeader = scope === 'row' || scope === 'rowgroup';
 	const current = sort ?? 'none';
 	const next = nextSort(sortDirections ?? table.sortDirections, current);
@@ -634,6 +915,7 @@ export function Head({
 			data-slot="table-head"
 			data-align={align}
 			data-sort={sort}
+			data-fixed={fixed}
 			data-filtered={filtered ? '' : undefined}
 			aria-sort={sort ?? (onSort === undefined ? undefined : 'none')}
 			title={title ?? (ellipsis && showTitle ? label : undefined)}
@@ -648,6 +930,14 @@ export function Head({
 				// The band runs down the column, so it starts here, opaque: a sticky header may not show
 				// the records that pass under it.
 				'data-[sort=ascending]:bg-table-head-hover data-[sort=descending]:bg-table-head-hover',
+				// A title holds still at the top of the frame and a pinned one at its edge as well. The
+				// pinned column stands in front of the rest, so it is drawn above the other titles — and
+				// only a title may be given the top, since a pinned record still has to scroll away.
+				(fixed !== undefined || holds) && 'sticky',
+				holds && 'top-[var(--table-head-top,0px)]',
+				layerOf(fixed, header !== null, holds),
+				fixedClass(fixed),
+				responsiveClass(responsive),
 				sortable && 'cursor-pointer select-none',
 				className,
 			)}
@@ -680,6 +970,13 @@ export type CellProps = Omit<ComponentProps<'td'>, 'align'> &
 		 * cells, so it reads as one band from the header down; `none` shades nothing.
 		 */
 		sort?: TableSort;
+		/**
+		 * Pin the column to an edge of the frame, exactly as its `Table.Head` does: the offset is
+		 * measured from the columns beside it, so the two only have to agree on the edge.
+		 */
+		fixed?: TableFixed;
+		/** Show the column from a breakpoint up. Give the same list to its `Table.Head`. */
+		responsive?: TableBreakpoint[];
 	};
 
 /** One field of one record. */
@@ -687,31 +984,318 @@ export function Cell({
 	align = 'start',
 	ellipsis = false,
 	sort,
+	fixed,
+	responsive,
 	title,
 	className,
 	children,
 	...props
 }: CellProps) {
 	const showTitle = typeof ellipsis === 'object' ? ellipsis.showTitle !== false : true;
+	const sorted = sort === 'ascending' || sort === 'descending';
 
 	return (
 		<td
 			data-slot="table-cell"
 			data-align={align}
 			data-sort={sort}
+			data-fixed={fixed}
 			data-ellipsis={ellipsis ? '' : undefined}
 			title={title ?? (ellipsis && showTitle ? textOf(children) : undefined)}
 			className={cn(
 				tableCellVariants({ align }),
 				ellipsis && ellipsisCell,
-				// The band the header starts, carried down the column.
-				'data-[sort=ascending]:bg-column-sorted data-[sort=descending]:bg-column-sorted',
+				// The band the header starts, carried down the column. On a pinned cell it becomes a layer
+				// over the opaque base rather than the fill itself, because that fill has to stay solid.
+				fixed === undefined
+					? 'data-[sort=ascending]:bg-column-sorted data-[sort=descending]:bg-column-sorted'
+					: sorted &&
+							'bg-[linear-gradient(var(--color-column-sorted),var(--color-column-sorted))]',
+				fixed !== undefined && 'z-1',
+				fixedClass(fixed),
+				responsiveClass(responsive),
 				className,
 			)}
 			{...props}
 		>
 			{children}
 		</td>
+	);
+}
+
+export type SelectionHeadProps = Omit<ComponentProps<'th'>, 'children' | 'align'> & {
+	/** The logical edge the column is set from. */
+	align?: 'start' | 'center' | 'end';
+	/** The chosen rows, and the way back. */
+	selection: TableSelection;
+	/** Pin the column, exactly as `Table.Head` does. */
+	fixed?: TableFixed;
+	/** Merged last through `cn()`. */
+	className?: string;
+};
+
+/**
+ * The column of boxes: one for every row in view, and a menu that picks them all at once. It acts on
+ * `selection.keys` and nothing else, which is what lets a fetched page and a shared selected set live
+ * together — the header never claims a row it cannot see.
+ */
+export function SelectionHead({ selection, fixed, className, ...props }: SelectionHeadProps) {
+	const table = use(TableContext);
+	const { keys, value, onChange, type = 'checkbox', menu = false } = selection;
+	const all = keys.length > 0 && keys.every((key) => value.includes(key));
+	const some = !all && keys.some((key) => value.includes(key));
+
+	// One list in, one list out: the header adds or drops the keys it is responsible for and leaves
+	// whatever the caller was holding on a page it can no longer see alone.
+	const keep = (next: string[]) => onChange([...new Set(next)]);
+	const clear = value.filter((key) => !keys.includes(key));
+
+	return (
+		<Head
+			fixed={fixed}
+			data-slot="table-selection-head"
+			className={cn('w-10', className)}
+			{...props}
+		>
+			<span data-slot="table-selection" className="flex items-center gap-1">
+				{type === 'checkbox' && (
+					<Checkbox.Root
+						aria-label={table.locale.selectAll}
+						checked={all}
+						indeterminate={some}
+						onCheckedChange={(next) =>
+							keep(next === true ? [...value, ...keys] : clear)
+						}
+					>
+						<Checkbox.Indicator />
+					</Checkbox.Root>
+				)}
+				{type === 'checkbox' && menu && (
+					<Menu.Root>
+						<Menu.Trigger
+							aria-label={table.locale.selectOptions}
+							render={
+								<button
+									type="button"
+									data-slot="table-selection-menu"
+									className={cn(headControl, 'size-5')}
+								/>
+							}
+						>
+							<ChevronDown />
+						</Menu.Trigger>
+						<Menu.Portal>
+							<Menu.Positioner sideOffset={6} align="start">
+								<Menu.Popup>
+									<Menu.Item onClick={() => keep([...value, ...keys])}>
+										{table.locale.selectAll}
+									</Menu.Item>
+									<Menu.Item
+										onClick={() =>
+											keep(
+												clear.concat(
+													keys.filter((key) => !value.includes(key)),
+												),
+											)
+										}
+									>
+										{table.locale.selectInvert}
+									</Menu.Item>
+									<Menu.Item onClick={() => keep(clear)}>
+										{table.locale.selectNone}
+									</Menu.Item>
+								</Menu.Popup>
+							</Menu.Positioner>
+						</Menu.Portal>
+					</Menu.Root>
+				)}
+			</span>
+		</Head>
+	);
+}
+
+export type SelectionCellProps = Omit<ComponentProps<'td'>, 'children' | 'align'> & {
+	/** The logical edge the cell is set from. */
+	align?: 'start' | 'center' | 'end';
+	/** The chosen rows, and the way back — the same object the header was given. */
+	selection: TableSelection;
+	/** The key of the record this box belongs to. */
+	value: string;
+	/** What a screen reader hears instead of the key: the record's own name. */
+	label?: string;
+	/** A record that cannot be chosen. */
+	disabled?: boolean;
+	/** Pin the column, exactly as `Table.Cell` does. */
+	fixed?: TableFixed;
+	/** Merged last through `cn()`. */
+	className?: string;
+};
+
+/** One box, for one record, belonging to the set the header is holding. */
+export function SelectionCell({
+	selection,
+	value,
+	label,
+	disabled = false,
+	fixed,
+	className,
+	...props
+}: SelectionCellProps) {
+	const { value: chosen, onChange, type = 'checkbox' } = selection;
+	const checked = chosen.includes(value);
+	const name = label ?? value;
+
+	return (
+		<Cell
+			fixed={fixed}
+			data-slot="table-selection-cell"
+			className={cn('w-10', className)}
+			{...props}
+		>
+			{type === 'radio' ? (
+				<RadioGroup.Root
+					value={checked ? value : null}
+					disabled={disabled}
+					onValueChange={() => onChange([value])}
+				>
+					<RadioGroup.Item value={value} aria-label={name}>
+						<RadioGroup.Indicator />
+					</RadioGroup.Item>
+				</RadioGroup.Root>
+			) : (
+				<Checkbox.Root
+					aria-label={name}
+					checked={checked}
+					disabled={disabled}
+					onCheckedChange={(next) =>
+						onChange(
+							next === true
+								? [...chosen, value]
+								: chosen.filter((one) => one !== value),
+						)
+					}
+				>
+					<Checkbox.Indicator />
+				</Checkbox.Root>
+			)}
+		</Cell>
+	);
+}
+
+/**
+ * The chevron that opens a record. It is a step smaller than a column's sort square, and it holds no
+ * state of its own while open: the turn of the glyph already says which way it leads, and a tint
+ * that stayed would read as a chosen row.
+ */
+const branchToggle = cn(
+	'relative inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm',
+	'text-muted-foreground transition-colors duration-(--duration-state)',
+	'hover:bg-row-hover hover:text-foreground',
+	'before:absolute before:-inset-1.5',
+	'[&_svg]:pointer-events-none [&_svg]:size-3',
+	'[&_svg]:transition-transform [&_svg]:duration-(--duration-state)',
+	'[&[aria-expanded=true]>svg]:rotate-90',
+);
+
+export type BranchProps = {
+	/** The record's own name, at the end of the indent. */
+	children: ReactNode;
+	/** Rows sit under this one, so the toggle is drawn. `false` keeps the space and drops the glyph. */
+	hasChildren?: boolean;
+	/** Whether those rows are showing. */
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
+	/** What the toggle is called, after the word for the direction it leads. */
+	label?: string;
+	/** Merged last through `cn()`. */
+	className?: string;
+};
+
+/**
+ * A record's name, inset by the depth its row was given, with the control that opens what is filed
+ * under it. The toggle is a step smaller than a column's sort arrow and turns instead of filling, so
+ * an open row is not read as a chosen one; a row with nothing under it keeps the space and drops the
+ * glyph, which is what holds a tree's names to one line.
+ */
+export function Branch({
+	children,
+	hasChildren = true,
+	open = false,
+	onOpenChange,
+	label,
+	className,
+}: BranchProps) {
+	const table = use(TableContext);
+	const name = label ?? textOf(children);
+	const word = open ? table.locale.collapse : table.locale.expand;
+
+	return (
+		<span
+			data-slot="table-branch"
+			className={cn(
+				'inline-flex max-w-full min-w-0 items-center gap-1.5',
+				'ps-[calc(var(--table-depth,0)*var(--spacing)*6)]',
+				className,
+			)}
+		>
+			{hasChildren ? (
+				<button
+					type="button"
+					data-slot="table-branch-toggle"
+					aria-expanded={open}
+					aria-label={name === undefined ? word : `${word} ${name}`}
+					onClick={() => onOpenChange?.(!open)}
+					className={branchToggle}
+				>
+					<ChevronRight />
+				</button>
+			) : (
+				<span aria-hidden className="size-5 shrink-0" />
+			)}
+			<span className="min-w-0 truncate">{children}</span>
+		</span>
+	);
+}
+
+export type ExpandedRowProps = Omit<ComponentProps<'tr'>, 'children'> & {
+	/** How many columns the panel reaches across: the whole row. */
+	columns: number;
+	/** How deep the record above it sits, so the panel opens under the name it belongs to. */
+	depth?: number;
+	children: ReactNode;
+	/** Merged last through `cn()`, on the cell. */
+	className?: string;
+};
+
+/**
+ * The panel a record opens into. It is a row and not a box floating under one, so the table keeps its
+ * columns and a reader keeps the header they were reading. Render it under the record it belongs to,
+ * where the table would otherwise have gone on with the next one.
+ */
+export function ExpandedRow({
+	columns,
+	depth = 1,
+	className,
+	children,
+	...props
+}: ExpandedRowProps) {
+	return (
+		<tr
+			data-slot="table-expanded"
+			style={{ '--table-depth': depth } as CSSProperties}
+			{...props}
+		>
+			<td
+				colSpan={columns}
+				className={cn(
+					'border-b bg-muted/40 py-(--cell-py) pe-(--cell-px)',
+					'ps-[calc(var(--cell-px)+var(--table-depth,0)*var(--spacing)*6)]',
+					className,
+				)}
+			>
+				{children}
+			</td>
+		</tr>
 	);
 }
 
@@ -783,4 +1367,8 @@ export const Table = {
 	Cell,
 	Caption,
 	Empty,
+	SelectionHead,
+	SelectionCell,
+	Branch,
+	ExpandedRow,
 };
