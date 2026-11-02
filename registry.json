@@ -856,7 +856,8 @@
 				"@lumo/menu",
 				"@lumo/popover",
 				"@lumo/radio-group",
-				"@lumo/spinner"
+				"@lumo/spinner",
+				"@lumo/tooltip"
 			],
 			"files": [
 				{

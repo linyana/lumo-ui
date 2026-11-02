@@ -28,6 +28,7 @@ import { Menu } from '@/components/ui/menu';
 import { Popover } from '@/components/ui/popover';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { Spinner } from '@/components/ui/spinner';
+import { Tooltip } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { iconSlot } from '@/lib/control';
 
@@ -302,6 +303,7 @@ const fixedRowStates = cn(
 	// Below the cell's own content, above its fill, so the wash tints the row and not the words in it.
 	'before:pointer-events-none before:absolute before:inset-0 before:-z-10',
 	'before:bg-row-hover before:opacity-0',
+	'before:transition-[opacity,background-color] before:duration-(--duration-state)',
 	'[[data-slot=table-container][data-hoverable=true]_tbody>tr:not([data-selected]):hover>&]:before:opacity-100',
 	'[tr[data-selected]>&]:before:bg-row-selected [tr[data-selected]>&]:before:opacity-100',
 	'[tr[data-selected]:hover>&]:before:bg-row-selected-hover',
@@ -901,7 +903,6 @@ export function Head({
 				data-slot="table-sort"
 				data-active={sorted ? '' : undefined}
 				aria-label={label === undefined ? hint : `${hint} ${label}`}
-				title={hint}
 				onClick={() => onSort(next)}
 				className={cn(headControl, 'group/sort data-active:text-foreground', iconSlot)}
 			>
@@ -909,7 +910,7 @@ export function Head({
 			</button>
 		);
 
-	return (
+	const cell = (
 		<th
 			scope={scope}
 			data-slot="table-head"
@@ -923,9 +924,9 @@ export function Head({
 			className={cn(
 				tableCellVariants({ align }),
 				ellipsis && ellipsisCell,
-				'font-medium transition-colors duration-(--duration-state)',
-				!rowHeader &&
-					'text-xs text-muted-foreground [thead>tr>&]:hover:bg-table-head-hover',
+				'transition-colors duration-(--duration-state)',
+				rowHeader ? 'font-medium' : 'text-sm font-semibold text-muted-foreground',
+				sortable && '[thead>tr>&]:hover:bg-table-head-hover',
 				'data-[sort=ascending]:text-foreground data-[sort=descending]:text-foreground',
 				// The band runs down the column, so it starts here, opaque: a sticky header may not show
 				// the records that pass under it.
@@ -958,6 +959,19 @@ export function Head({
 				</span>
 			)}
 		</th>
+	);
+
+	if (!sortable) return cell;
+
+	return (
+		<Tooltip.Root>
+			<Tooltip.Trigger render={cell} />
+			<Tooltip.Portal>
+				<Tooltip.Positioner>
+					<Tooltip.Popup>{hint}</Tooltip.Popup>
+				</Tooltip.Positioner>
+			</Tooltip.Portal>
+		</Tooltip.Root>
 	);
 }
 
@@ -1078,7 +1092,7 @@ export function SelectionHead({ selection, fixed, className, ...props }: Selecti
 								<button
 									type="button"
 									data-slot="table-selection-menu"
-									className={cn(headControl, 'size-5')}
+									className={cn(headControl, iconSlot)}
 								/>
 							}
 						>

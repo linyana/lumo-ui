@@ -20,7 +20,6 @@ import Selection from './demos/selection';
 import Sort from './demos/sort';
 import States from './demos/states';
 import Structure from './demos/structure';
-import Surfaces from './demos/surfaces';
 import Tree from './demos/tree';
 
 const files = ['src/components/ui/table.tsx'];
@@ -449,21 +448,6 @@ export function TablePage() {
 					<Code code={usageImport} language="tsx" header={false} />
 					<Code code={usageExample} language="tsx" header={false} />
 				</div>
-			</DocSection>
-
-			<DocSection
-				title="surfaces"
-				note={
-					<>
-						<Mono>borderless</Mono> blends into its host; <Mono>outlined</Mono> draws a
-						card-coloured frame; <Mono>filled</Mono> uses a muted surface without a
-						frame. These static records set <Mono>{'hoverable={false}'}</Mono>.
-					</>
-				}
-			>
-				<DocPreview path="src/pages/Table/demos/surfaces.tsx">
-					<Surfaces />
-				</DocPreview>
 			</DocSection>
 
 			<DocSection
