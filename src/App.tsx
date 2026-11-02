@@ -1,5 +1,15 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { BookOpen, createLucideIcon, FileText, Moon, Sparkles, Sun, Terminal } from 'lucide-react';
+import {
+	Blocks,
+	BookOpen,
+	Component,
+	createLucideIcon,
+	FileText,
+	Moon,
+	Sparkles,
+	Sun,
+	Terminal,
+} from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/blocks/layout';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -60,8 +70,19 @@ const nav: LayoutNavEntry[] = docSections.flatMap((section): LayoutNavEntry[] =>
 		);
 	}
 
-	const group: LayoutNavEntry = { type: 'group', label: section, children };
-	return section === 'Getting Started' ? [group, { type: 'separator' }] : [group];
+	if (section === 'Getting Started') {
+		return [{ type: 'group', label: section, children }, { type: 'separator' }];
+	}
+
+	return [
+		{
+			key: section,
+			label: section,
+			icon: section === 'Components' ? <Component /> : <Blocks />,
+			children,
+			defaultOpen: section === 'Components',
+		},
+	];
 });
 
 /**
