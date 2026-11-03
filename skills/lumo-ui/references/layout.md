@@ -79,6 +79,11 @@ export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 	title?: ReactNode;
 	/** Controls at the far end of the brand row, before the fold toggle — a theme switch, a tint. */
 	brandActions?: ReactNode;
+	/**
+	 * Pinned above the nav, under the brand row: a search trigger, a filter — a control the list
+	 * should not scroll past.
+	 */
+	toolbar?: ReactNode;
 	/** Pinned to the rail's bottom edge: a version, a status, a link. */
 	footer?: ReactNode;
 	/** Lets the rail narrow to its icons: the brand row carries the toggle, and cmd/ctrl+b does it. */
@@ -103,6 +108,7 @@ function LayoutRoot({
 	logo,
 	title,
 	brandActions,
+	toolbar,
 	footer,
 	collapsible = false,
 	defaultCollapsed = false,
@@ -164,6 +170,7 @@ function LayoutRoot({
 				logo={logo}
 				title={title}
 				brandActions={brandActions}
+				toolbar={toolbar}
 				footer={footer}
 				collapsible={collapsible}
 				collapsed={isCollapsed}
@@ -178,6 +185,7 @@ function LayoutRoot({
 						logo={logo}
 						title={title}
 						brandActions={brandActions}
+						toolbar={toolbar}
 						footer={footer}
 						resetScrollKey={resetScrollKey}
 					/>
@@ -361,6 +369,8 @@ export type SidebarProps = {
 	title?: ReactNode;
 	/** Controls at the far end of the brand row, before the fold toggle. */
 	brandActions?: ReactNode;
+	/** Rows pinned above the nav, rendered inside this rail's own nav root. */
+	toolbar?: ReactNode;
 	/** Rows for the bottom edge, rendered inside this rail's own nav root. */
 	footer?: ReactNode;
 	/** Whether the rail can narrow to its icons at all. */
@@ -381,9 +391,29 @@ const row = 'h-9 [&_svg]:size-4';
 const subRow = 'h-8 [&_svg]:size-4';
 
 /**
- * The shell's left rail: a brand row, the nav, and whatever is pinned to the bottom. It paints
- * nothing of its own — the shell's fill shows through, which is what makes it read as grey next
- * to the card rather than as a second surface.
+ * A strip at one edge of the rail, outside the scroll box: the same padded nav root at either end,
+ * because what it holds is rows and rows want the list the nav gives them.
+ */
+function RailSlot({
+	slot,
+	compact,
+	children,
+}: {
+	slot: string;
+	compact: boolean;
+	children: ReactNode;
+}) {
+	return (
+		<div data-slot={slot} className="shrink-0 p-2">
+			<Nav.Root compact={compact}>{children}</Nav.Root>
+		</div>
+	);
+}
+
+/**
+ * The shell's left rail: a brand row, whatever is pinned above the nav, the nav, and whatever is
+ * pinned to the bottom. It paints nothing of its own — the shell's fill shows through, which is what
+ * makes it read as grey next to the card rather than as a second surface.
  */
 export function Sidebar({ className, collapsed = false, ...props }: SidebarProps) {
 	return (
@@ -409,6 +439,7 @@ export function SidebarContent({
 	logo,
 	title,
 	brandActions,
+	toolbar,
 	footer,
 	collapsible = false,
 	collapsed = false,
@@ -583,6 +614,11 @@ export function SidebarContent({
 					)}
 				</div>
 			)}
+			{toolbar !== undefined && (
+				<RailSlot slot="layout-toolbar" compact={collapsed}>
+					{toolbar}
+				</RailSlot>
+			)}
 			<ScrollArea.Root className="flex-1">
 				<ScrollArea.Viewport>
 					<ScrollArea.Content>
@@ -592,9 +628,9 @@ export function SidebarContent({
 				<ScrollArea.Scrollbar />
 			</ScrollArea.Root>
 			{footer !== undefined && (
-				<div data-slot="layout-footer" className="shrink-0 p-2">
-					<Nav.Root compact={collapsed}>{footer}</Nav.Root>
-				</div>
+				<RailSlot slot="layout-footer" compact={collapsed}>
+					{footer}
+				</RailSlot>
 			)}
 		</div>
 	);
@@ -612,7 +648,7 @@ import { SidebarContent, type SidebarProps } from '../sidebar';
 
 export type MobileNavigationProps = Pick<
 	SidebarProps,
-	'nav' | 'selectedKey' | 'onSelect' | 'logo' | 'title' | 'brandActions' | 'footer'
+	'nav' | 'selectedKey' | 'onSelect' | 'logo' | 'title' | 'brandActions' | 'toolbar' | 'footer'
 > & {
 	resetScrollKey?: string;
 };
@@ -624,6 +660,7 @@ export function MobileNavigation({
 	logo,
 	title,
 	brandActions,
+	toolbar,
 	footer,
 	resetScrollKey,
 }: MobileNavigationProps) {
@@ -720,6 +757,7 @@ export function MobileNavigation({
 									}
 								/>
 							}
+							toolbar={toolbar}
 							footer={footer}
 						/>
 					</Drawer.Popup>

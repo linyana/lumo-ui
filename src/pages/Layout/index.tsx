@@ -59,6 +59,11 @@ const layoutProps: Record<string, PropNode> = {
 		type: 'ReactNode',
 		description: 'Pinned to the rail’s bottom edge: a version, a status, a link.',
 	},
+	toolbar: {
+		type: 'ReactNode',
+		description:
+			'Pinned above the nav, under the brand row: a search trigger, a filter — a control the list should not scroll past. Rows go inside a Nav.List, since the rail supplies the nav root.',
+	},
 	collapsible: {
 		type: 'boolean',
 		default: 'false',
@@ -137,7 +142,12 @@ const hookRows = [
 		'a page bar',
 		'sticky top-0, bg-inherit, so it takes the surface’s colour rather than its own.',
 	],
-	['data-slot="layout-sidebar"', 'the rail', 'holds the brand row, the nav and the footer.'],
+	[
+		'data-slot="layout-sidebar"',
+		'the rail',
+		'holds the brand row, the toolbar, the nav and the footer.',
+	],
+	['data-slot="layout-toolbar"', 'the pinned strip', 'outside the scroll box, above the nav.'],
 	['data-slot="layout-mobile-bar"', 'the mobile bar', 'navigation trigger, brand and actions.'],
 	['data-slot="layout-mobile-navigation"', 'the drawer', 'expanded navigation and the footer.'],
 	[
