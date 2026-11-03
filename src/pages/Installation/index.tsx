@@ -208,9 +208,10 @@ export function InstallationPage() {
 			>
 				<Command>bunx skills add linyana/lumo-ui</Command>
 				<p className="text-sm text-muted-foreground">
-					The installed skill reads the current <AgentFile file="skills.md" /> from
-					the documentation site, so its component index and examples stay with the
-					library. You can also give that link directly to your agent.
+					The skill installs as a directory: <Mono>SKILL.md</Mono> holds the rules and the
+					index, and a <Mono>references/&lt;name&gt;.md</Mono> per component holds its
+					source and examples beside it, so the agent works without the network. You can
+					also hand the library's <AgentFile file="skills.md" /> to your agent directly.
 				</p>
 			</DocSection>
 

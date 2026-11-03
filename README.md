@@ -40,7 +40,8 @@ bun run build    # 生产构建
 | `bun run registry:build` | 生成 `public/r/*.json`（CLI 真正下载的东西，`bun run build` 会自动跑）|
 | `bun run registry:check` | 用 shadcn CLI 校验 `registry.json` 本身 |
 | `bun run registry:sync` | 按磁盘补齐 `registry.json`（加完组件后跑） |
-| `bun run llms:build` | 生成 `public/llms.txt`、`public/llms-full.txt`、`public/skills.md` 和 `public/docs/*.md`（给 AI 的入口，`bun run build` / `bun run dev` 会自动跑） |
+| `bun run llms:build` | 生成 `public/llms.txt`、`public/llms-full.txt`、`public/skills.md`、`public/docs/*.md` 和 `skills/lumo-ui/`（给 AI 的入口，`bun run build` / `bun run dev` 会自动跑） |
+| `bun run llms:check` | 检查已入库的 `skills/lumo-ui/` 是否与生成结果一致（`bun run check` 会跑） |
 
 ## 目录
 
@@ -64,7 +65,8 @@ src/
 └── App.tsx                       # 外壳：把路由接到 Layout 上
 scripts/check-registry.ts         # registry.json 与磁盘的同步检查（--fix 即 sync）
 scripts/theme.ts                  # 两份 CSS → theme / palette 两个 item
-scripts/llms.ts                   # 站点 → llms.txt / llms-full.txt / skills.md / docs/*.md（给 AI 读的同一套）
+scripts/llms.ts                   # 站点 → llms.txt / llms-full.txt / skills.md / docs/*.md，以及技能目录 skills/lumo-ui/
+skills/lumo-ui/                   # 装进项目的技能：SKILL.md + references/<name>.md（生成，入库）
 registry.json                     # 分发定义
 public/r/                         # 生成的 registry JSON，随站点部署（不入库）
 AGENTS.md                         # 给 AI 的项目规范
@@ -173,11 +175,12 @@ Install the Lumo UI skill in a consuming project:
 bunx skills add linyana/lumo-ui
 ```
 
-The CLI discovers `skills/lumo-ui/SKILL.md` in the GitHub repository. This lightweight
-entry reads the maintained instructions at <https://ui.lumo.cab/skills.md> instead of
-keeping a second component catalogue. Installing the skill does not install components
-or configure the registry and theme. The skill must be available on the repository's
-default branch before the remote install command can discover it.
+The CLI copies the `skills/lumo-ui/` directory from the GitHub repository: a `SKILL.md` holding the
+rules, the install and the index, and a `references/<name>.md` per item — the same page
+`/docs/<name>.md` serves, shipped beside the skill so it opens without a network. Installing the
+skill does not install components or configure the registry and theme. The directory is generated
+by `scripts/llms.ts` and committed, because the CLI discovers it on the default branch: `bun run
+llms:build` writes it, `bun run check` fails when it drifts.
 
 站点同时是给 agent 的文档源，和 ant.design 的 `llms.txt` 是一回事：
 
@@ -187,17 +190,21 @@ default branch before the remote install command can discover it.
 | `/llms-full.txt` | 上面全部，加上每个 item 的源码和示例，一次取完 |
 | `/docs/<name>.md` | 单个 item：装法、它复制的源码、页面上那些示例 |
 | `/skills.md` | 同一套东西，按 skill 的写法：frontmatter、装法、规矩，然后一句话一个 item 的索引 |
+| `skills/lumo-ui/` | 上面那个 skill 装进项目后的样子：`SKILL.md` 加每个 item 一份 `references/<name>.md`，索引链接是相对路径 |
 | `/docs/agents.md` | 就是这份 `AGENTS.md` |
 
-四份都是 `scripts/llms.ts` 从 `registry.json` 和页面目录（`src/pages/Button/demos` 就是
-`@lumo/button`）生成的，写进 `public/` 随站点部署、不入库。所以**改内容改源头**：组件的
+前四份都是 `scripts/llms.ts` 从 `registry.json` 和页面目录（`src/pages/Button/demos` 就是
+`@lumo/button`）生成的，写进 `public/` 随站点部署、不入库。第五份 `skills/lumo-ui/` 是唯一的
+例外：它得入库，因为 `bunx skills add` 从默认分支读它。所以**改内容改源头**：组件的
 `title` / `description`、它的源码、示例，以及 `AGENTS.md`——生成物不用手改。加一个组件时也
 什么都不用多做，索引和 markdown 会自动带上它。
 
 `/skills.md` 是同一堆内容换一种读法：`llms.txt` 让人翻，skill 让人照做，所以它先说装法和规矩，
-再把源码留给链接的 `/docs/<name>.md`，索引里的描述压成第一句。它也是唯一不带 BOM、而且必须是
-纯 ASCII 的生成物：frontmatter 得从第一个字节开始，靠不了 BOM，只能把 `—`、`…`、`’` 这类排版
-符号换成 ASCII，免得在猜错编码的编辑器里变成乱码。
+再把源码留给链接的 `/docs/<name>.md`，索引里的描述压成第一句。`skills/lumo-ui/` 是同一份正文装成
+目录：索引改指 `references/<name>.md`，那些文件就是 `/docs/<name>.md` 逐字节照搬，于是模型读规矩和
+索引，再打开它要的那一个文件，离线也够。`/skills.md` 和 `SKILL.md` 这两个是唯一不带 BOM、而且必须
+是纯 ASCII 的生成物：它们都以 frontmatter 开头，靠不了 BOM，只能把 `—`、`…`、`’` 这类排版符号换成
+ASCII，免得在猜错编码的编辑器里变成乱码；`references/` 里的文件不是这样读的，所以照搬即可。
 
 ## 改主题
 

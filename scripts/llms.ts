@@ -7,7 +7,7 @@
  * prose, and the files it copies, so the index cannot advertise a component the CLI would not
  * install, and an item added here shows up in all three files without a second edit.
  *
- * Four outputs, smallest to largest:
+ * Five outputs, smallest to largest:
  *
  * - `/docs/<name>.md` — one item: what it is, how it is installed, the source it copies, and the
  *   examples its page shows.
@@ -18,6 +18,12 @@
  * - `/skills.md` — the same corpus as a skill: frontmatter a session can load, the install and the
  *   rules, then the index in one sentence an item. A doc is browsed and a skill is obeyed, so this
  *   one says what to do in what order and leaves the source to the page it links.
+ * - `skills/lumo-ui/` — the same skill as a directory the CLI installs: `SKILL.md`, and one
+ *   `references/<name>.md` an item, each the `/docs/<name>.md` page. A skill is not one body of
+ *   text but a body and a library: the model reads the rules and the index, then opens the one file
+ *   it needs. This is the only output written into the repository, because `bunx skills add` reads
+ *   the default branch of the GitHub repository rather than this site, so a file that is not
+ *   committed is a file the installer cannot copy.
  *
  * The examples are read off the page directory that documents the item (`src/pages/Button/demos` is
  * `@lumo/button`), which is the same rule the docs app uses to name an item — so a page and its
@@ -39,6 +45,8 @@ type RegistryItem = {
 const root = join(import.meta.dir, '..');
 const out = join(root, 'public');
 const docs = join(out, 'docs');
+/** The one output written into the repository: the directory `bunx skills add` installs. */
+const skillDir = join(root, 'skills/lumo-ui');
 const registry = (await Bun.file(join(root, 'registry.json')).json()) as { items: RegistryItem[] };
 
 /** The order an index is read in, and every item type filed under one of the four. */
@@ -201,8 +209,20 @@ async function itemDoc(item: RegistryItem) {
 	return `${lines.join('\n').trimEnd()}\n`;
 }
 
-/** What this is, and how a first install goes — the part every output opens with. */
-function brief() {
+/**
+ * What this is, and how a first install goes — the part every output opens with.
+ *
+ * `origin` is the address a document fetched from the site can leave implicit — a reader that got
+ * the file over HTTP knows where it came from. A skill installed into a project does not: the files
+ * are on disk, so the namespace it has to declare would be a `<host>` nobody can resolve, and this
+ * names it instead.
+ */
+function brief(origin?: string) {
+	const source =
+		origin === undefined
+			? '`<host>` is the origin this file was fetched from, and `{name}` is the CLI’s placeholder.'
+			: `\`${origin}\` is this skill's origin; \`{name}\` is the CLI’s placeholder.`;
+
 	return [
 		'lumo-ui is a personal React component library distributed as a shadcn registry — there is no',
 		'npm package. A component arrives as source, in the project, copied into the consumer’s own',
@@ -212,10 +232,10 @@ function brief() {
 		'## how an install works',
 		'',
 		'Declare the namespace once, in `components.json` (or under `registries` in `package.json`).',
-		'`<host>` is the origin this file was fetched from, and `{name}` is the CLI’s placeholder.',
+		source,
 		'',
 		'```json',
-		'"registries": { "@lumo": "https://<host>/r/{name}.json" }',
+		`"registries": { "@lumo": "${origin ?? 'https://<host>'}/r/{name}.json" }`,
 		'```',
 		'',
 		'```bash',
@@ -283,8 +303,38 @@ function gist(description: string | undefined) {
 	return sentence.length <= 140 ? sentence : `${sentence.slice(0, 139).trimEnd()}…`;
 }
 
+/**
+ * Where a skill's reader goes for an item, and what it does there.
+ *
+ * The two skills say the same thing about the same corpus, and differ in one address: the file at
+ * `/skills.md` is read beside the site, so an item is a `/docs/<name>.md` fetched over the network;
+ * the directory is read inside the project it was installed into, so the same page is the
+ * `references/<name>.md` sitting next to it. One body of text, two bases.
+ */
+type SkillTarget = {
+	/** An item's page, spelled from the skill's own root. */
+	page: (name: string) => string;
+	/** What a reader does with it, since one is a fetch and the other is already on disk. */
+	verb: 'fetch' | 'read';
+	/** The origin to name, when the reader has no address of its own to read it off. */
+	origin?: string;
+};
+
+/** `/skills.md`, which is one file and therefore one base. */
+const siteSkill: SkillTarget = {
+	page: (name) => `/docs/${name}.md`,
+	verb: 'fetch',
+};
+
+/** The installed directory: the references travel with the skill, so nothing is fetched. */
+const installedSkill: SkillTarget = {
+	page: (name) => `references/${name}.md`,
+	verb: 'read',
+	origin: 'https://ui.lumo.cab',
+};
+
 /** The catalogue as a skill reads it: the same order, one sentence an item, each linking to its page. */
-function skillIndex() {
+function skillIndex(target: SkillTarget) {
 	const lines: string[] = [];
 	for (const group of groups) {
 		const items = ordered(group);
@@ -293,7 +343,9 @@ function skillIndex() {
 		lines.push(`### ${group.title}`, '');
 		for (const item of items) {
 			const note = gist(item.description);
-			lines.push(`- [${item.name}](/docs/${item.name}.md)${note === '' ? '' : `: ${note}`}`);
+			lines.push(
+				`- [${item.name}](${target.page(item.name)})${note === '' ? '' : `: ${note}`}`,
+			);
 		}
 		lines.push('');
 	}
@@ -332,7 +384,7 @@ const markdown = [
  * up to date. Nothing here is written twice: the install, the rules and the prose are the same
  * functions `/llms.txt` is built from.
  */
-function skill() {
+function skill(target: SkillTarget) {
 	const description =
 		'Components to copy, not to install: Base UI for behaviour, Tailwind v4 for styling and CSS ' +
 		'variables for theme, installed as a shadcn registry rather than an npm package. Use when ' +
@@ -349,12 +401,13 @@ function skill() {
 		'',
 		summary,
 		'',
-		brief(),
+		brief(target.origin),
 		'',
 		'## workflow',
 		'',
-		'1. Choose the item from the index below, then fetch `/docs/<name>.md` for it: the install ' +
-			'command, the source the CLI copies, and the examples its page shows.',
+		'1. Choose the item from the index below, then ' +
+			`${target.verb} \`${target.page('<name>')}\` for it: the install command, the source the ` +
+			'CLI copies, and the examples its page shows.',
 		'2. Read that source before writing a call site — it is the API. There is no generated prop ' +
 			'table, so a part, a variant or a prop that is not in the file does not exist.',
 		'3. Follow the rules above instead of inventing a convention beside them, and copy the shape ' +
@@ -362,7 +415,7 @@ function skill() {
 		'',
 		'## index',
 		'',
-		skillIndex(),
+		skillIndex(target),
 		'',
 	]
 		.join('\n')
@@ -423,18 +476,91 @@ const full = [
 	...groups.flatMap((group) => ordered(group)).map((item) => itemDocs.get(item.name)!),
 ].join('\n\n---\n\n');
 
-const skills = ascii(skill());
+const skills = ascii(skill(siteSkill));
 
-await rm(docs, { recursive: true, force: true });
-await mkdir(docs, { recursive: true });
-await write(join(out, 'llms.txt'), markdown);
-await write(join(out, 'llms-full.txt'), `${full}\n`);
-await Bun.write(join(out, 'skills.md'), skills);
-await write(join(docs, 'agents.md'), rules);
-for (const [name, doc] of itemDocs) await write(join(docs, `${name}.md`), doc);
+/**
+ * The installed skill, as the files it is: `SKILL.md`, which is the rules and the index, and one
+ * `references/<name>.md` an item, which is that item's `/docs/<name>.md` page. The links in the
+ * index are relative to the directory, so the two files travel as one thing and nothing is fetched.
+ *
+ * Only `SKILL.md` is ASCII and BOM-free, for the reason `/skills.md` is: a loader parses its
+ * frontmatter, and three bytes ahead of `---` are three bytes of YAML it did not expect. A reference
+ * is not read that way, so each is the page byte for byte, BOM and all — the file the skill hands a
+ * model is the file the site serves, and a mark `ascii()` would rewrite is a mark still in the code
+ * it quotes (`−`, `×`, `·`). Bytes rather than text, so the comparison sees a BOM add or lose one.
+ */
+function installedFiles() {
+	const encode = (text: string) => new TextEncoder().encode(text);
+	const files = new Map<string, Uint8Array>();
+	files.set('SKILL.md', encode(ascii(skill(installedSkill))));
+	for (const [name, doc] of itemDocs) files.set(`references/${name}.md`, encode(BOM + doc));
+	return files;
+}
 
-const size = (text: string) => `${Math.round(text.length / 1024)}K`;
-console.log(
-	`llms ok: ${itemDocs.size} item pages, llms.txt ${size(markdown)}, ` +
-		`llms-full.txt ${size(full)}, skills.md ${size(skills)}`,
-);
+/** Every file under `dir`, relative to it: what is on disk, to be compared against what would be. */
+async function filesUnder(dir: string, prefix = ''): Promise<string[]> {
+	const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+	const files: string[] = [];
+	for (const entry of entries) {
+		const path = prefix === '' ? entry.name : `${prefix}/${entry.name}`;
+		if (entry.isDirectory()) files.push(...(await filesUnder(join(dir, entry.name), path)));
+		else files.push(path);
+	}
+	return files;
+}
+
+/**
+ * `--check`: does the committed directory still match what this script would write?
+ *
+ * The site's markdown is generated and thrown away, so nothing can drift. The installed skill is
+ * committed - it has to be, the CLI installs it from GitHub - so it is the one output that can go
+ * stale, and this is what keeps `bun run check` honest about it.
+ */
+const check = process.argv.includes('--check');
+
+if (check) {
+	const files = installedFiles();
+	const disk = await filesUnder(skillDir);
+	const drift: string[] = [];
+
+	for (const path of disk) {
+		if (!files.has(path)) drift.push(`skills/lumo-ui/${path} is not generated; delete it`);
+	}
+	for (const [path, bytes] of files) {
+		const name = `skills/lumo-ui/${path}`;
+		if (!disk.includes(path)) drift.push(`${name} is missing`);
+		else {
+			const onDisk = new Uint8Array(await Bun.file(join(skillDir, path)).arrayBuffer());
+			if (!Buffer.from(onDisk).equals(Buffer.from(bytes))) drift.push(`${name} is stale`);
+		}
+	}
+
+	if (drift.length > 0) {
+		console.error(`the installed skill is out of sync (${drift.length}):`);
+		for (const change of drift) console.error(`  - ${change}`);
+		console.error('run `bun run llms:build` to write it back');
+		process.exit(1);
+	}
+
+	console.log(`skill ok: ${files.size} files in skills/lumo-ui`);
+} else {
+	await rm(docs, { recursive: true, force: true });
+	await mkdir(docs, { recursive: true });
+	await write(join(out, 'llms.txt'), markdown);
+	await write(join(out, 'llms-full.txt'), `${full}\n`);
+	await Bun.write(join(out, 'skills.md'), skills);
+	await write(join(docs, 'agents.md'), rules);
+	for (const [name, doc] of itemDocs) await write(join(docs, `${name}.md`), doc);
+
+	await rm(join(skillDir, 'references'), { recursive: true, force: true });
+	await mkdir(join(skillDir, 'references'), { recursive: true });
+	const installed = installedFiles();
+	for (const [path, bytes] of installed) await Bun.write(join(skillDir, path), bytes);
+
+	const size = (text: string) => `${Math.round(text.length / 1024)}K`;
+	console.log(
+		`llms ok: ${itemDocs.size} item pages, llms.txt ${size(markdown)}, ` +
+			`llms-full.txt ${size(full)}, skills.md ${size(skills)}, ` +
+			`skill ${installed.size} files`,
+	);
+}
