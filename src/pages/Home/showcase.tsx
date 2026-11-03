@@ -34,7 +34,9 @@ export function Showcase() {
 							/>
 						</div>
 						<div className="flex min-w-0 flex-col border-t bg-card lg:border-t-0 lg:border-l">
-							<p className="border-b px-4 py-3 text-xs text-muted-foreground">Live preview</p>
+							<p className="border-b px-4 py-3 text-xs text-muted-foreground">
+								Live preview
+							</p>
 							<div className="flex min-h-64 flex-1 items-center justify-center p-6 sm:p-8">
 								<Preview />
 							</div>

@@ -64,7 +64,9 @@ function PagePreview({ page, onOpen }: { page: SearchPage; onOpen: () => void })
 			<div className="flex shrink-0 items-center justify-between gap-3 px-5 py-4">
 				<div className="min-w-0">
 					<p className="truncate text-sm font-medium">{page.label}</p>
-					<p className="text-xs text-muted-foreground">{Demo ? 'Preview' : page.section}</p>
+					<p className="text-xs text-muted-foreground">
+						{Demo ? 'Preview' : page.section}
+					</p>
 				</div>
 				<Button
 					variant="ghost"
@@ -123,11 +125,7 @@ function SearchContent({
 	const desktop = useSyncExternalStore(subscribeToDesktop, isDesktop, () => false);
 	const navigate = useNavigate();
 	const results = useMemo(() => {
-		const words = query
-			.trim()
-			.split(/\s+/)
-			.map(normalize)
-			.filter(Boolean);
+		const words = query.trim().split(/\s+/).map(normalize).filter(Boolean);
 		const needle = normalize(query);
 		return pages
 			.filter((page) => {
@@ -201,7 +199,11 @@ function SearchContent({
 								data-slot="doc-search-result"
 								onClick={() => {
 									if (page.external) {
-										window.open(`/${page.path}`, '_blank', 'noopener,noreferrer');
+										window.open(
+											`/${page.path}`,
+											'_blank',
+											'noopener,noreferrer',
+										);
 									} else {
 										navigate(`/${page.path}`);
 									}
@@ -210,13 +212,17 @@ function SearchContent({
 								className={cn(row, 'cursor-pointer flex-col gap-1 py-3 pe-4')}
 							>
 								<span className="font-medium">{page.label}</span>
-								<span className="text-xs text-muted-foreground">{page.section}</span>
+								<span className="text-xs text-muted-foreground">
+									{page.section}
+								</span>
 							</Autocomplete.Item>
 						)}
 					</Autocomplete.List>
 					<Autocomplete.Empty data-slot="doc-search-empty">
 						<div className="flex flex-col items-center gap-3 px-4 py-8 text-center text-sm">
-							<p className="text-muted-foreground">No pages found. Try another name.</p>
+							<p className="text-muted-foreground">
+								No pages found. Try another name.
+							</p>
 							<Button
 								variant="secondary"
 								size="sm"

@@ -49,8 +49,8 @@ export default function Home() {
 						Your interface.
 					</h1>
 					<p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
-						Composable React components built on Base UI and Tailwind v4.
-						Thoughtful defaults, editable source, and a theme that stays yours.
+						Composable React components built on Base UI and Tailwind v4. Thoughtful
+						defaults, editable source, and a theme that stays yours.
 					</p>
 					<div className="mt-8 flex flex-wrap gap-3">
 						<Button size="lg" nativeButton={false} render={<Link to="/installation" />}>
@@ -65,7 +65,11 @@ export default function Home() {
 							icon={<SiGithub aria-hidden="true" />}
 							nativeButton={false}
 							render={
-								<a href="https://github.com/linyana/lumo-ui" target="_blank" rel="noreferrer" />
+								<a
+									href="https://github.com/linyana/lumo-ui"
+									target="_blank"
+									rel="noreferrer"
+								/>
 							}
 						>
 							GitHub
@@ -78,14 +82,21 @@ export default function Home() {
 			<section aria-labelledby="home-components" className="border-t py-10 sm:py-14">
 				<div className="mb-7 flex flex-wrap items-end justify-between gap-4">
 					<div className="max-w-lg space-y-2">
-						<h2 id="home-components" className="text-2xl font-semibold tracking-tight sm:text-3xl">
+						<h2
+							id="home-components"
+							className="text-2xl font-semibold tracking-tight sm:text-3xl"
+						>
 							Not pictures. Components.
 						</h2>
 						<p className="text-sm leading-relaxed text-muted-foreground">
-							Type, toggle, and try them out. These are the same components you install.
+							Type, toggle, and try them out. These are the same components you
+							install.
 						</p>
 					</div>
-					<Link to="/overview" className="inline-flex items-center gap-2 text-sm hover:underline">
+					<Link
+						to="/overview"
+						className="inline-flex items-center gap-2 text-sm hover:underline"
+					>
 						Browse components
 						<ArrowRight aria-hidden="true" className="size-4" />
 					</Link>
@@ -95,7 +106,10 @@ export default function Home() {
 
 			<section aria-labelledby="home-code" className="border-t py-10 sm:py-14">
 				<div className="mb-7 max-w-lg space-y-2">
-					<h2 id="home-code" className="text-2xl font-semibold tracking-tight sm:text-3xl">
+					<h2
+						id="home-code"
+						className="text-2xl font-semibold tracking-tight sm:text-3xl"
+					>
 						What you write is what you see.
 					</h2>
 					<p className="text-sm leading-relaxed text-muted-foreground">
@@ -130,7 +144,10 @@ export default function Home() {
 				<div className="max-w-2xl">
 					<Command bordered>{installCommand}</Command>
 				</div>
-				<Link to="/installation" className="inline-flex items-center gap-2 text-sm hover:underline">
+				<Link
+					to="/installation"
+					className="inline-flex items-center gap-2 text-sm hover:underline"
+				>
 					Set up your project
 					<ArrowRight aria-hidden="true" className="size-4" />
 				</Link>
