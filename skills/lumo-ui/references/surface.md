@@ -51,6 +51,31 @@ export const backdrop = cn(
 );
 
 /**
+ * The box a modal surface is drawn in. Base UI builds an alert dialog out of a dialog, so the two
+ * are the same panel with a different role on it, and writing it twice would put the padding, the
+ * radius and the cap in two places that can drift apart.
+ *
+ * The panel caps itself at the viewport — the 2rem is the layer's own p-4 — and scrolls inside, so
+ * a long form never grows past a centred grid where its top would be lost.
+ */
+export const panel = cn(
+	'w-full max-w-md rounded-xl border bg-popover p-6 text-popover-foreground shadow-overlay',
+	'max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain',
+	'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-overlay)',
+	'data-starting-style:scale-95 data-starting-style:opacity-0',
+	'data-ending-style:scale-95 data-ending-style:opacity-0',
+);
+
+/**
+ * The fixed layer a modal panel is centred in. `safe` keeps a popup taller than the viewport — one
+ * that brought its own max-height — starting at the top edge instead of overflowing above it,
+ * where nothing can scroll.
+ */
+export const modalViewport = cn(
+	'fixed inset-0 z-50 grid place-items-center-safe overflow-y-auto p-4',
+);
+
+/**
  * A popup arriving and leaving: it scales from wherever Base UI anchored it, and its box is the size
  * of the Viewport inside it while one slides to the next — which is a box the popup does not
  * otherwise have, so the two dimensions are named rather than measured.

@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
 import { cn } from '@/lib/utils';
-import { backdrop, description, title } from '@/lib/surface';
+import { backdrop, description, modalViewport, panel, title } from '@/lib/surface';
 
 export type BackdropProps = ComponentProps<typeof BaseDialog.Backdrop>;
 
@@ -33,20 +33,7 @@ export type PopupProps = ComponentProps<typeof BaseDialog.Popup>;
 
 export function Popup({ className, ...props }: PopupProps) {
 	return (
-		<BaseDialog.Popup
-			data-slot="dialog-popup"
-			className={cn(
-				'w-full max-w-md rounded-xl border bg-popover p-6 text-popover-foreground shadow-overlay',
-				// The panel caps itself at the viewport — the 2rem is the Viewport's p-4 — and scrolls
-				// inside, so a long form never grows past a centred grid where its top would be lost.
-				'max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain',
-				'transition-[scale,opacity] duration-(--duration-state) ease-(--ease-overlay)',
-				'data-starting-style:scale-95 data-starting-style:opacity-0',
-				'data-ending-style:scale-95 data-ending-style:opacity-0',
-				className,
-			)}
-			{...props}
-		/>
+		<BaseDialog.Popup data-slot="dialog-popup" className={cn(panel, className)} {...props} />
 	);
 }
 
@@ -70,12 +57,7 @@ export function Viewport({ className, ...props }: ViewportProps) {
 	return (
 		<BaseDialog.Viewport
 			data-slot="dialog-viewport"
-			className={cn(
-				// `safe` keeps a popup taller than the viewport — one that brought its own max-height —
-				// starting at the top edge instead of overflowing above it, where nothing can scroll.
-				'fixed inset-0 z-50 grid place-items-center-safe overflow-y-auto p-4',
-				className,
-			)}
+			className={cn(modalViewport, className)}
 			{...props}
 		/>
 	);

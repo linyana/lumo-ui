@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import AccordionBasic from '@/pages/Accordion/demos/basic';
+import AlertDialogBasic from '@/pages/AlertDialog/demos/basic';
 import AvatarBasic from '@/pages/Avatar/demos/basic';
 import BadgeBasic from '@/pages/Badge/demos/basic';
 import ButtonBasic from '@/pages/Button/demos/basic';
@@ -15,6 +16,7 @@ import DrawerBasic from '@/pages/Drawer/demos/basic';
 import FieldBasic from '@/pages/Field/demos/basic';
 import FieldsetBasic from '@/pages/Fieldset/demos/basic';
 import FormBasic from '@/pages/Form/demos/basic';
+import HoverCardBasic from '@/pages/HoverCard/demos/basic';
 import InputBasic from '@/pages/Input/demos/basic';
 import LayoutResponsive from '@/pages/Layout/demos/responsive';
 import MenuBasic from '@/pages/Menu/demos/basic';
@@ -112,6 +114,7 @@ export const previewGroups: PreviewGroup[] = [
 			{ path: 'code-tree', label: 'CodeTree', Demo: CodeTreeBasic, room: 'tall' },
 			{ path: 'collapsible', label: 'Collapsible', Demo: CollapsibleBasic, room: 'compact' },
 			{ path: 'table', label: 'Table', Demo: TableBasic },
+			{ path: 'hover-card', label: 'HoverCard', Demo: HoverCardBasic, room: 'compact' },
 			{ path: 'popover', label: 'Popover', Demo: PopoverBasic, room: 'compact' },
 			{ path: 'tooltip', label: 'Tooltip', Demo: TooltipBasic, room: 'compact' },
 		],
@@ -120,6 +123,7 @@ export const previewGroups: PreviewGroup[] = [
 		title: 'Feedback',
 		previews: [
 			{ path: 'dialog', label: 'Dialog', Demo: DialogBasic, room: 'compact' },
+			{ path: 'alert-dialog', label: 'AlertDialog', Demo: AlertDialogBasic, room: 'compact' },
 			{ path: 'drawer', label: 'Drawer', Demo: DrawerBasic, room: 'compact' },
 			{ path: 'progress', label: 'Progress', Demo: ProgressBasic, room: 'compact' },
 			{ path: 'skeleton', label: 'Skeleton', Demo: SkeletonBasic, room: 'compact' },

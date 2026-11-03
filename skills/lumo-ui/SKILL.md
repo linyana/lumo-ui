@@ -60,6 +60,7 @@ imports comes with it: another item, or the npm package it names.
 ### Components
 
 - [accordion](references/accordion.md): A list of folds that share one value: one answer open at a time, or several.
+- [alert-dialog](references/alert-dialog.md): A modal that asks rather than offers: the page behind it is inert and a click outside will not dismiss it, so the only way out is one of th...
 - [avatar](references/avatar.md): A face, or the initials standing in for one, and the row a set of them is stacked in.
 - [badge](references/badge.md): A word that labels the thing beside it.
 - [button](references/button.md): The reference component: tailwind-variants API, token-driven appearance, data-slot / data-variant hooks.
@@ -74,6 +75,7 @@ imports comes with it: another item, or the npm package it names.
 - [field](references/field.md): One control, its name, and the line beneath it: label, description and error joined to whatever control is inside, by Base UI's own wiring.
 - [fieldset](references/fieldset.md): A heading over the fields it names, so a long form reads as several answers instead of one list.
 - [form](references/form.md): The fields as one submission: it collects their values, checks them on submit, moves focus to the first one that failed, and files every ve...
+- [hover-card](references/hover-card.md): A card that arrives when a pointer rests on the thing it is about - a name, a link - and stays open while the pointer moves into it, becaus...
 - [input](references/input.md): A single line of text in the same 32 / 36 / 40 tiers a Button takes, so the two line up.
 - [menu](references/menu.md): A menu of actions on a trigger: groups, a group label, separators, and one popup several detached triggers can share.
 - [nav](references/nav.md): A list of navigation rows: groups, icons, active state, badges, inline sub rows, and a compact rail where a row with children opens them in...

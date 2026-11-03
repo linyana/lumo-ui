@@ -933,6 +933,34 @@
 					"type": "registry:ui"
 				}
 			]
+		},
+		{
+			"name": "alert-dialog",
+			"type": "registry:ui",
+			"title": "AlertDialog",
+			"description": "A modal that asks rather than offers: the page behind it is inert and a click outside will not dismiss it, so the only way out is one of the panel's own buttons. For the action that cannot be taken back.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface"],
+			"files": [
+				{
+					"path": "src/components/ui/alert-dialog.tsx",
+					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "hover-card",
+			"type": "registry:ui",
+			"title": "HoverCard",
+			"description": "A card that arrives when a pointer rests on the thing it is about — a name, a link — and stays open while the pointer moves into it, because what it holds is something to read and click. Where a tooltip names a control in a word, this shows the whole entity.",
+			"dependencies": ["@base-ui/react"],
+			"registryDependencies": ["@lumo/utils", "@lumo/surface"],
+			"files": [
+				{
+					"path": "src/components/ui/hover-card.tsx",
+					"type": "registry:ui"
+				}
+			]
 		}
 	]
 }
