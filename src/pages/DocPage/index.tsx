@@ -252,7 +252,11 @@ export function Command({
 	}
 
 	return (
-		<Card.Root data-slot="doc-command" bordered={bordered} className="gap-0 overflow-hidden py-0">
+		<Card.Root
+			data-slot="doc-command"
+			bordered={bordered}
+			className="gap-0 overflow-hidden py-0"
+		>
 			<Tabs.Root
 				variant="pill"
 				size="sm"

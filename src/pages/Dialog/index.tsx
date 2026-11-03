@@ -2,6 +2,7 @@ import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
+	DocLink,
 	DocPage,
 	DocPreview,
 	DocSection,
@@ -146,7 +147,10 @@ export function DialogPage() {
 					<>
 						the destructive button wears the destructive tier and the way out is a ghost
 						one — the same two tiers a button row uses anywhere else, so nothing about
-						the dialog has to be learned twice.
+						the dialog has to be learned twice. where the question is the whole content
+						and no third answer is allowed,{' '}
+						<DocLink to="/alert-dialog">alert dialog</DocLink> is the one that enforces
+						it.
 					</>
 				}
 			>

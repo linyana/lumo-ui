@@ -6,7 +6,7 @@ import { SidebarContent, type SidebarProps } from '../sidebar';
 
 export type MobileNavigationProps = Pick<
 	SidebarProps,
-	'nav' | 'selectedKey' | 'onSelect' | 'logo' | 'title' | 'brandActions' | 'footer'
+	'nav' | 'selectedKey' | 'onSelect' | 'logo' | 'title' | 'brandActions' | 'toolbar' | 'footer'
 > & {
 	resetScrollKey?: string;
 };
@@ -18,6 +18,7 @@ export function MobileNavigation({
 	logo,
 	title,
 	brandActions,
+	toolbar,
 	footer,
 	resetScrollKey,
 }: MobileNavigationProps) {
@@ -114,6 +115,7 @@ export function MobileNavigation({
 									}
 								/>
 							}
+							toolbar={toolbar}
 							footer={footer}
 						/>
 					</Drawer.Popup>

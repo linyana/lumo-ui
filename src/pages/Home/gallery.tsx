@@ -30,7 +30,10 @@ function Tile({
 					<h3>
 						<Link to={href} className="inline-flex items-center gap-2 hover:underline">
 							{title}
-							<ArrowUpRight aria-hidden="true" className="size-4 text-muted-foreground" />
+							<ArrowUpRight
+								aria-hidden="true"
+								className="size-4 text-muted-foreground"
+							/>
 						</Link>
 					</h3>
 				</Card.Title>

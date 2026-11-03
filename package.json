@@ -13,12 +13,13 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "oxlint .",
 		"format": "oxfmt .",
-		"check": "oxfmt --check . && oxlint . && tsc --noEmit && bun scripts/check-registry.ts",
-		"check:fix": "oxfmt . && oxlint --fix . && tsc --noEmit && bun scripts/check-registry.ts --fix",
+		"check": "oxfmt --check . && oxlint . && tsc --noEmit && bun scripts/check-registry.ts && bun run llms:check",
+		"check:fix": "oxfmt . && oxlint --fix . && tsc --noEmit && bun scripts/check-registry.ts --fix && bun run llms:build",
 		"registry:check": "shadcn registry validate registry.json",
 		"registry:build": "shadcn build registry.json -o public/r",
 		"registry:sync": "bun scripts/check-registry.ts --fix",
-		"llms:build": "bun scripts/llms.ts"
+		"llms:build": "bun scripts/llms.ts",
+		"llms:check": "bun scripts/llms.ts --check"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.9.0",

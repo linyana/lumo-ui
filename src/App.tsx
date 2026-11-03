@@ -23,6 +23,7 @@ import {
 import { NavLink, Outlet, useLocation } from 'react-router';
 import { Layout, type LayoutNavEntry, type LayoutNavItem } from '@/components/blocks/layout';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Nav } from '@/components/ui/nav';
 import { cn } from '@/lib/utils';
 import { docRoutes, docSections } from '@/pages';
 import { DocNeighborsProvider } from '@/pages/DocPage';
@@ -174,24 +175,28 @@ export default function App() {
 		return layout.querySelector<HTMLElement>('[data-doc-search-trigger]');
 	}, []);
 
-	const navigation = useMemo<LayoutNavEntry[]>(
-		() => [
-			{
-				key: 'search',
-				label: 'Search',
-				icon: <Search />,
-				render: (
-					<SearchTrigger
-						type="button"
-						shortcut={shortcut}
-						aria-haspopup="dialog"
-						aria-keyshortcuts="Control+k Meta+k"
+	// Above the nav and outside its scroll box: the one row the rail should never scroll away.
+	const toolbar = useMemo(
+		() => (
+			<Nav.List>
+				<Nav.Item>
+					<Nav.Button
+						icon={<Search />}
+						label="Search"
+						className="h-9 [&_svg]:size-4"
+						render={
+							<SearchTrigger
+								type="button"
+								shortcut={shortcut}
+								aria-haspopup="dialog"
+								aria-keyshortcuts="Control+k Meta+k"
+							/>
+						}
+						onClick={openSearch}
 					/>
-				),
-				onClick: openSearch,
-			},
-			...nav,
-		],
+				</Nav.Item>
+			</Nav.List>
+		),
 		[openSearch, shortcut],
 	);
 
@@ -237,7 +242,7 @@ export default function App() {
 				<Layout
 					ref={shell}
 					variant="default"
-					nav={navigation}
+					nav={nav}
 					selectedKey={selectedKey}
 					resetScrollKey={pathname}
 					logo={<img src="/logo.svg" alt="" className="size-5 shrink-0" />}
@@ -271,6 +276,7 @@ export default function App() {
 							</Button>
 						</>
 					}
+					toolbar={toolbar}
 				>
 					<Layout.Content className="p-0">
 						<Outlet />

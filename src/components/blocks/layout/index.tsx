@@ -56,6 +56,11 @@ export type LayoutProps = Omit<ComponentProps<'div'>, 'title' | 'onSelect'> & {
 	title?: ReactNode;
 	/** Controls at the far end of the brand row, before the fold toggle — a theme switch, a tint. */
 	brandActions?: ReactNode;
+	/**
+	 * Pinned above the nav, under the brand row: a search trigger, a filter — a control the list
+	 * should not scroll past.
+	 */
+	toolbar?: ReactNode;
 	/** Pinned to the rail's bottom edge: a version, a status, a link. */
 	footer?: ReactNode;
 	/** Lets the rail narrow to its icons: the brand row carries the toggle, and cmd/ctrl+b does it. */
@@ -80,6 +85,7 @@ function LayoutRoot({
 	logo,
 	title,
 	brandActions,
+	toolbar,
 	footer,
 	collapsible = false,
 	defaultCollapsed = false,
@@ -141,6 +147,7 @@ function LayoutRoot({
 				logo={logo}
 				title={title}
 				brandActions={brandActions}
+				toolbar={toolbar}
 				footer={footer}
 				collapsible={collapsible}
 				collapsed={isCollapsed}
@@ -155,6 +162,7 @@ function LayoutRoot({
 						logo={logo}
 						title={title}
 						brandActions={brandActions}
+						toolbar={toolbar}
 						footer={footer}
 						resetScrollKey={resetScrollKey}
 					/>

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { AccordionPage } from './Accordion';
+import { AlertDialogPage } from './AlertDialog';
 import { AvatarPage } from './Avatar';
 import { BadgePage } from './Badge';
 import { ButtonPage } from './Button';
@@ -15,6 +16,7 @@ import { DrawerPage } from './Drawer';
 import { FieldPage } from './Field';
 import { FieldsetPage } from './Fieldset';
 import { FormPage } from './Form';
+import { HoverCardPage } from './HoverCard';
 import { InputPage } from './Input';
 import { InstallationPage } from './Installation';
 import { LayoutPage } from './Layout';
@@ -63,6 +65,12 @@ export const docRoutes: DocRoute[] = [
 		element: <InstallationPage />,
 	},
 	{ path: 'accordion', label: 'Accordion', section: 'Components', element: <AccordionPage /> },
+	{
+		path: 'alert-dialog',
+		label: 'AlertDialog',
+		section: 'Components',
+		element: <AlertDialogPage />,
+	},
 	{ path: 'avatar', label: 'Avatar', section: 'Components', element: <AvatarPage /> },
 	{ path: 'badge', label: 'Badge', section: 'Components', element: <BadgePage /> },
 	{ path: 'button', label: 'Button', section: 'Components', element: <ButtonPage /> },
@@ -83,6 +91,7 @@ export const docRoutes: DocRoute[] = [
 	{ path: 'field', label: 'Field', section: 'Components', element: <FieldPage /> },
 	{ path: 'fieldset', label: 'Fieldset', section: 'Components', element: <FieldsetPage /> },
 	{ path: 'form', label: 'Form', section: 'Components', element: <FormPage /> },
+	{ path: 'hover-card', label: 'HoverCard', section: 'Components', element: <HoverCardPage /> },
 	{ path: 'input', label: 'Input', section: 'Components', element: <InputPage /> },
 	{ path: 'menu', label: 'Menu', section: 'Components', element: <MenuPage /> },
 	{ path: 'nav', label: 'Nav', section: 'Components', element: <NavPage /> },

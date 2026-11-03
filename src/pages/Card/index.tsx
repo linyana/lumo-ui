@@ -78,7 +78,11 @@ const partRows = [
 const hookRows = [
 	['data-slot="card"', 'the surface', 'a div; the card adds the look, nothing else.'],
 	['data-size', 'sm | md', 'on the root, and read by every part through group-data-[size=…].'],
-	['data-bordered', 'present only when bordered', 'on the root when its explicit border is enabled.'],
+	[
+		'data-bordered',
+		'present only when bordered',
+		'on the root when its explicit border is enabled.',
+	],
 	[
 		'data-hoverable',
 		'present only when hoverable',
