@@ -48,9 +48,9 @@ Not a file, and not copied: the CLI merges it into the stylesheet `components.js
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
+	--background: rgb(17 17 19);
 	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
+	--card: rgb(25 25 27);
 	--card-foreground: oklch(0.985 0 0);
 	--popover: oklch(0.205 0 0);
 	--popover-foreground: oklch(0.985 0 0);

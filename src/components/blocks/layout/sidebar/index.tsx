@@ -32,8 +32,12 @@ const noNav: LayoutNavEntry[] = [];
  * primitive's density: a 36px row and a 16px glyph — and the glyph at a fixed size rather than
  * the row's `1em`, because here the icon leads the label instead of following it.
  */
-const row = 'h-9 [&_svg]:size-4';
-const subRow = 'h-8 [&_svg]:size-4';
+const rowColor = cn(
+	'text-foreground/70 hover:text-foreground',
+	'dark:text-foreground/60 dark:hover:text-foreground dark:data-active:text-accent-foreground',
+);
+const row = cn('h-9 [&_svg]:size-4', rowColor);
+const subRow = cn('h-8 [&_svg]:size-4', rowColor);
 
 /**
  * A strip at one edge of the rail, outside the scroll box: the same padded nav root at either end,
@@ -148,7 +152,9 @@ export function SidebarContent({
 						onSelect?.(item.key);
 					}}
 				/>
-				{item.badge !== undefined && <Nav.Badge>{item.badge}</Nav.Badge>}
+				{item.badge !== undefined && (
+					<Nav.Badge className="text-muted-foreground">{item.badge}</Nav.Badge>
+				)}
 			</Nav.Item>
 		);
 	}
