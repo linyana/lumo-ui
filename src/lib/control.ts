@@ -50,6 +50,7 @@ export const iconSlot = '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:si
  */
 export const fieldShell = cn(
 	'w-full min-w-0 rounded-md border border-input bg-background text-foreground',
+	'dark:border-border dark:bg-card',
 	'placeholder:text-muted-foreground',
 	'transition-colors duration-(--duration-state)',
 	'hover:not-disabled:not-data-disabled:border-input-strong',

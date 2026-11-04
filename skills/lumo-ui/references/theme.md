@@ -216,7 +216,7 @@ Not a file, and not copied: the CLI merges it into the stylesheet `components.js
 }
 
 .dark {
-	--layout-background: color-mix(in srgb, var(--background) 50%, black);
+	--layout-background: color-mix(in srgb, var(--background) 75%, black);
 	--layout-content: var(--background);
 	--success: oklch(0.723 0.219 149.579);
 	--warning: oklch(0.769 0.188 70.08);
