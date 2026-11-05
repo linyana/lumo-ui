@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import AccordionBasic from '@/pages/Accordion/demos/basic';
 import AlertDialogBasic from '@/pages/AlertDialog/demos/basic';
+import AuthSignIn from '@/pages/Auth/demos/sign-in';
 import AvatarBasic from '@/pages/Avatar/demos/basic';
 import BadgeBasic from '@/pages/Badge/demos/basic';
 import ButtonBasic from '@/pages/Button/demos/basic';
@@ -145,5 +146,6 @@ export const componentPreviews = new Map<string, ComponentPreview>([
 	...previewGroups.flatMap(({ previews }) =>
 		previews.map((preview) => [preview.path, preview] as const),
 	),
+	['auth', { path: 'auth', label: 'Auth layout', Demo: AuthSignIn }],
 	['layout', { path: 'layout', label: 'Layout', Demo: LayoutResponsive }],
 ]);
