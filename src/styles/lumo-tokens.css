@@ -12,13 +12,13 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-	/* Type: Inter carries the Latin, and the CJK families after it carry Chinese. The font
-	   FILE is not shipped here — a consumer installs `@fontsource-variable/inter` (or serves
-	   Inter some other way) and this stack picks it up; without it, the stack degrades to the
+	/* Type: Geist carries the Latin, and the CJK families after it carry Chinese. The font
+	   FILE is not shipped here — a consumer installs `@fontsource-variable/geist` (or serves
+	   Geist some other way) and this stack picks it up; without it, the stack degrades to the
 	   system sans rather than to something broken. Tailwind's preflight resolves `html`'s
 	   font-family from `--font-sans`, so this one declaration is the whole app's type. */
 	--font-sans:
-		'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui,
+		'Geist Variable', 'Geist', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui,
 		-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
 	/* Mono: Geist Mono comes FIRST so every machine draws code in the same font — the
@@ -37,6 +37,9 @@
 	--color-background: var(--background);
 	--color-layout-background: var(--layout-background);
 	--color-layout-content: var(--layout-content);
+	/* The panel an anonymous screen's artwork is drawn on: a night sky, dark in either theme. */
+	--color-scene-background: var(--scene-background);
+	--color-scene-foreground: var(--scene-foreground);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
 	--color-card-foreground: var(--card-foreground);
@@ -121,6 +124,12 @@
 	/* Shell chrome stays separate from the content canvas and card surfaces. */
 	--layout-background: rgb(239 239 240);
 	--layout-content: rgb(249 249 250);
+
+	/* The panel beside an anonymous form is a picture rather than a layer of the page: the artwork
+	   on it is a backlit planet, and a planet needs a night sky in either theme. A brand that wants
+	   its own colour there overrides these two, and the artwork keeps its own palette. */
+	--scene-background: #050505;
+	--scene-foreground: #f3f3f3;
 
 	/* Interaction feedback — shared by every pressable control.
 	   Filled buttons tint themselves with their light foreground colour, which reads

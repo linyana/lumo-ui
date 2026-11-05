@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { AccordionPage } from './Accordion';
 import { AlertDialogPage } from './AlertDialog';
+import { AuthPage } from './Auth';
 import { AvatarPage } from './Avatar';
 import { BadgePage } from './Badge';
 import { ButtonPage } from './Button';
@@ -140,5 +141,6 @@ export const docRoutes: DocRoute[] = [
 		section: 'Components',
 		element: <TransitionPage />,
 	},
+	{ path: 'auth', label: 'Auth layout', section: 'Blocks', element: <AuthPage /> },
 	{ path: 'layout', label: 'Layout', section: 'Blocks', element: <LayoutPage /> },
 ];

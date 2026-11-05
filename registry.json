@@ -86,11 +86,13 @@
 			"description": "The stylesheet every component reads: the `dark` variant, the `@theme` mappings, the interaction and motion tokens, the radius scale, the outcome colours a shadcn theme does not define, the focus ring and the base layer. Required — a project that keeps its own palette still needs this file, which is why the colours are a separate item.",
 			"cssVars": {
 				"theme": {
-					"font-sans": "'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+					"font-sans": "'Geist Variable', 'Geist', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 					"font-mono": "'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace",
 					"color-background": "var(--background)",
 					"color-layout-background": "var(--layout-background)",
 					"color-layout-content": "var(--layout-content)",
+					"color-scene-background": "var(--scene-background)",
+					"color-scene-foreground": "var(--scene-foreground)",
 					"color-foreground": "var(--foreground)",
 					"color-card": "var(--card)",
 					"color-card-foreground": "var(--card-foreground)",
@@ -132,6 +134,8 @@
 				"light": {
 					"layout-background": "rgb(239 239 240)",
 					"layout-content": "rgb(249 249 250)",
+					"scene-background": "#050505",
+					"scene-foreground": "#f3f3f3",
 					"state-layer-hover-opacity": "0.06",
 					"state-layer-pressed-opacity": "0.14",
 					"state-layer-fill-hover-opacity": "0.16",
@@ -564,6 +568,30 @@
 				{
 					"path": "src/components/ui/select.tsx",
 					"type": "registry:ui"
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"type": "registry:block",
+			"title": "Auth layout",
+			"description": "The frame the anonymous screens stand in: the form's own column, and a panel beside it while the frame has room for one. The panel is a backlit planet drawn on a canvas — or whatever node the screen hands it — and it steps aside below 36rem of the frame's width, so the form keeps the page on a phone and in a card.",
+			"registryDependencies": ["@lumo/utils"],
+			"files": [
+				{
+					"path": "src/components/blocks/auth/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/auth/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/auth/planet/index.tsx",
+					"type": "registry:component",
+					"target": "@components/blocks/auth/planet/index.tsx"
+				},
+				{
+					"path": "src/components/blocks/auth/planet/piece.ts",
+					"type": "registry:component",
+					"target": "@components/blocks/auth/planet/piece.ts"
 				}
 			]
 		},

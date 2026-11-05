@@ -102,6 +102,7 @@ imports comes with it: another item, or the npm package it names.
 
 ### Blocks
 
+- [auth](references/auth.md): The frame the anonymous screens stand in: the form's own column, and a panel beside it while the frame has room for one.
 - [code-tree](references/code-tree.md): A flat list of paths drawn as the tree a person reads a project in: folders that open and close, one file active.
 - [layout](references/layout.md): The responsive app shell: one nav array draws a desktop rail and a mobile navigation drawer, beside the surface a page scrolls in.
 
