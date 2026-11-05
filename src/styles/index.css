@@ -4,9 +4,9 @@
  * into their global stylesheet instead.
  */
 @import 'tailwindcss';
-/* The theme names Inter and Geist Mono in its stacks; these are what actually deliver the
+/* The theme names Geist and Geist Mono in its stacks; these are what actually deliver the
    files to the demo. */
-@import '@fontsource-variable/inter';
+@import '@fontsource-variable/geist';
 @import '@fontsource-variable/geist-mono';
 @import './lumo-palette.css';
 @import './lumo-tokens.css';

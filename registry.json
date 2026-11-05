@@ -86,7 +86,7 @@
 			"description": "The stylesheet every component reads: the `dark` variant, the `@theme` mappings, the interaction and motion tokens, the radius scale, the outcome colours a shadcn theme does not define, the focus ring and the base layer. Required — a project that keeps its own palette still needs this file, which is why the colours are a separate item.",
 			"cssVars": {
 				"theme": {
-					"font-sans": "'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+					"font-sans": "'Geist Variable', 'Geist', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
 					"font-mono": "'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'Noto Sans SC Variable', 'Noto Sans SC', monospace",
 					"color-background": "var(--background)",
 					"color-layout-background": "var(--layout-background)",

@@ -31,13 +31,13 @@ Not a file, and not copied: the CLI merges it into the stylesheet `components.js
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-	/* Type: Inter carries the Latin, and the CJK families after it carry Chinese. The font
-	   FILE is not shipped here — a consumer installs `@fontsource-variable/inter` (or serves
-	   Inter some other way) and this stack picks it up; without it, the stack degrades to the
+	/* Type: Geist carries the Latin, and the CJK families after it carry Chinese. The font
+	   FILE is not shipped here — a consumer installs `@fontsource-variable/geist` (or serves
+	   Geist some other way) and this stack picks it up; without it, the stack degrades to the
 	   system sans rather than to something broken. Tailwind's preflight resolves `html`'s
 	   font-family from `--font-sans`, so this one declaration is the whole app's type. */
 	--font-sans:
-		'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui,
+		'Geist Variable', 'Geist', 'Noto Sans SC Variable', 'Noto Sans SC', system-ui,
 		-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
 	/* Mono: Geist Mono comes FIRST so every machine draws code in the same font — the
