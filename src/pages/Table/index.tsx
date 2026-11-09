@@ -1,10 +1,10 @@
-import { Code } from '@/components/ui/code';
 import {
 	DocInstall,
 	DocPage,
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -444,10 +444,7 @@ export function TablePage() {
 				title="usage"
 				note="Compose native sections and cells. The table remains frameless by default; choose a surface when it stands on its own."
 			>
-				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
-				</div>
+				<DocUsage snippets={[usageImport, usageExample]} />
 			</DocSection>
 
 			<DocSection

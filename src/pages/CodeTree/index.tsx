@@ -1,4 +1,3 @@
-import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -6,6 +5,7 @@ import {
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -154,10 +154,7 @@ export function CodeTreePage() {
 				title="usage"
 				note="hand it the paths. it builds the folders, the order and the glyphs itself."
 			>
-				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
-				</div>
+				<DocUsage snippets={[usageImport, usageExample]} />
 			</DocSection>
 
 			<DocSection
