@@ -511,7 +511,7 @@ export function Root({
 						)}
 					>
 						<span className="inline-flex items-center gap-2 text-sm">
-							<Spinner label={null} />
+							<Spinner size={1} label={null} />
 							{value.locale.loading}
 						</span>
 					</div>

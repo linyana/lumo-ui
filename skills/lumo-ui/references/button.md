@@ -97,7 +97,7 @@ export function Button({
 	children,
 	...props
 }: ButtonProps) {
-	const spinner = loadingIcon ?? <Spinner label={null} />;
+	const spinner = loadingIcon ?? <Spinner size={1} label={null} />;
 
 	return (
 		<BaseButton

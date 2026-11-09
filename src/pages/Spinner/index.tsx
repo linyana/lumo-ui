@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -7,6 +6,7 @@ import {
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -18,23 +18,11 @@ import Sizes from './demos/sizes';
 const files = ['src/components/ui/spinner.tsx'];
 
 const spinnerProps: Record<string, PropNode> = {
-	dots: {
-		type: 'number',
-		default: '8',
+	size: {
+		type: 'number | string',
+		default: '2',
 		description:
-			'How many dots go round. Floored at 4: below that the ring stops reading as a ring.',
-	},
-	dotScale: {
-		type: 'number',
-		default: '0.2',
-		description:
-			'A dot’s width, as a share of the spinner’s box. Clamped to 0.2–0.4 so the dots can neither vanish nor merge.',
-	},
-	radiusScale: {
-		type: 'number',
-		default: '0.34',
-		description:
-			'The ring’s radius, as a share of the box. Clamped so a ring can never cross its own edge.',
+			'The box. A number is ems of the text around it, so the ring still follows the type; a string is any CSS length, which stops it following. A size-* class loses to it.',
 	},
 	label: {
 		type: 'ReactNode',
@@ -44,7 +32,8 @@ const spinnerProps: Record<string, PropNode> = {
 	},
 	className: {
 		type: 'string',
-		description: 'Merged last through cn(); the size and the ink live here.',
+		description:
+			'Merged last through cn(); the ink lives here, and a size class where no size is set.',
 	},
 	'...props': {
 		type: 'HTMLSpanElement props',
@@ -57,12 +46,12 @@ const hookRows = [
 	[
 		'data-slot="spinner"',
 		'the box',
-		'one em square, an inline-flex, so it sits on the text’s baseline.',
+		'a square of 2em, an inline-flex, so it sits on the text’s baseline.',
 	],
 	['data-slot="spinner-dot"', 'each dot', 'bg-current, with its own animation delay.'],
 	['role="status"', 'present when label is set', 'with the label as visually hidden text.'],
 	['aria-hidden', 'on the ring', 'the dots are decoration; the label is the announcement.'],
-	['--duration', '1s', 'one turn of the ring; the delay is the turn divided by the dot count.'],
+	['--duration', '1s', 'one turn of the ring; the delay is the turn divided by the eight dots.'],
 	[
 		'container-type: size',
 		'on the box',
@@ -72,7 +61,7 @@ const hookRows = [
 
 const usageImport = "import { Spinner } from '@/components/ui/spinner';";
 const usageExample = `<p className="flex items-center gap-2 text-sm">
-	<Spinner label={null} />
+	<Spinner size={1} label={null} />
 	saving
 </p>`;
 
@@ -104,18 +93,16 @@ export function SpinnerPage() {
 					</>
 				}
 			>
-				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
-				</div>
+				<DocUsage snippets={[usageImport, usageExample]} />
 			</DocSection>
 
 			<DocSection
 				title="sizes, and ink"
 				note={
 					<>
-						it is <Mono>size-[1em]</Mono> and <Mono>bg-current</Mono>: a size class
-						chooses the box, and the colour is whatever the text around it is.
+						<Mono>size</Mono> chooses the box — a number is ems, so the default{' '}
+						<Mono>2</Mono> sits the ring at twice the text around it — and{' '}
+						<Mono>bg-current</Mono> takes the colour from that text.
 					</>
 				}
 			>
@@ -126,7 +113,7 @@ export function SpinnerPage() {
 
 			<DocSection
 				title="in the text’s own size"
-				note="the point of sizing in em: a control loads at exactly the size of the icon it replaces."
+				note="the point of sizing in em: a control loads at the size its text sets. A call site that stands the ring in for a glyph pins it back with size={1}."
 			>
 				<DocPreview path="src/pages/Spinner/demos/inline.tsx">
 					<Inline />
@@ -138,7 +125,10 @@ export function SpinnerPage() {
 				note={
 					<>
 						<Mono>Button</Mono> defaults its <Mono>loadingIcon</Mono> to this element,
-						so <Mono>loading</Mono> and a leading icon cannot disagree about size.
+						pinned back with <Mono>size={'{1}'}</Mono> so <Mono>loading</Mono> and a
+						leading icon cannot disagree about size. <Mono>Table</Mono> pins it the same
+						way, and
+						<Mono>Toast</Mono> to a rem.
 					</>
 				}
 			>
