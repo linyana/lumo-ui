@@ -1,10 +1,10 @@
-import { Code } from '@/components/ui/code';
 import {
 	DocInstall,
 	DocPage,
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -205,10 +205,7 @@ export function PaginationPage() {
 					</>
 				}
 			>
-				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
-				</div>
+				<DocUsage snippets={[usageImport, usageExample]} />
 			</DocSection>
 
 			<DocSection

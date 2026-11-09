@@ -70,8 +70,9 @@ component, because a wrapper would only be a second set of names for the same dr
 
 Two things lucide cannot supply:
 
-- **A state.** Loading is `Spinner`, the library's only loading indicator, which sizes itself in `em`
-  so a control loads at exactly the size of the icon it replaces. Pass `label={null}` inside a control
+- **A state.** Loading is `Spinner`, the library's only loading indicator, sized in `em` by its
+  `size` prop — a number of ems, or a CSS length when it should not follow the type — and defaults to
+  `2`, so a call site that stands it in for a glyph pins it back with `size={1}`. Pass `label={null}` inside a control
   that announces its own state — `Button` does, and its default `loadingIcon` is that element.
 - **A glyph lucide does not ship.** Make one with `createLucideIcon`, which puts it on lucide's own
   grid and stroke so it reads as one of the set. Used once, keep it a local constant; used in many

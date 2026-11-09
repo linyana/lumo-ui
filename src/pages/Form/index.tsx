@@ -5,6 +5,7 @@ import {
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -130,10 +131,7 @@ export function FormPage() {
 					</>
 				}
 			>
-				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
-				</div>
+				<DocUsage snippets={[usageImport, usageExample]} />
 			</DocSection>
 
 			<DocSection

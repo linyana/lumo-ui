@@ -311,7 +311,7 @@
 			"name": "spinner",
 			"type": "registry:ui",
 			"title": "Spinner",
-			"description": "Default loading indicator: a container-query sized ring of pulsing dots, one em across so it matches the icon it replaces. Cancel the status role where the surrounding control already announces its own state.",
+			"description": "Default loading indicator: a container-query sized ring of pulsing dots, 2em across by default, set from a size prop in ems so it tracks the text around it or in any CSS length when it should not. Cancel the status role where the surrounding control already announces its own state.",
 			"registryDependencies": ["@lumo/utils"],
 			"files": [
 				{

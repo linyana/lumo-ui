@@ -1,4 +1,3 @@
-import { Code } from '@/components/ui/code';
 import { Toast } from '@/components/ui/toast';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
@@ -7,6 +6,7 @@ import {
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -169,10 +169,7 @@ export function ToastPage() {
 						</>
 					}
 				>
-					<div className="space-y-3">
-						<Code code={usageProvider} language="tsx" header={false} />
-						<Code code={usageCall} language="tsx" header={false} />
-					</div>
+					<DocUsage snippets={[usageProvider, usageCall]} />
 				</DocSection>
 
 				<DocSection

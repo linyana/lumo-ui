@@ -690,6 +690,29 @@ export type DocPreviewProps = {
 };
 
 /**
+ * A usage answer: what to import and how to write it are one snippet, so they are drawn as one — one
+ * bar, one copy. A second snippet joins the same block a blank line apart, because a paste of the
+ * answer is the answer.
+ */
+export function DocUsage({ snippets }: { snippets: string[] }) {
+	const code = snippets.join('\n\n');
+
+	return (
+		<Card.Root className="w-full gap-0 overflow-hidden py-0">
+			<Card.Header className="min-h-9 border-b border-border/50 px-3 py-1">
+				<Card.Title className="font-mono text-xs font-medium">tsx</Card.Title>
+				<Card.Action>
+					<Copy value={code} />
+				</Card.Action>
+			</Card.Header>
+			<Card.Content className="min-w-0 px-0">
+				<Code code={code} language="tsx" />
+			</Card.Content>
+		</Card.Root>
+	);
+}
+
+/**
  * The source of an example, and of the files the component it demonstrates installs: the tree on the
  * left is that registry item, drawn in the shape of the repository, and the pane on the right is
  * whichever file is selected. The file on screen leads the tree — its own row and the folders above

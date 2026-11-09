@@ -1,6 +1,6 @@
 ﻿# spinner
 
-> Default loading indicator: a container-query sized ring of pulsing dots, one em across so it matches the icon it replaces. Cancel the status role where the surrounding control already announces its own state.
+> Default loading indicator: a container-query sized ring of pulsing dots, 2em across by default, set from a size prop in ems so it tracks the text around it or in any CSS length when it should not. Cancel the status role where the surrounding control already announces its own state.
 
 ## install
 
@@ -24,29 +24,22 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 export type SpinnerProps = ComponentProps<'span'> & {
-	dots?: number;
-	dotScale?: number;
-	radiusScale?: number;
+	/**
+	 * The box: a number is ems of the text around it, a string is any CSS length. It wins over a
+	 * `size-*` class, so a call site sizes the spinner one way or the other.
+	 */
+	size?: number | string;
 	/** Visually hidden status text. Pass `null` inside a control that already announces itself. */
 	label?: ReactNode;
 };
 
-function clamp(value: number, min: number, max: number) {
-	return Math.min(Math.max(value, min), max);
-}
+/** Eight dots, each a fifth of the box, on a ring a third of it across. */
+const dotCount = 8;
+const dotScale = 0.2;
+const radiusScale = 0.34;
 
-export function Spinner({
-	className,
-	style,
-	dots = 8,
-	dotScale = 0.2,
-	radiusScale = 0.34,
-	label = 'Loading',
-	...props
-}: SpinnerProps) {
-	const dotCount = Math.max(4, Math.floor(dots));
-	const safeDotScale = clamp(dotScale, 0.2, 0.4);
-	const safeRadiusScale = clamp(radiusScale, 0, 0.5 - safeDotScale / 2);
+export function Spinner({ className, style, size, label = 'Loading', ...props }: SpinnerProps) {
+	const box = typeof size === 'number' ? `${size}em` : size;
 
 	return (
 		<>
@@ -78,26 +71,26 @@ export function Spinner({
 				data-slot="spinner"
 				role={label ? 'status' : undefined}
 				className={cn(
-					'@container-size relative inline-flex aspect-square size-[1em] align-middle',
+					'@container-size relative inline-flex aspect-square size-[2em] align-middle',
 					'items-center justify-center',
 					className,
 				)}
-				style={style}
+				style={{ width: box, height: box, ...style }}
 				{...props}
 			>
 				<span aria-hidden="true" className="relative block size-full">
 					{Array.from({ length: dotCount }, (_, index) => {
 						const angle = (index / dotCount) * Math.PI * 2;
-						const x = `${(Math.sin(angle) * safeRadiusScale * 100).toFixed(2)}cqmin`;
-						const y = `${(-Math.cos(angle) * safeRadiusScale * 100).toFixed(2)}cqmin`;
+						const x = `${(Math.sin(angle) * radiusScale * 100).toFixed(2)}cqmin`;
+						const y = `${(-Math.cos(angle) * radiusScale * 100).toFixed(2)}cqmin`;
 
 						return (
 							<span
 								key={index}
 								className="absolute top-1/2 left-1/2"
 								style={{
-									width: `calc(${safeDotScale} * 100cqmin)`,
-									height: `calc(${safeDotScale} * 100cqmin)`,
+									width: `calc(${dotScale} * 100cqmin)`,
+									height: `calc(${dotScale} * 100cqmin)`,
 									transform: `translate(-50%, -50%) translate(${x}, ${y})`,
 								}}
 							>
@@ -140,17 +133,19 @@ export default function Basic() {
 ```tsx
 import { Spinner } from '@/components/ui/spinner';
 
-/** The same spinner in the type size of the control it sits in: it is one em across. */
+/** A number is ems of the text around it, so the ring follows the type it sits in. */
 export default function Inline() {
 	return (
 		<div className="space-y-3 text-sm">
 			<div className="flex items-center gap-2">
-				<Spinner label={null} />
-				<span className="text-muted-foreground">next to text-sm, it is text-sm wide</span>
+				<Spinner size={1} label={null} />
+				<span className="text-muted-foreground">size={1}, next to text-sm</span>
 			</div>
 			<div className="flex items-center gap-3 text-2xl">
-				<Spinner label={null} />
-				<span className="text-muted-foreground text-sm">next to text-2xl, it grows</span>
+				<Spinner size={1} label={null} />
+				<span className="text-muted-foreground text-sm">
+					the same size={1}, next to text-2xl
+				</span>
 			</div>
 		</div>
 	);
@@ -166,8 +161,8 @@ export default function Sizes() {
 	return (
 		<div className="flex flex-wrap items-center gap-6 text-foreground">
 			<Spinner />
-			<Spinner className="size-6" />
-			<Spinner className="size-10 text-muted-foreground" label="saving" />
+			<Spinner size={3} />
+			<Spinner size="2.5rem" className="text-muted-foreground" label="saving" />
 		</div>
 	);
 }

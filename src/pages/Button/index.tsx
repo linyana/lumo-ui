@@ -1,4 +1,3 @@
-import { Code } from '@/components/ui/code';
 /* oxlint-disable import/default -- `?raw` is Vite handing over the file's text; the plugin resolves the module the path names, which has no default export */
 import {
 	DocInstall,
@@ -6,6 +5,7 @@ import {
 	DocPreview,
 	DocSection,
 	DocTable,
+	DocUsage,
 	Mono,
 	PropTable,
 	type PropNode,
@@ -44,8 +44,9 @@ const buttonProps: Record<string, PropNode> = {
 	},
 	loadingIcon: {
 		type: 'ReactNode',
-		default: '<Spinner label={null} />',
-		description: 'Replaces the built-in spinner.',
+		default: '<Spinner size={1} label={null} />',
+		description:
+			'Replaces the built-in spinner, which is pinned to a glyph’s size so loading and a leading icon never disagree.',
 	},
 	disabled: {
 		type: 'boolean',
@@ -110,10 +111,7 @@ export function ButtonPage() {
 			</DocSection>
 
 			<DocSection title="usage" note="one import, one element. everything else is Base UI's.">
-				<div className="space-y-3">
-					<Code code={usageImport} language="tsx" header={false} />
-					<Code code={usageExample} language="tsx" header={false} />
-				</div>
+				<DocUsage snippets={[usageImport, usageExample]} />
 			</DocSection>
 
 			<DocSection

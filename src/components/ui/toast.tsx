@@ -122,7 +122,7 @@ function glyphOf(type: string | undefined): ReactNode {
 		case 'info':
 			return <Info />;
 		case 'loading':
-			return <Spinner className="size-4" label={null} />;
+			return <Spinner size="1rem" label={null} />;
 		default:
 			return null;
 	}
